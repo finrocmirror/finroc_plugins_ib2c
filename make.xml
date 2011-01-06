@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<targets>
+
+  <finroclibrary name="ibbc" libs="dl">
+    <sources exclude="">
+      **.cpp
+    </sources>
+  </finroclibrary>
+
+</targets>
