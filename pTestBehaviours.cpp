@@ -19,15 +19,15 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tBehaviourBasedModule.cpp
+/*!\file    pTestBehaviours.cpp
  *
  * \author  Bernd-Helge Schaefer
  *
- * \date    2010-12-31
+ * \date    2011-01-09
  *
  */
 //----------------------------------------------------------------------
-#include "plugins/ibbc/tBehaviourBasedModule.h"
+#include "core/default_main_wrapper.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -36,15 +36,16 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
+#include "plugins/ibbc/mbbFusion.h"
 
 //----------------------------------------------------------------------
 // Debugging
 //----------------------------------------------------------------------
+#include <cassert>
 
 //----------------------------------------------------------------------
 // Namespace usage
 //----------------------------------------------------------------------
-using namespace finroc::core::structure;
 using namespace finroc::ibbc;
 
 //----------------------------------------------------------------------
@@ -54,49 +55,37 @@ using namespace finroc::ibbc;
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
+const char * const cPROGRAM_VERSION = "ver 1.0";
+const char * const cPROGRAM_DESCRIPTION = "This program executes the TestBehaviours module/group.";
 
 //----------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// tBehaviourBasedModule constructors
+// StartUp
 //----------------------------------------------------------------------
-tBehaviourBasedModule::tBehaviourBasedModule(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name) :
-    tModule(parent, name),
-    activity(this, "Activity"),
-    target_rating(this, "Target Rating"),
-    stimulation(this, "Stimulation")
+void StartUp()
+{}
+
+//----------------------------------------------------------------------
+// InitMainGroup
+//----------------------------------------------------------------------
+void InitMainGroup(finroc::core::tThreadContainer *main_thread)
 {
+  //mbbTestBehaviour* test_behaviour = new mbbTestBehaviour (this);
 
-}
+  typedef mbbFusion <double, int> myFusion;
+  myFusion* fusion = new myFusion(main_thread);
 
-//----------------------------------------------------------------------
-// tBehaviourBasedModule Update
-//----------------------------------------------------------------------
-void tBehaviourBasedModule::Update()
-{
-  this->activation = this->stimulation.GetDoubleRaw() * (1. - this->CalculateInhibition(this->inhibitions));
+  //  std::vector <finroc::core::tAbstractPort*> port_handles;
 
-  double activity_value = this->CalculateActivity(this->derived_activity_values,
-                          this->activation);
+  std::vector <std::string> names;
+  names.push_back("Double Port");
+  names.push_back("Int Port");
+  fusion->CreateInputs(names);
 
+  // test_behaviour->ConnectToFusion (port_handles);
 
-  double target_rating_value = this->CalculateTargetRating();
-
-  this->CalculateTransferFunction(this->activation);
-
-  this->CheckBoundaries(activity_value);
-  this->CheckBoundaries(target_rating_value);
-  for (auto iter = this->derived_activity_values.begin();
-       iter != this->derived_activity_values.end();
-       ++iter)
-  {
-    this->CheckBoundaries(*iter);
-  }
-
-  this->PublishBehaviourSignals(activity_value, target_rating_value, this->derived_activity_values);
-
-  //@todo: naming IBBC ? tIBBCModule?
-  this->AssertIbbcPrinciples();
+  main_thread->SetCycleTime(500);
 }

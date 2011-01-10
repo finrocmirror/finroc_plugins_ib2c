@@ -19,15 +19,14 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tBehaviourBasedModule.cpp
+/*!\file    mbbFusion.cpp
  *
- * \author  Bernd-Helge Schaefer
+ * \author
  *
- * \date    2010-12-31
+ * \date    2011-01-07
  *
  */
 //----------------------------------------------------------------------
-#include "plugins/ibbc/tBehaviourBasedModule.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -40,11 +39,11 @@
 //----------------------------------------------------------------------
 // Debugging
 //----------------------------------------------------------------------
+#include <cassert>
 
 //----------------------------------------------------------------------
 // Namespace usage
 //----------------------------------------------------------------------
-using namespace finroc::core::structure;
 using namespace finroc::ibbc;
 
 //----------------------------------------------------------------------
@@ -54,49 +53,46 @@ using namespace finroc::ibbc;
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
+template <typename THead, typename ... TRest>
+finroc::core::tStandardCreateModuleAction< mbbFusion <THead, TRest... > > mbbFusion <THead, TRest... >::cCREATE_ACTION("Fusion");
 
 //----------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// tBehaviourBasedModule constructors
+// mbbFusion constructors
 //----------------------------------------------------------------------
-tBehaviourBasedModule::tBehaviourBasedModule(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name) :
-    tModule(parent, name),
-    activity(this, "Activity"),
-    target_rating(this, "Target Rating"),
-    stimulation(this, "Stimulation")
+template <typename THead, typename ... TRest>
+mbbFusion <THead, TRest... >::mbbFusion(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name)
+    : tBehaviourBasedModule(parent, name)
 {
 
+  // this->CreateOutputs (&value_2);
 }
 
 //----------------------------------------------------------------------
-// tBehaviourBasedModule Update
+// mbbFusion CalculateActivity
 //----------------------------------------------------------------------
-void tBehaviourBasedModule::Update()
+template <typename THead, typename ... TRest>
+double mbbFusion <THead, TRest... >::CalculateActivity(std::vector <double>& derived_activities,
+    double iota)
 {
-  this->activation = this->stimulation.GetDoubleRaw() * (1. - this->CalculateInhibition(this->inhibitions));
-
-  double activity_value = this->CalculateActivity(this->derived_activity_values,
-                          this->activation);
-
-
-  double target_rating_value = this->CalculateTargetRating();
-
-  this->CalculateTransferFunction(this->activation);
-
-  this->CheckBoundaries(activity_value);
-  this->CheckBoundaries(target_rating_value);
-  for (auto iter = this->derived_activity_values.begin();
-       iter != this->derived_activity_values.end();
-       ++iter)
-  {
-    this->CheckBoundaries(*iter);
-  }
-
-  this->PublishBehaviourSignals(activity_value, target_rating_value, this->derived_activity_values);
-
-  //@todo: naming IBBC ? tIBBCModule?
-  this->AssertIbbcPrinciples();
+  return 0.;
 }
+
+//----------------------------------------------------------------------
+// mbbFusion CalculateTargetRating
+//----------------------------------------------------------------------
+template <typename THead, typename ... TRest>
+double mbbFusion <THead, TRest... >::CalculateTargetRating()
+{
+  return 0.5;
+}
+
+//----------------------------------------------------------------------
+// mbbFusion CalculateTransferFunction
+//----------------------------------------------------------------------
+template <typename THead, typename ... TRest>
+void mbbFusion <THead, TRest... >::CalculateTransferFunction(double iota)
+{}

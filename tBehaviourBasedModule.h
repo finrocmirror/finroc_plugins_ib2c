@@ -76,6 +76,8 @@ class tBehaviourBasedModule : public finroc::core::structure::tModule
 
 public:
 
+  /* tIbbcModule */
+  /* tIBBCModule */
   tBehaviourBasedModule(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name);
 
   ////////////////
@@ -120,7 +122,7 @@ public:
 
   const tInhibition& RegisterInhibition(const finroc::util::tString &name)
   {
-    this->inhibitions.push_back(tInhibition(this, name));
+    this->inhibitions.push_back(tInhibition(this, ("(I) ") + name));
     return this->inhibitions.back();
   }
 
@@ -136,11 +138,11 @@ protected:
 private:
 
   virtual double CalculateActivity(std::vector <double>& derived_activities,
-                                   double iota) = 0;
+                                   double activation) = 0;
 
   virtual double CalculateTargetRating() = 0;
 
-  virtual void CalculateTransferFunction(double iota) = 0;
+  virtual void CalculateTransferFunction(double activation) = 0;
 
   /////////////////
   // output behaviour signals
@@ -166,7 +168,7 @@ private:
   // internal behaviour signals
   /////////////////
 
-  double iota;
+  double activation;
 
   inline double CalculateInhibition(std::vector <tInhibition> inhibitions)    //const  <- why is GetDoubleRaw not const?
   {

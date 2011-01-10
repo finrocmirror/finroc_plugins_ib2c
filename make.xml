@@ -7,4 +7,10 @@
     </sources>
   </finroclibrary>
 
+  <finrocprogram name="test_behaviours">
+    <sources>
+      pTestBehaviours.cpp
+    </sources>
+  </finrocprogram>
+
 </targets>
