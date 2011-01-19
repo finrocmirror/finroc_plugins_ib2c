@@ -96,10 +96,6 @@ class mbbFusion : public tBehaviourBasedModule
 
   virtual void CalculateTransferFunction(double activation);
 
-  // @todo: check tPortWrapperBase, tAbstractPort as super classes?
-  //  typedef finroc::core::tPortWrapperBase < finroc::core::tAbstractPort > tAbstractPortWrapper;
-  //  std::vector < finroc::core::tAbstractPort* > input_vector;
-
   std::vector < std::vector < finroc::core::tAbstractPort* > > input_vectors;
 
   std::vector <tInputActivity> input_activities;
@@ -176,8 +172,12 @@ class mbbFusion : public tBehaviourBasedModule
       }
     }
 
-    if (behaviour_signal_info.number_of_values > 0)
+    if (behaviour_signal_info.number_of_values > 0 &&
+        behaviour_signal_info.max_activity_index >= 0)
     {
+      assert(behaviour_signal_info.max_activity_index >= 0);
+      assert(behaviour_signal_info.max_activity_index < (int) input_target_ratings.size());
+
       behaviour_signal_info.max_a = max_activity;
       behaviour_signal_info.max_a_target_rating = input_target_ratings [behaviour_signal_info.max_activity_index].GetDoubleRaw();
       behaviour_signal_info.min_activity_limit *= activation;
@@ -305,25 +305,46 @@ public:
 
   void CalculateTransferFunctionWeight(double activation, const tBehaviourSignalInfo& behaviour_signal_info)
   {
+    this->InnerCalculateTransferFunctionWeight <THead, TRest...> (activation, behaviour_signal_info);
+  }
 
-    /* for (int vector_element = 0; vector_element < control_vector_dimension; vector_element++) */
-    /*   { */
-    /*     double out = 0.; */
-    /*     if (behaviour_signal_info.max_a > 0.) */
-    /*  { */
-    /*    for (it = this->start_indices_for_control_edges.begin(); it != start_indices_for_control_edges.end(); it++) */
-    /*      { */
-    /*        // out += output value <vector_element> of behaviour connected to CI starting at index <*it> */
-    /*        //       * activity of this behaviour / max. activity */
-    /*        out += ControllerInput(*it + eFUSVEC_DIMENSION + vector_element) * ControllerInput(*it) / this->max_activity; */
-    /*      } */
-    /*  } */
-    /*     else */
-    /*  { */
-    /*    out = 0.; */
-    /*  } */
-    /*     controller_output[ eCO_DIMENSION + vector_element ] = out; */
-    /*   } */
+
+  template <typename TLocalHead, typename ... TLocalRest>
+  typename boost::enable_if_c < ((sizeof...(TLocalRest)) > 0), void >::type InnerCalculateTransferFunctionWeight(double activation, const tBehaviourSignalInfo& behaviour_signal_info)
+  {
+    size_t index = (sizeof...(TLocalRest));
+    std::vector < finroc::core::tAbstractPort* > & input_ports(this->input_vectors [index]);
+    finroc::core::tAbstractPort* output_port = this->output_vector [index];
+
+    this->InnerCalculateTransferFunctionWeight <TLocalHead> (output_port, input_ports, activation, behaviour_signal_info);
+  }
+
+  template <typename T>
+  void InnerCalculateTransferFunctionWeight(finroc::core::tAbstractPort* output_port,
+      const std::vector < finroc::core::tAbstractPort* >& input_ports,
+      double activation,
+      const tBehaviourSignalInfo& behaviour_signal_info)
+  {
+    assert(this->input_activities.size() == input_ports.size());
+
+    typedef tInput < finroc::core::tCCPort <T> > tInputPort;
+
+    typedef tOutput < finroc::core::tCCPort <T> > tOutputPort;
+
+    T out;
+    if (behaviour_signal_info.max_a > 0.)
+    {
+      size_t number_of_inputs = input_ports.size();
+      for (size_t i = 0; i < number_of_inputs; ++i)
+      {
+        tInputPort* input = (tInputPort*) input_ports [i];
+        const T* input_data = input->GetAutoLocked();
+        out += (*input_data) * (this->input_activities [i].GetDoubleRaw() / behaviour_signal_info.max_a);
+      }
+    }
+
+    // this does not work so far even though I feel, that this should be working
+    // ((tOutputPort*) output_port)->Publish (out);
   }
 
   void CalculateTransferFunctionMax(double activation, const tBehaviourSignalInfo& behaviour_signal_info)

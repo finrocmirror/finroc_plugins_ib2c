@@ -81,8 +81,14 @@ void InitMainGroup(finroc::core::tThreadContainer *main_thread)
   //  std::vector <finroc::core::tAbstractPort*> port_handles;
 
   std::vector <std::string> names;
-  names.push_back("Double Port");
-  names.push_back("Int Port");
+  names.push_back("Double Port 0");
+  names.push_back("Int Port 0");
+  fusion->CreateInputs(names);
+
+  names.clear();
+  names.push_back("Double Port 1");
+  names.push_back("Int Port 1");
+
   fusion->CreateInputs(names);
 
   // test_behaviour->ConnectToFusion (port_handles);

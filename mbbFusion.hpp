@@ -79,7 +79,6 @@ template <typename THead, typename ... TRest>
 void mbbFusion <THead, TRest... >::Update()
 {
   assert(this->input_activities.size() == this->input_target_ratings.size());
-  assert(this->input_activities.size() == this->input_vectors.size());
 
   this->CalculateBehaviourSignalInfo(this->behaviour_signal_info);
 
