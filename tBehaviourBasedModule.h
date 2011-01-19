@@ -64,6 +64,7 @@ namespace ibbc
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
 
+
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
@@ -133,6 +134,14 @@ protected:
     this->derived_activities.push_back(tDerivedActivity(this, name));
     this->derived_activity_values.push_back(0.);
     return (this->derived_activities.size() - 1);
+  }
+
+  /*!
+   * \brief Calculates the activation of this behaviour-based module.
+   */
+  virtual double CalculateActivation()
+  {
+    return this->stimulation.GetDoubleRaw() *(1. - this->CalculateInhibition(this->inhibitions));
   }
 
 private:

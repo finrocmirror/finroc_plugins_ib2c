@@ -76,7 +76,7 @@ tBehaviourBasedModule::tBehaviourBasedModule(finroc::core::tFrameworkElement *pa
 //----------------------------------------------------------------------
 void tBehaviourBasedModule::Update()
 {
-  this->activation = this->stimulation.GetDoubleRaw() * (1. - this->CalculateInhibition(this->inhibitions));
+  this->activation = this->CalculateActivation();
 
   double activity_value = this->CalculateActivity(this->derived_activity_values,
                           this->activation);
