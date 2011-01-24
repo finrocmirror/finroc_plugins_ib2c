@@ -71,7 +71,7 @@ void StartUp()
 //----------------------------------------------------------------------
 // InitMainGroup
 //----------------------------------------------------------------------
-void InitMainGroup(finroc::core::tThreadContainer *main_thread)
+void InitMainGroup(finroc::core::tThreadContainer *main_thread, const rrlib::getopt::tOption& option)
 {
   //mbbTestBehaviour* test_behaviour = new mbbTestBehaviour (this);
 
