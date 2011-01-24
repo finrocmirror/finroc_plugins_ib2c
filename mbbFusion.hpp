@@ -107,19 +107,25 @@ double mbbFusion <THead, TRest... >::CalculateActivity(std::vector <double>& der
     }
     break;
     // weighted sum
-    // case tBehaviourDefinitions::eFUS_WEIGHTED_SUM:
-    //   activity = 0.;
-    //   if (this->max_activity > 0.0)
-    //   {
-    //     std::vector<int>::iterator it;
-    //     for (it = this->start_indices_for_control_edges.begin(); it != start_indices_for_control_edges.end(); it++)
-    //     {
-    //       // similar to weighted sum of controller outputs: activity * (activity / max_activity)
-    //       activity += ControllerInput(*it) * ControllerInput(*it) / this->max_activity;
-    //     }
-    //     activity = Limit(0.0, 1.0, this->activity) * activation;
-    //   }
-    //   break;
+  case tBehaviourDefinitions::eFUS_WEIGHTED_SUM:
+    activity = 0.;
+    if (this->behaviour_signal_info.max_a > 0.)
+    {
+      //     std::vector<int>::iterator it;
+      //     for (it = this->start_indices_for_control_edges.begin(); it != start_indices_for_control_edges.end(); it++)
+      for (int i = 0; i < this->behaviour_signal_info.number_of_values; ++i)
+      {
+        // similar to weighted sum of controller outputs: activity * (activity / max_activity)
+        double input_activity = input_activities [i].GetDoubleRaw();
+        assert(input_activity <= this->behaviour_signal_info.max_a);
+        activity += input_activity * input_activity / this->behaviour_signal_info.max_a;
+      }
+      assert(activity >= 0.);
+      assert(activity <= 1.);
+      activity = activity * activation;
+      //  activity = Limit(this->activity, 0.0, 1.0) * activation;
+    }
+    break;
     // maximum activity wins:
   case tBehaviourDefinitions::eFUS_MAX:
   default:
@@ -216,7 +222,6 @@ void mbbFusion <THead, TRest... >::CalculateTransferFunction(double activation)
     break;
   };
 }
-
 
 } // end of namespace ibbc
 } // end of namespace finroc

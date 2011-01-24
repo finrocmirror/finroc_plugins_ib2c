@@ -259,50 +259,96 @@ public:
     this->output_vector.push_back(output.GetWrapped());
   }
 
+  //////////////////////
+  // Weighted Sum Fusion
+  //////////////////////
   void CalculateTransferFunctionWeightedSum(double activation, const tBehaviourSignalInfo& behaviour_signal_info)
   {
-    // 1. summation of activities and of square of activities as well as target ratings:
-    /* for (it = this->start_indices_for_control_edges.begin(); it != start_indices_for_control_edges.end(); it++) */
-    /*   { */
-    /*     // input vector coming from one connected behaviour: activity | target rating | control values */
-    /*     this->square_sum_of_activity += ControllerInput(*it) * ControllerInput(*it); */
-    /*   } */
-
-    /* // 2. control values: */
-    /* for (int vector_element = 0; vector_element < control_vector_dimension; vector_element++) */
-    /*   { */
-    /*     out = 0.0; */
-    /*     if (sum_of_activity > 0.0) */
-    /*  { */
-    /*    for (it = this->start_indices_for_control_edges.begin(); it != start_indices_for_control_edges.end(); it++) */
-    /*      { */
-    /*        // out += output value <vector_element> of behaviour connected to CI starting at index <*it> * activity of this behaviour */
-    /*        out += ControllerInput(*it + eFUSVEC_DIMENSION + vector_element) * ControllerInput(*it); */
-    /*      } */
-    /*    out /= sum_of_activity; */
-    /*  } */
-    /*     else */
-    /*  { */
-    /*    if (this->start_indices_for_control_edges.size() > 0) */
-    /*      { */
-    /*        //all activities are zero -> average the control values */
-    /*        for (it = this->start_indices_for_control_edges.begin(); it != start_indices_for_control_edges.end(); it++) */
-    /*    { */
-    /*      // out += output value <vector_element> of behaviour connected to CI starting at index <*it> */
-    /*      out += ControllerInput(*it + eFUSVEC_DIMENSION + vector_element); */
-    /*    } */
-    /*        out /= (this->start_indices_for_control_edges.size()); */
-    /*      } */
-    /*    else */
-    /*      { */
-    /*        out = 0.; */
-    /*      } */
-    /*  } */
-    /*     controller_output[ eCO_DIMENSION + vector_element ] = out; */
-    /*   } */
-
+    this->InnerCalculateTransferFunctionWeightedSum <THead, TRest...> (activation, behaviour_signal_info);
   }
 
+  template <typename TLocalHead, typename ... TLocalRest>
+  typename boost::enable_if_c < ((sizeof...(TLocalRest)) > 0), void >::type InnerCalculateTransferFunctionWeightedSum(double activation, const tBehaviourSignalInfo& behaviour_signal_info)
+  {
+
+    size_t index = (sizeof...(TRest));
+    std::vector < finroc::core::tAbstractPort* > & input_ports(this->input_vectors [index]);
+    finroc::core::tAbstractPort* output_port = this->output_vector [index];
+
+    this->InnerCalculateTransferFunctionWeightedSum <TLocalHead> (output_port, input_ports, activation, behaviour_signal_info);
+    this->InnerCalculateTransferFunctionWeightedSum <TLocalRest...> (activation, behaviour_signal_info);
+  }
+
+  template <typename TLocalHead>
+  void InnerCalculateTransferFunctionWeightedSum(double activation, const tBehaviourSignalInfo& behaviour_signal_info)
+  {
+
+    size_t index = 0;
+    std::vector < finroc::core::tAbstractPort* > & input_ports(this->input_vectors [index]);
+    finroc::core::tAbstractPort* output_port = this->output_vector [index];
+
+    this->InnerCalculateTransferFunctionWeightedSum <TLocalHead> (output_port, input_ports, activation, behaviour_signal_info);
+  }
+
+  template <typename T>
+  void InnerCalculateTransferFunctionWeightedSum(finroc::core::tAbstractPort* output_port,
+      const std::vector < finroc::core::tAbstractPort* >& input_ports,
+      double activation,
+      const tBehaviourSignalInfo& behaviour_signal_info)
+  {
+    assert(this->input_activities.size() == input_ports.size());
+    assert((int) this->input_activities.size() == behaviour_signal_info.number_of_values);
+
+    typedef tInput < finroc::core::tCCPort <T> > tInputPort;
+
+    typedef tOutput < finroc::core::tCCPort <T> > tOutputPort;
+
+    T out;
+    if (behaviour_signal_info.sum_of_activity > 0.)
+    {
+      for (int i = 0; i < behaviour_signal_info.number_of_values; ++i)
+      {
+        // out += output value <vector_element> of behaviour connected to CI starting at index <*it> * activity of this behaviour
+        tInputPort* input = (tInputPort*) input_ports [i];
+        const T* input_data = input->GetAutoLocked();
+        out += (*input_data) * this->input_activities [i].GetDoubleRaw();
+
+        //ControllerInput(*it + eFUSVEC_DIMENSION + vector_element) * ControllerInput(*it);
+      }
+      out *= (1. / behaviour_signal_info.sum_of_activity);
+      //out /= sum_of_activity;
+    }
+    else
+    {
+      if (behaviour_signal_info.number_of_values > 0)
+      {
+        //all activities are zero -> average the control values
+        for (int i = 0; i < behaviour_signal_info.number_of_values; ++i)
+          //   for (it = this->start_indices_for_control_edges.begin(); it != start_indices_for_control_edges.end(); it++)
+        {
+          // out += output value <vector_element> of behaviour connected to CI starting at index <*it>
+          //out += ControllerInput(*it + eFUSVEC_DIMENSION + vector_element);
+
+          tInputPort* input = (tInputPort*) input_ports [i];
+          const T* input_data = input->GetAutoLocked();
+          out += (*input_data);
+        }
+        out *= (1. / behaviour_signal_info.number_of_values);
+        //out /= (this->start_indices_for_control_edges.size());
+      }
+      else
+      {
+        out *= 0.;
+      }
+    }
+
+    ((tOutputPort*) output_port)->Publish(out);
+    //controller_output[ eCO_DIMENSION + vector_element ] = out;
+  }
+
+  //////////////////////
+  // Weighted Fusion
+  //////////////////////
   void CalculateTransferFunctionWeight(double activation, const tBehaviourSignalInfo& behaviour_signal_info)
   {
     this->InnerCalculateTransferFunctionWeight <THead, TRest...> (activation, behaviour_signal_info);
@@ -317,6 +363,17 @@ public:
     finroc::core::tAbstractPort* output_port = this->output_vector [index];
 
     this->InnerCalculateTransferFunctionWeight <TLocalHead> (output_port, input_ports, activation, behaviour_signal_info);
+    this->InnerCalculateTransferFunctionWeight <TLocalRest...> (activation, behaviour_signal_info);
+  }
+
+  template <typename TLocalHead>
+  void InnerCalculateTransferFunctionWeight(double activation, const tBehaviourSignalInfo& behaviour_signal_info)
+  {
+    size_t index = 0;
+    std::vector < finroc::core::tAbstractPort* > & input_ports(this->input_vectors [index]);
+    finroc::core::tAbstractPort* output_port = this->output_vector [index];
+
+    this->InnerCalculateTransferFunctionWeight <TLocalHead> (output_port, input_ports, activation, behaviour_signal_info);
   }
 
   template <typename T>
@@ -326,6 +383,7 @@ public:
       const tBehaviourSignalInfo& behaviour_signal_info)
   {
     assert(this->input_activities.size() == input_ports.size());
+    assert((int) this->input_activities.size() == behaviour_signal_info.number_of_values);
 
     typedef tInput < finroc::core::tCCPort <T> > tInputPort;
 
@@ -343,10 +401,12 @@ public:
       }
     }
 
-    // this does not work so far even though I feel, that this should be working
-    // ((tOutputPort*) output_port)->Publish (out);
+    ((tOutputPort*) output_port)->Publish(out);
   }
 
+  //////////////////////
+  // Maximum Fusion
+  //////////////////////
   void CalculateTransferFunctionMax(double activation, const tBehaviourSignalInfo& behaviour_signal_info)
   {
 

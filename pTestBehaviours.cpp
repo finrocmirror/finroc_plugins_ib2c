@@ -37,6 +37,7 @@
 // Internal includes with ""
 //----------------------------------------------------------------------
 #include "plugins/ibbc/mbbFusion.h"
+#include "rrlib/math/tPose2D.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -75,7 +76,7 @@ void InitMainGroup(finroc::core::tThreadContainer *main_thread, const rrlib::get
 {
   //mbbTestBehaviour* test_behaviour = new mbbTestBehaviour (this);
 
-  typedef mbbFusion <double, int> myFusion;
+  typedef mbbFusion <double, int> myFusion; //rrlib::math::tPose2D, rrlib::math::tPose2D
   myFusion* fusion = new myFusion(main_thread);
 
   //  std::vector <finroc::core::tAbstractPort*> port_handles;
