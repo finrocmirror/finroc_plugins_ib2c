@@ -86,13 +86,13 @@ void tBehaviourBasedModule::Update()
 
   this->CalculateTransferFunction(this->activation);
 
-  this->CheckBoundaries(activity_value);
-  this->CheckBoundaries(target_rating_value);
+  this->AssertBoundaries(activity_value);
+  this->AssertBoundaries(target_rating_value);
   for (auto iter = this->derived_activity_values.begin();
        iter != this->derived_activity_values.end();
        ++iter)
   {
-    this->CheckBoundaries(*iter);
+    this->AssertBoundaries(*iter);
   }
 
   this->PublishBehaviourSignals(activity_value, target_rating_value, this->derived_activity_values);

@@ -22,6 +22,7 @@
 /*!\file    mbbFusion.cpp
  *
  * \author  Bernd-Helge Schaefer
+ * \author  Martin Proetzsch
  *
  * \date    2011-01-07
  *
@@ -137,14 +138,6 @@ double mbbFusion <THead, TRest... >::CalculateActivity(std::vector <double>& der
     }
   }
 
-  //@todo: put into AssertIbbcPrinciples(bool strict = false)?
-  // if (this->transfer_function_called && ((this->activity < this->min_activity_limit - DBL_EPSILON) || (this->activity > this->max_activity_limit + DBL_EPSILON)))
-  // {
-  //   char buffer[sStringUtils::max_chars+1];
-  //   snprintf(buffer, sStringUtils::max_chars, "activity=%f, min activity limit=%f, max activity limit=%f", this->activity, this->min_activity_limit, this->max_activity_limit);
-  //   tBehaviourBasis::ReportViolation("principle", "fusion behavior neutrality (activity)", buffer);
-  // }
-
   return activity;
 }
 
@@ -180,13 +173,6 @@ double mbbFusion <THead, TRest... >::CalculateTargetRating()
     target_rating = this->behaviour_signal_info.max_a_target_rating;
   }
 
-  //@todo: put into AssertIbbcPrinciples(bool strict = false)?
-  // if (this->transfer_function_called && ((this->target_rating < this->min_target_rating_limit - DBL_EPSILON) || (this->target_rating > this->max_target_rating_limit + DBL_EPSILON)))
-  // {
-  //   char buffer[sStringUtils::max_chars+1];
-  //   snprintf(buffer, sStringUtils::max_chars, "target rating=%f, min target rating limit=%f, max target rating limit=%f", this->target_rating, this->min_target_rating_limit, this->max_target_rating_limit);
-  //   tBehaviourBasis::ReportViolation("principle", "fusion behavior neutrality (target rating)", buffer);
-  // }
   return target_rating;
 }
 

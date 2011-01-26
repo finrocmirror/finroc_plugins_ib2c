@@ -64,7 +64,6 @@ namespace ibbc
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
 
-
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
@@ -74,7 +73,6 @@ namespace ibbc
  */
 class tBehaviourBasedModule : public finroc::core::structure::tModule
 {
-
 public:
 
   /* tIbbcModule */
@@ -144,15 +142,6 @@ protected:
     return this->stimulation.GetDoubleRaw() *(1. - this->CalculateInhibition(this->inhibitions));
   }
 
-private:
-
-  virtual double CalculateActivity(std::vector <double>& derived_activities,
-                                   double activation) = 0;
-
-  virtual double CalculateTargetRating() = 0;
-
-  virtual void CalculateTransferFunction(double activation) = 0;
-
   /////////////////
   // output behaviour signals
   /////////////////
@@ -172,6 +161,42 @@ private:
   tStimulation stimulation;
 
   std::vector <tInhibition> inhibitions;
+
+  virtual bool AssertIbbcPrinciples(bool strict = false)
+  {
+    bool success = true;
+
+    // check that derived activities do not exceed the activity itself
+    double activity_value = this->activity.GetDoubleRaw();
+    for (auto iter = this->derived_activities.begin();
+         iter != this->derived_activities.end();
+         ++iter)
+    {
+      double derived_activity = (*iter).GetDoubleRaw();
+      if (derived_activity > activity_value)
+      {
+        FINROC_LOG_STREAM(rrlib::logging::eLL_DEBUG) << "Derived activity \"" << (*iter).GetDescription() << "\": " << derived_activity << " greater Activity: " << activity_value;
+
+        success = false;
+      }
+    }
+
+    if (strict && !success)
+    {
+      assert(false);
+    }
+
+    return success;
+  }
+
+private:
+
+  virtual double CalculateActivity(std::vector <double>& derived_activities,
+                                   double activation) = 0;
+
+  virtual double CalculateTargetRating() = 0;
+
+  virtual void CalculateTransferFunction(double activation) = 0;
 
   /////////////////
   // internal behaviour signals
@@ -215,39 +240,11 @@ private:
     }
   }
 
-  virtual void CheckBoundaries(double behaviour_signal)
+  virtual void AssertBoundaries(double behaviour_signal)
   {
     assert(behaviour_signal >= 0.);
     assert(behaviour_signal <= 1.);
   }
-
-  virtual bool AssertIbbcPrinciples(bool strict = false)
-  {
-    bool success = true;
-
-    // check that derived activities do not exceed the activity itself
-    double activity_value = this->activity.GetDoubleRaw();
-    for (auto iter = this->derived_activities.begin();
-         iter != this->derived_activities.end();
-         ++iter)
-    {
-      double derived_activity = (*iter).GetDoubleRaw();
-      if (derived_activity > activity_value)
-      {
-        FINROC_LOG_STREAM(rrlib::logging::eLL_DEBUG) << "Derived activity \"" << (*iter).GetDescription() << "\": " << derived_activity << " greater Activity: " << activity_value;
-
-        success = false;
-      }
-    }
-
-    if (strict && !success)
-    {
-      assert(false);
-    }
-
-    return success;
-  }
-
 };
 //----------------------------------------------------------------------
 // End of namespace declaration

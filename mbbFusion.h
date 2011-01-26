@@ -22,6 +22,7 @@
 /*!\file    mbbFusion.h
  *
  * \author  Bernd-Helge Schaefer
+ * \author  Martin Proetzsch
  *
  * \date    2011-01-07
  *
@@ -43,6 +44,7 @@
 #include <vector>
 #include <sstream>
 #include <boost/utility/enable_if.hpp>
+#include <float.h>
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -192,6 +194,46 @@ class mbbFusion : public tBehaviourBasedModule
     }
   }
 
+  virtual bool AssertIbbcPrinciples(bool strict = false)
+  {
+
+    double activity_value = this->activity.GetDoubleRaw();
+    double target_rating_value = this->target_rating.GetDoubleRaw();
+
+    bool success = true;
+
+    if ((activity_value < (this->behaviour_signal_info.min_activity_limit - DBL_EPSILON)) ||
+        (activity_value > this->behaviour_signal_info.max_activity_limit + DBL_EPSILON))
+    {
+      success = false;
+    }
+    // {
+    //   char buffer[sStringUtils::max_chars+1];
+    //   snprintf(buffer, sStringUtils::max_chars, "activity=%f, min activity limit=%f, max activity limit=%f", this->activity, this->min_activity_limit, this->max_activity_limit);
+    //   tBehaviourBasis::ReportViolation("principle", "fusion behavior neutrality (activity)", buffer);
+    // }
+
+    if ((target_rating_value < this->behaviour_signal_info.min_target_rating_limit - DBL_EPSILON) ||
+        (target_rating_value > this->behaviour_signal_info.max_target_rating_limit + DBL_EPSILON))
+    {
+      success = false;
+    }
+    // {
+    //   char buffer[sStringUtils::max_chars+1];
+    //   snprintf(buffer, sStringUtils::max_chars, "target rating=%f, min target rating limit=%f, max target rating limit=%f", this->target_rating, this->min_target_rating_limit, this->max_target_rating_limit);
+    //   tBehaviourBasis::ReportViolation("principle", "fusion behavior neutrality (target rating)", buffer);
+    // }
+
+    if (!success && strict)
+    {
+      assert(false);
+    }
+
+    success &= tBehaviourBasedModule::AssertIbbcPrinciples(strict);
+
+    return success;
+  }
+
   tBehaviourSignalInfo behaviour_signal_info;
 
 //----------------------------------------------------------------------
@@ -215,7 +257,7 @@ public:
       this->InnerCreateOutputs <THead, TRest...>(names);
     }
 
-    //@todo: create behaviour signals for the behaviour to be fused
+    //create behaviour signals for the behaviour to be fused
     std::stringstream activity_name;
     std::stringstream target_rating_name;
     activity_name << "A " << this->input_activities.size();
