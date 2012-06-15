@@ -1,6 +1,6 @@
 //
 // You received this file as part of Finroc
-// A framework for integrated robot control
+// A framework for intelligent robot control
 //
 // Copyright (C) AG Robotersysteme TU Kaiserslautern
 //
@@ -19,33 +19,35 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    tBehaviourBasedModule.cpp
+/*!\file    pTestBehaviours.cpp
  *
- * \author  Bernd-Helge Schaefer
+ * \author  Bernd-Helge Schäfer
+ * \author  Tobias Föhst
  *
- * \date    2010-12-31
+ * \date    2011-01-09
  *
  */
 //----------------------------------------------------------------------
-#include "plugins/ibbc/tBehaviourBasedModule.h"
+#include "core/default_main_wrapper.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include "rrlib/math/tPose2D.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
+#include "plugins/ib2c/mbbFusion.h"
 
 //----------------------------------------------------------------------
 // Debugging
 //----------------------------------------------------------------------
+#include <cassert>
 
 //----------------------------------------------------------------------
 // Namespace usage
 //----------------------------------------------------------------------
-using namespace finroc::core::structure;
-using namespace finroc::ibbc;
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
@@ -54,49 +56,43 @@ using namespace finroc::ibbc;
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
+const char * const cPROGRAM_VERSION = "ver 1.0";
+const char * const cPROGRAM_DESCRIPTION = "This program executes the TestBehaviors module/group.";
 
 //----------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// tBehaviourBasedModule constructors
+// StartUp
 //----------------------------------------------------------------------
-tBehaviourBasedModule::tBehaviourBasedModule(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name) :
-    tModule(parent, name),
-    activity(this, "Activity"),
-    target_rating(this, "Target Rating"),
-    stimulation(this, "Stimulation")
+void StartUp()
+{}
+
+//----------------------------------------------------------------------
+// InitMainGroup
+//----------------------------------------------------------------------
+void InitMainGroup(finroc::core::tThreadContainer *main_thread, const rrlib::getopt::tOption& option)
 {
+  //mbbTestBehaviour* test_behaviour = new mbbTestBehaviour (this);
 
-}
+  typedef finroc::plugins::ib2c::mbbFusion <double, int> myFusion; //rrlib::math::tPose2D, rrlib::math::tPose2D
+  myFusion *fusion = new myFusion(main_thread);
 
-//----------------------------------------------------------------------
-// tBehaviourBasedModule Update
-//----------------------------------------------------------------------
-void tBehaviourBasedModule::Update()
-{
-  this->activation = this->CalculateActivation();
+  //  std::vector <finroc::core::tAbstractPort*> port_handles;
 
-  double activity_value = this->CalculateActivity(this->derived_activity_values,
-                          this->activation);
+  std::vector <std::string> names;
+  names.push_back("Double Port 0");
+  names.push_back("Int Port 0");
+  fusion->CreateInputs(names);
 
+  names.clear();
+  names.push_back("Double Port 1");
+  names.push_back("Int Port 1");
 
-  double target_rating_value = this->CalculateTargetRating();
+  fusion->CreateInputs(names);
 
-  this->CalculateTransferFunction(this->activation);
+  // test_behaviour->ConnectToFusion (port_handles);
 
-  this->AssertBoundaries(activity_value);
-  this->AssertBoundaries(target_rating_value);
-  for (auto iter = this->derived_activity_values.begin();
-       iter != this->derived_activity_values.end();
-       ++iter)
-  {
-    this->AssertBoundaries(*iter);
-  }
-
-  this->PublishBehaviourSignals(activity_value, target_rating_value, this->derived_activity_values);
-
-  //@todo: naming IBBC ? tIBBCModule?
-  this->AssertIbbcPrinciples();
+  main_thread->SetCycleTime(500);
 }

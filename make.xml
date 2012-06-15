@@ -1,16 +1,18 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE targets PUBLIC "-//RRLIB//DTD make 1.0" "http://rrlib.org/xml/1.0/make.dtd">
 <targets>
 
-  <finroclibrary name="ibbc" libs="dl">
-    <sources exclude="">
-      **.cpp
-    </sources>
-  </finroclibrary>
-
-  <finrocprogram name="test_behaviours">
+  <finrocplugin name="ib2c"
+        libs="dl">
     <sources>
-      pTestBehaviours.cpp
+      tModule.cpp
     </sources>
-  </finrocprogram>
+  </finrocplugin>
+
+  <testprogram name="behaviors">
+    <sources>
+      test/pTestBehaviors.cpp
+    </sources>
+  </testprogram>
 
 </targets>

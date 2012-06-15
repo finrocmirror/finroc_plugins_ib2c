@@ -1,8 +1,8 @@
 //
 // You received this file as part of Finroc
-// A framework for integrated robot control
+// A Framework for intelligent robot control
 //
-// Copyright (C) AG Robotersysteme TU Kaiserslautern
+// Copyright (C) Finroc GbR (finroc.org)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,15 +19,25 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    pTestBehaviours.cpp
+/*!\file    plugins/ib2c/tViolation.h
  *
- * \author  Bernd-Helge Schaefer
+ * \author  Tobias Föhst
  *
- * \date    2011-01-09
+ * \date    2012-06-15
+ *
+ * \brief   Contains tViolation
+ *
+ * \b tException
+ *
+ * Special exception type that can be selectively caught by code that
+ * uses iB2C constructs.
  *
  */
 //----------------------------------------------------------------------
-#include "core/default_main_wrapper.h"
+#ifndef __plugins__ib2c__tViolation_h__
+#define __plugins__ib2c__tViolation_h__
+
+#include <stdexcept>
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -36,63 +46,46 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "plugins/ibbc/mbbFusion.h"
-#include "rrlib/math/tPose2D.h"
 
 //----------------------------------------------------------------------
-// Debugging
+// Namespace declaration
 //----------------------------------------------------------------------
-#include <cassert>
-
-//----------------------------------------------------------------------
-// Namespace usage
-//----------------------------------------------------------------------
-using namespace finroc::ibbc;
+namespace finroc
+{
+namespace ib2c
+{
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// Const values
+// Class declaration
 //----------------------------------------------------------------------
-const char * const cPROGRAM_VERSION = "ver 1.0";
-const char * const cPROGRAM_DESCRIPTION = "This program executes the TestBehaviours module/group.";
-
-//----------------------------------------------------------------------
-// Implementation
-//----------------------------------------------------------------------
-
-//----------------------------------------------------------------------
-// StartUp
-//----------------------------------------------------------------------
-void StartUp()
-{}
-
-//----------------------------------------------------------------------
-// InitMainGroup
-//----------------------------------------------------------------------
-void InitMainGroup(finroc::core::tThreadContainer *main_thread, const rrlib::getopt::tOption& option)
+//! Exception for iB2C violations
+/*!
+ * Special exception type that can be selectively caught by code that
+ * uses iB2C constructs.
+ */
+class tViolation : public std::runtime_error
 {
-  //mbbTestBehaviour* test_behaviour = new mbbTestBehaviour (this);
 
-  typedef mbbFusion <double, int> myFusion; //rrlib::math::tPose2D, rrlib::math::tPose2D
-  myFusion* fusion = new myFusion(main_thread);
+//----------------------------------------------------------------------
+// Public methods and typedefs
+//----------------------------------------------------------------------
+public:
 
-  //  std::vector <finroc::core::tAbstractPort*> port_handles;
+  tViolation(const std::string &message)
+    : std::runtime_error(message)
+  {};
 
-  std::vector <std::string> names;
-  names.push_back("Double Port 0");
-  names.push_back("Int Port 0");
-  fusion->CreateInputs(names);
+};
 
-  names.clear();
-  names.push_back("Double Port 1");
-  names.push_back("Int Port 1");
-
-  fusion->CreateInputs(names);
-
-  // test_behaviour->ConnectToFusion (port_handles);
-
-  main_thread->SetCycleTime(500);
+//----------------------------------------------------------------------
+// End of namespace declaration
+//----------------------------------------------------------------------
 }
+}
+
+
+#endif

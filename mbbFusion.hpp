@@ -1,6 +1,6 @@
 //
 // You received this file as part of Finroc
-// A framework for integrated robot control
+// A framework for intelligent robot control
 //
 // Copyright (C) AG Robotersysteme TU Kaiserslautern
 //
@@ -70,7 +70,7 @@ finroc::core::tStandardCreateModuleAction< mbbFusion <THead, TRest... > > mbbFus
 //----------------------------------------------------------------------
 template <typename THead, typename ... TRest>
 mbbFusion <THead, TRest... >::mbbFusion(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name)
-    : tBehaviourBasedModule(parent, name)
+  : tBehaviourBasedModule(parent, name)
 {
 
   // this->CreateOutputs (&value_2);

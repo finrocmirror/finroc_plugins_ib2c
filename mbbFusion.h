@@ -1,6 +1,6 @@
 //
 // You received this file as part of Finroc
-// A framework for integrated robot control
+// A framework for intelligent robot control
 //
 // Copyright (C) AG Robotersysteme TU Kaiserslautern
 //
