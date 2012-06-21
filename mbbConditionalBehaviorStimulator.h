@@ -1,8 +1,8 @@
 //
 // You received this file as part of Finroc
-// A framework for intelligent robot control
+// A Framework for intelligent robot control
 //
-// Copyright (C) AG Robotersysteme TU Kaiserslautern
+// Copyright (C) Finroc GbR (finroc.org)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,16 +19,25 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    pTestBehaviours.cpp
+/*!\file    plugins/ib2c/mbbConditionalBehaviorStimulator.h
  *
- * \author  Bernd-Helge Schäfer
  * \author  Tobias Föhst
  *
- * \date    2011-01-09
+ * \date    2012-06-20
+ *
+ * \brief Contains mbbConditionalBehaviorStimulator
+ *
+ * \b mbbConditionalBehaviorStimulator
+ *
+ * This class implements the iB2C Conditional Behavior Stimulator (CBS)
+ * that allows to easily create behavior activity sequences.
  *
  */
 //----------------------------------------------------------------------
-#include "core/default_main_wrapper.h"
+#ifndef __plugins__ib2c__mbbConditionalBehaviorStimulator_h__
+#define __plugins__ib2c__mbbConditionalBehaviorStimulator_h__
+
+#include "plugins/ib2c/tModule.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -37,66 +46,70 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "plugins/ib2c/test/mbbTestModule.h"
-#include "plugins/ib2c/mbbFusion.h"
 
 //----------------------------------------------------------------------
-// Debugging
+// Namespace declaration
 //----------------------------------------------------------------------
-#include <cassert>
-
-//----------------------------------------------------------------------
-// Namespace usage
-//----------------------------------------------------------------------
+namespace finroc
+{
+namespace ib2c
+{
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// Const values
+// Class declaration
 //----------------------------------------------------------------------
-const char * const cPROGRAM_VERSION = "ver 1.0";
-const char * const cPROGRAM_DESCRIPTION = "This program executes the TestBehaviors module/group.";
-
-//----------------------------------------------------------------------
-// Implementation
-//----------------------------------------------------------------------
-
-//----------------------------------------------------------------------
-// StartUp
-//----------------------------------------------------------------------
-void StartUp()
-{}
-
-//----------------------------------------------------------------------
-// InitMainGroup
-//----------------------------------------------------------------------
-void InitMainGroup(finroc::core::tThreadContainer *main_thread, std::vector<char *> remaining_args)
+//! SHORT_DESCRIPTION
+/*!
+ * This class implements the iB2C Conditional Behavior Stimulator (CBS)
+ * that allows to easily create behavior activity sequences.
+ */
+class mbbConditionalBehaviorStimulator : public ib2c::tModule
 {
-//  mbbTestBehaviour *test_behaviour = new mbbTestBehaviour (this);
-//
-//  typedef finroc::plugins::ib2c::mbbFusion <double, int> myFusion; //rrlib::math::tPose2D, rrlib::math::tPose2D
-//  myFusion *fusion = new myFusion(main_thread);
-//
-//  //  std::vector <finroc::core::tAbstractPort*> port_handles;
-//
-//  std::vector <std::string> names;
-//  names.push_back("Double Port 0");
-//  names.push_back("Int Port 0");
-//  fusion->CreateInputs(names);
-//
-//  names.clear();
-//  names.push_back("Double Port 1");
-//  names.push_back("Int Port 1");
-//
-//  fusion->CreateInputs(names);
+  static core::tStandardCreateModuleAction<mbbConditionalBehaviorStimulator> cCREATE_ACTION;
 
-  // test_behaviour->ConnectToFusion (port_handles);
+//----------------------------------------------------------------------
+// Ports (These are the only variables that may be declared public)
+//----------------------------------------------------------------------
+public:
 
-  new finroc::ib2c::mbbTestModule(main_thread);
+  std::vector<tInput<>> enabling_input;
+  std::vector<tInput<>> ordering_input;
+  std::vector<tInput<>> permanent_input;
 
-  new finroc::ib2c::mbbFusion<int, double>(main_thread);
+  std::vector<tInput<>> enabling_output;
+  std::vector<tInput<>> ordering_output;
+  std::vector<tInput<>> permanent_output;
 
-  main_thread->SetCycleTime(500);
+//----------------------------------------------------------------------
+// Public methods and typedefs
+//----------------------------------------------------------------------
+public:
+
+  mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const util::tString &name = "ConditionalBehaviorStimulator");
+
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
+
+  virtual void ProcessTransferFunction(double activation);
+
+  virtual double CalculateActivity(std::vector<double> &derived_activities, double activity); // const; FIXME
+
+  virtual double CalculateTargetRating(); // const; FIXME
+
+};
+
+//----------------------------------------------------------------------
+// End of namespace declaration
+//----------------------------------------------------------------------
 }
+}
+
+
+
+#endif

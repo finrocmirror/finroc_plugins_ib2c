@@ -89,7 +89,7 @@ public:
     explicit tMetaInput(const TPortParameters &... port_parameters)
       : tMetaSignalPort(GetContainer, port_parameters...)
     {
-      this->SetBounds(core::tBounds<double>(0, 1));
+//      this->SetBounds(core::tBounds<double>(0, 1));
     }
 
   private:
@@ -105,7 +105,7 @@ public:
     explicit tMetaOutput(const TPortParameters &... port_parameters)
       : tMetaSignalPort(GetContainer, port_parameters.../*, core::tBounds<double>(0, 1)*/) // FIXME
     {
-      this->SetBounds(core::tBounds<double>(0, 1));
+//      this->SetBounds(core::tBounds<double>(0, 1));
     }
 
   private:
@@ -150,7 +150,8 @@ public:
   tMetaInput stimulation;
   std::vector<tMetaInput> inhibition;
 
-  std::vector<tMetaOutput> activity;
+  tMetaOutput activity;
+  std::vector<tMetaOutput> derived_activity;
   tMetaOutput target_rating;
 
 //----------------------------------------------------------------------
@@ -166,10 +167,10 @@ public:
     return this->inhibition.back();
   }
 
-  inline const tMetaOutput &AddActivitySignal(const util::tString &name)
+  inline const tMetaOutput &AddDerivedActivitySignal(const util::tString &name)
   {
-    this->activity.push_back(tMetaOutput(this, name));
-    return this->activity.back();
+    this->derived_activity.push_back(tMetaOutput(this, name));
+    return this->derived_activity.back();
   }
 
 //----------------------------------------------------------------------
@@ -203,9 +204,9 @@ private:
 
   virtual void ProcessTransferFunction(double activation) = 0;
 
-  virtual double CalculateActivity(std::vector<double> &derived_activities, double activation) const = 0;
+  virtual double CalculateActivity(std::vector<double> &derived_activities, double activation) = 0; // const = 0; FIXME
 
-  virtual double CalculateTargetRating() const = 0;
+  virtual double CalculateTargetRating() = 0; // const = 0; FIXME
 
 };
 

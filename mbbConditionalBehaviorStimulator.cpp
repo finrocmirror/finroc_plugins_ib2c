@@ -1,8 +1,8 @@
 //
 // You received this file as part of Finroc
-// A framework for intelligent robot control
+// A Framework for intelligent robot control
 //
-// Copyright (C) AG Robotersysteme TU Kaiserslautern
+// Copyright (C) Finroc GbR (finroc.org)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,16 +19,15 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    pTestBehaviours.cpp
+/*!\file    plugins/ib2c/mbbConditionalBehaviorStimulator.cpp
  *
- * \author  Bernd-Helge Schäfer
  * \author  Tobias Föhst
  *
- * \date    2011-01-09
+ * \date    2012-06-20
  *
  */
 //----------------------------------------------------------------------
-#include "core/default_main_wrapper.h"
+#include "plugins/ib2c/mbbConditionalBehaviorStimulator.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -37,8 +36,6 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "plugins/ib2c/test/mbbTestModule.h"
-#include "plugins/ib2c/mbbFusion.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -50,53 +47,57 @@
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
+// Namespace declaration
+//----------------------------------------------------------------------
+namespace finroc
+{
+namespace ib2c
+{
+
+//----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-const char * const cPROGRAM_VERSION = "ver 1.0";
-const char * const cPROGRAM_DESCRIPTION = "This program executes the TestBehaviors module/group.";
+core::tStandardCreateModuleAction<mbbConditionalBehaviorStimulator> mbbConditionalBehaviorStimulator::cCREATE_ACTION("ConditionalBehaviorStimulator");
 
 //----------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// StartUp
+// mbbConditionalBehaviorStimulator constructor
 //----------------------------------------------------------------------
-void StartUp()
+mbbConditionalBehaviorStimulator::mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const util::tString &name)
+  : ib2c::tModule(parent, name)
 {}
 
 //----------------------------------------------------------------------
-// InitMainGroup
+// mbbConditionalBehaviorStimulator ProcessTransferFunction
 //----------------------------------------------------------------------
-void InitMainGroup(finroc::core::tThreadContainer *main_thread, std::vector<char *> remaining_args)
+void mbbConditionalBehaviorStimulator::ProcessTransferFunction(double activation)
+{}
+
+//----------------------------------------------------------------------
+// mbbConditionalBehaviorStimulator CalculateActivity
+//----------------------------------------------------------------------
+double mbbConditionalBehaviorStimulator::CalculateActivity(std::vector<double> &derived_activity, double activation) // const FIXME
 {
-//  mbbTestBehaviour *test_behaviour = new mbbTestBehaviour (this);
-//
-//  typedef finroc::plugins::ib2c::mbbFusion <double, int> myFusion; //rrlib::math::tPose2D, rrlib::math::tPose2D
-//  myFusion *fusion = new myFusion(main_thread);
-//
-//  //  std::vector <finroc::core::tAbstractPort*> port_handles;
-//
-//  std::vector <std::string> names;
-//  names.push_back("Double Port 0");
-//  names.push_back("Int Port 0");
-//  fusion->CreateInputs(names);
-//
-//  names.clear();
-//  names.push_back("Double Port 1");
-//  names.push_back("Int Port 1");
-//
-//  fusion->CreateInputs(names);
+  return 0;
+}
 
-  // test_behaviour->ConnectToFusion (port_handles);
+//----------------------------------------------------------------------
+// mbbConditionalBehaviorStimulator CalculateTargetRating
+//----------------------------------------------------------------------
+double mbbConditionalBehaviorStimulator::CalculateTargetRating() // const FIXME
+{
+  return 0;
+}
 
-  new finroc::ib2c::mbbTestModule(main_thread);
-
-  new finroc::ib2c::mbbFusion<int, double>(main_thread);
-
-  main_thread->SetCycleTime(500);
+//----------------------------------------------------------------------
+// End of namespace declaration
+//----------------------------------------------------------------------
+}
 }

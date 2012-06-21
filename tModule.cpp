@@ -138,7 +138,7 @@ void tModule::UpdateTask::ExecuteTask()
 
   std::vector<double> derived_activities;
   double activity = this->module->CalculateActivity(derived_activities, activation);
-  assert(derived_activities.size() == this->module->activity.size() && "You are not allowed to change the number of derived activities during calculation!");
+  assert(derived_activities.size() == this->module->derived_activity.size() && "You are not allowed to change the number of derived activities during calculation!");
 
   if (activity > activation)
   {
@@ -147,23 +147,25 @@ void tModule::UpdateTask::ExecuteTask()
     throw tViolation(message.str());
   }
 
+  this->module->activity.Publish(activity);
+
   for (size_t i = 0; i < derived_activities.size(); ++i)
   {
     if (!(0 <= derived_activities[i] && derived_activities[i] <= 1))
     {
       std::stringstream message;
-      message << "Derived activity \"" << this->module->activity[i].GetName() << "\" out of bounds: " << derived_activities[i];
+      message << "Derived activity \"" << this->module->derived_activity[i].GetName() << "\" out of bounds: " << derived_activities[i];
       throw tViolation(message.str());
     }
 
     if (derived_activities[i] > activity)
     {
       std::stringstream message;
-      message << "Derived activity \"" << this->module->activity[i].GetName() << "\" = " << derived_activities[i] << " exceeds Activity = " << activity << "!";
+      message << "Derived activity \"" << this->module->derived_activity[i].GetName() << "\" = " << derived_activities[i] << " exceeds Activity = " << activity << "!";
       throw tViolation(message.str());
     }
 
-    this->module->activity[i].Publish(derived_activities[i]);
+    this->module->derived_activity[i].Publish(derived_activities[i]);
   }
 
   this->module->target_rating.Publish(this->module->CalculateTargetRating());

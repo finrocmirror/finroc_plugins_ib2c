@@ -22,7 +22,7 @@
 /*!\file    mbbFusion.cpp
  *
  * \author  Bernd-Helge Schaefer
- * \author  Martin Proetzsch
+ * \author  Tobias Föhst
  *
  * \date    2011-01-07
  *
@@ -52,14 +52,14 @@
 
 namespace finroc
 {
-namespace ibbc
+namespace ib2c
 {
 
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-template <typename THead, typename ... TRest>
-finroc::core::tStandardCreateModuleAction< mbbFusion <THead, TRest... > > mbbFusion <THead, TRest... >::cCREATE_ACTION("Fusion");
+template <typename ... TSignalTypes>
+finroc::core::tStandardCreateModuleAction<mbbFusion<TSignalTypes...>> mbbFusion<TSignalTypes...>::cCREATE_ACTION("Fusion");
 
 //----------------------------------------------------------------------
 // Implementation
@@ -68,146 +68,126 @@ finroc::core::tStandardCreateModuleAction< mbbFusion <THead, TRest... > > mbbFus
 //----------------------------------------------------------------------
 // mbbFusion constructors
 //----------------------------------------------------------------------
-template <typename THead, typename ... TRest>
-mbbFusion <THead, TRest... >::mbbFusion(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name)
-  : tBehaviourBasedModule(parent, name)
+template <typename ... TSignalTypes>
+mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name)
+  : tModule(parent, name),
+
+    max_input_activity_index(0),
+    max_input_activity(0),
+    sum_of_input_activities(0),
+    min_input_target_rating(1),
+    max_input_target_rating(0)
+{}
+
+//----------------------------------------------------------------------
+// mbbFusion ProcessTransferFunction
+//----------------------------------------------------------------------
+template <typename ... TSignalTypes>
+void mbbFusion<TSignalTypes...>::ProcessTransferFunction(double activation)
 {
+  this->max_input_activity_index = 0;
+  this->max_input_activity = 0;
+  this->sum_of_input_activities = 0;
+  this->min_input_target_rating = 1;
+  this->max_input_target_rating = 0;
 
-  // this->CreateOutputs (&value_2);
-}
+  for (size_t i = 0; 0 < this->input.size(); ++i)
+  {
+    double input_activity = this->input[i].activity.Get();
+    double input_target_rating = this->input[i].target_rating.Get();
 
-template <typename THead, typename ... TRest>
-void mbbFusion <THead, TRest... >::Update()
-{
-  assert(this->input_activities.size() == this->input_target_ratings.size());
+    if (input_activity > this->max_input_activity)
+    {
+      this->max_input_activity_index = i;
+      this->max_input_activity = input_activity;
+    }
 
-  this->CalculateBehaviourSignalInfo(this->behaviour_signal_info);
+    this->sum_of_input_activities += input_activity;
 
-  tBehaviourBasedModule::Update();
+    this->min_input_target_rating = std::min(this->min_input_target_rating, input_target_rating);
+    this->max_input_target_rating = std::max(this->max_input_target_rating, input_target_rating);
+  }
+
+  switch (this->fusion_method.Get())
+  {
+
+  case tFusionMethod::WINNER_TAKES_ALL:
+    break;
+
+  case tFusionMethod::WEIGHTED_AVERAGE:
+    break;
+
+  case tFusionMethod::WEIGHTED_SUM:
+    break;
+
+  }
 }
 
 //----------------------------------------------------------------------
 // mbbFusion CalculateActivity
 //----------------------------------------------------------------------
-template <typename THead, typename ... TRest>
-double mbbFusion <THead, TRest... >::CalculateActivity(std::vector <double>& derived_activities,
-    double activation)
+template <typename ... TSignalTypes>
+double mbbFusion<TSignalTypes...>::CalculateActivity(std::vector<double> &derived_activities, double activation) // const FIXME
 {
-  double activity = 0.;
-  switch (this->control_fusion_method)
+  double fused_activity = 0;
+
+  switch (this->fusion_method.Get())
   {
-    // weighted sums:
-  case tBehaviourDefinitions::eFUS_WEIGHT:
-    if (this->behaviour_signal_info.sum_of_activity > 0.0)
-    {
-      activity = this->behaviour_signal_info.square_sum_of_activity / this->behaviour_signal_info.sum_of_activity * activation;
-    }
-    else
-    {
-      activity = 0.;
-    }
+
+  case tFusionMethod::WINNER_TAKES_ALL:
+    fused_activity = this->max_input_activity;
     break;
-    // weighted sum
-  case tBehaviourDefinitions::eFUS_WEIGHTED_SUM:
-    activity = 0.;
-    if (this->behaviour_signal_info.max_a > 0.)
+
+  case tFusionMethod::WEIGHTED_AVERAGE:
+    for (auto it = this->input.begin(); it != this->input.end(); ++it)
     {
-      //     std::vector<int>::iterator it;
-      //     for (it = this->start_indices_for_control_edges.begin(); it != start_indices_for_control_edges.end(); it++)
-      for (int i = 0; i < this->behaviour_signal_info.number_of_values; ++i)
-      {
-        // similar to weighted sum of controller outputs: activity * (activity / max_activity)
-        double input_activity = input_activities [i].GetDoubleRaw();
-        assert(input_activity <= this->behaviour_signal_info.max_a);
-        activity += input_activity * input_activity / this->behaviour_signal_info.max_a;
-      }
-      assert(activity >= 0.);
-      assert(activity <= 1.);
-      activity = activity * activation;
-      //  activity = Limit(this->activity, 0.0, 1.0) * activation;
+      fused_activity += it->activity.Get() * it->activity.Get();
     }
+    fused_activity /= this->sum_of_input_activities;
     break;
-    // maximum activity wins:
-  case tBehaviourDefinitions::eFUS_MAX:
-  default:
-    //write out maximum value of activity:
-    activity = 0.;
-    if (this->behaviour_signal_info.max_a > 0.0)
+
+  case tFusionMethod::WEIGHTED_SUM:
+    for (auto it = this->input.begin(); it != this->input.end(); ++it)
     {
-      activity = this->behaviour_signal_info.max_a * activation;
+      fused_activity += it->activity.Get() * it->activity.Get() / this->max_input_activity;
     }
+    fused_activity = std::min(1.0, fused_activity);
+
   }
 
-  return activity;
+  return fused_activity * activation;
 }
 
 //----------------------------------------------------------------------
 // mbbFusion CalculateTargetRating
 //----------------------------------------------------------------------
-template <typename THead, typename ... TRest>
-double mbbFusion <THead, TRest... >::CalculateTargetRating()
+template <typename ... TSignalTypes>
+double mbbFusion<TSignalTypes...>::CalculateTargetRating() // const FIXME
 {
-  double target_rating = 0.5;
-  switch (this->control_fusion_method)
+  double fused_target_rating = 0;
+  switch (this->fusion_method.Get())
   {
-  case tBehaviourDefinitions::eFUS_WEIGHTED_SUM:
-  case tBehaviourDefinitions::eFUS_WEIGHT:
-    if (this->behaviour_signal_info.sum_of_activity > 0.0)
-    {
-      target_rating = this->behaviour_signal_info.sum_of_activity_times_target_rating / this->behaviour_signal_info.sum_of_activity;
-    }
-    else
-    {
-      if (this->behaviour_signal_info.number_of_values > 0.)
-      {
-        target_rating = this->behaviour_signal_info.sum_of_target_rating / this->behaviour_signal_info.number_of_values;
-      }
-      else
-      {
-        target_rating = 0.;
-      }
-    }
+
+  case tFusionMethod::WINNER_TAKES_ALL:
+    fused_target_rating = this->input[this->max_input_activity_index].target_rating.Get();
     break;
-  case tBehaviourDefinitions::eFUS_MAX:
-  default:
-    target_rating = this->behaviour_signal_info.max_a_target_rating;
+
+  case tFusionMethod::WEIGHTED_AVERAGE:
+  case tFusionMethod::WEIGHTED_SUM:
+    for (auto it = this->input.begin(); it != this->input.end(); ++it)
+    {
+      fused_target_rating += it->activity.Get() * it->target_rating.Get();
+    }
+    fused_target_rating /= this->sum_of_input_activities;
+    break;
+
   }
 
-  return target_rating;
+  return fused_target_rating;
 }
 
 //----------------------------------------------------------------------
-// mbbFusion CalculateTransferFunction
+// End of namespace declaration
 //----------------------------------------------------------------------
-template <typename THead, typename ... TRest>
-void mbbFusion <THead, TRest... >::CalculateTransferFunction(double activation)
-{
-  switch (this->control_fusion_method)
-  {
-    //------------------------------------------------------------------------------------------------
-    // A) Weighted (eFUS_WEIGHT):
-    //------------------------------------------------------------------------------------------------
-  case tBehaviourDefinitions::eFUS_WEIGHT:
-    this->CalculateTransferFunctionWeight(activation, this->behaviour_signal_info);
-    break;
-
-    //------------------------------------------------------------------------------------------------
-    // B) Weighted Sum (eFUS_WEIGHTED_SUM):
-    //------------------------------------------------------------------------------------------------
-  case tBehaviourDefinitions::eFUS_WEIGHTED_SUM:
-    this->CalculateTransferFunctionWeightedSum(activation, this->behaviour_signal_info);
-    break;
-
-    //------------------------------------------------------------------------------------------------
-    // C) Maximum activity wins (eFUS_MAX):
-    //------------------------------------------------------------------------------------------------
-  case tBehaviourDefinitions::eFUS_MAX:
-  default:
-    // find behaviour with highest activity:
-    this->CalculateTransferFunctionMax(activation, this->behaviour_signal_info);
-    break;
-  };
 }
-
-} // end of namespace ibbc
-} // end of namespace finroc
+}

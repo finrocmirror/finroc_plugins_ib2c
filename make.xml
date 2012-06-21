@@ -5,9 +5,18 @@
   <finrocplugin name="ib2c"
         libs="dl">
     <sources>
+      mbbConditionalBehaviorStimulator.cpp
+      mbbFusion.h
       tModule.cpp
+      tViolation.h
     </sources>
   </finrocplugin>
+
+  <finroclibrary name="test_behaviors">
+    <sources>
+      test/mbbTestModule.cpp
+    </sources>
+  </finroclibrary>
 
   <testprogram name="behaviors">
     <sources>
