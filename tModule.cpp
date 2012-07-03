@@ -76,6 +76,11 @@ tModule::tModule(core::tFrameworkElement *parent, const util::tString &name)
 
     input(new core::tPortGroup(this, "Input", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cINPUT_PORT)),
     output(new core::tPortGroup(this, "Output", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cOUTPUT_PORT)),
+
+    stimulation("stimulation", this),     // TODO: use port_name_generator for this block
+    activity("activity", this),
+    target_rating("target_rating", this),
+
     update_task(this),
     input_changed(true),
     last_activation(0)
@@ -88,7 +93,6 @@ tModule::tModule(core::tFrameworkElement *parent, const util::tString &name)
 //----------------------------------------------------------------------
 double tModule::CalculateActivation() //const FIXME
 {
-  // FIXME: assertion not needed when using bounded ports
   assert(0 <= this->stimulation.Get() && this->stimulation.Get() <= 1 && "Stimulation out of bounds!");
   return this->stimulation.Get() * (1 - this->CalculateInhibition());
 }
@@ -102,7 +106,6 @@ double tModule::CalculateInhibition() //const FIXME
 
   for (auto it = this->inhibition.begin(); it != this->inhibition.end(); ++it)
   {
-    // FIXME: assertion not needed when using bounded ports
     assert(0 <= it->Get() && it->Get() <= 1 && "Inhibition out of bounds!");
     inhibition = std::max(inhibition, it->Get());
   }
@@ -140,6 +143,8 @@ void tModule::UpdateTask::ExecuteTask()
   double activity = this->module->CalculateActivity(derived_activities, activation);
   assert(derived_activities.size() == this->module->derived_activity.size() && "You are not allowed to change the number of derived activities during calculation!");
 
+  double target_rating = this->module->CalculateTargetRating();
+
   if (activity > activation)
   {
     std::stringstream message;
@@ -147,7 +152,18 @@ void tModule::UpdateTask::ExecuteTask()
     throw tViolation(message.str());
   }
 
+  if (target_rating == 0)
+  {
+    if (activity != this->module->last_activation) // FIXME activity transfer inputs??? probably derived_activities
+    {
+      std::stringstream message;
+      message << "Goal state activity: Target rating = 0 but Activity not constant!";
+      throw tViolation(message.str());
+    }
+  }
+
   this->module->activity.Publish(activity);
+  this->module->target_rating.Publish(this->module->CalculateTargetRating());
 
   for (size_t i = 0; i < derived_activities.size(); ++i)
   {
@@ -168,17 +184,6 @@ void tModule::UpdateTask::ExecuteTask()
     this->module->derived_activity[i].Publish(derived_activities[i]);
   }
 
-  this->module->target_rating.Publish(this->module->CalculateTargetRating());
-
-  if (this->module->target_rating.Get() == 0)
-  {
-    if (activity != this->module->last_activation) // FIXME activity transfer inputs???
-    {
-      std::stringstream message;
-      message << "Goal state activity: Target rating = 0 but Activity not constant!";
-      throw tViolation(message.str());
-    }
-  }
 }
 
 //----------------------------------------------------------------------

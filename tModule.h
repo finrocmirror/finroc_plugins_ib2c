@@ -40,11 +40,6 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-//#include <vector>
-
-//#include "core/port/cc/tPortNumericBounded.h"
-
-//#include "rrlib/logging/definitions.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -78,6 +73,11 @@ class tModule : public core::structure::tModuleBase
 
   typedef core::structure::tConveniencePort<double, tModule, core::tPort<double>> tMetaSignalPort;
 
+  core::tPortGroup *meta_input;
+  core::tPortGroup *input;
+  core::tPortGroup *meta_output;
+  core::tPortGroup *output;
+
 //----------------------------------------------------------------------
 // Ports (These are the only variables that may be declared public)
 //----------------------------------------------------------------------
@@ -87,10 +87,8 @@ public:
   {
     template<typename ... TPortParameters>
     explicit tMetaInput(const TPortParameters &... port_parameters)
-      : tMetaSignalPort(GetContainer, port_parameters...)
-    {
-//      this->SetBounds(core::tBounds<double>(0, 1));
-    }
+      : tMetaSignalPort(GetContainer, port_parameters..., core::tBounds<double>(0, 1))
+    {}
 
   private:
     static tFrameworkElement *GetContainer(tModule *module)
@@ -103,10 +101,8 @@ public:
   {
     template<typename ... TPortParameters>
     explicit tMetaOutput(const TPortParameters &... port_parameters)
-      : tMetaSignalPort(GetContainer, port_parameters.../*, core::tBounds<double>(0, 1)*/) // FIXME
-    {
-//      this->SetBounds(core::tBounds<double>(0, 1));
-    }
+      : tMetaSignalPort(GetContainer, port_parameters..., core::tBounds<double>(0, 1))
+    {}
 
   private:
     static tFrameworkElement *GetContainer(tModule *module)
@@ -161,21 +157,22 @@ public:
 
   tModule(core::tFrameworkElement *parent, const util::tString &name);
 
-  inline const tMetaInput &AddInhibitionSignal(const util::tString &name)
+  inline const tMetaInput &RegisterInhibition(const util::tString &name)
   {
-    this->inhibition.push_back(tMetaInput(this, name));
+    this->inhibition.push_back(tMetaInput(this, "(I) " + name));
     return this->inhibition.back();
-  }
-
-  inline const tMetaOutput &AddDerivedActivitySignal(const util::tString &name)
-  {
-    this->derived_activity.push_back(tMetaOutput(this, name));
-    return this->derived_activity.back();
   }
 
 //----------------------------------------------------------------------
 // Protected methods
 //----------------------------------------------------------------------
+protected:
+
+  inline const tMetaOutput &RegisterDerivedActivity(const util::tString &name)
+  {
+    this->derived_activity.push_back(tMetaOutput(this, "(A) " + name));
+    return this->derived_activity.back();
+  }
 
 //----------------------------------------------------------------------
 // Private fields and methods
@@ -190,8 +187,6 @@ private:
     virtual void ExecuteTask();
   };
 
-  core::tPortGroup *input;
-  core::tPortGroup *output;
   UpdateTask update_task;
 
   bool input_changed;
