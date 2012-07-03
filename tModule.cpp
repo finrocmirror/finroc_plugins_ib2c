@@ -33,6 +33,8 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include <boost/lexical_cast.hpp>
+
 #include "core/thread/tPeriodicFrameworkElementTask.h"
 
 //----------------------------------------------------------------------
@@ -77,9 +79,12 @@ tModule::tModule(core::tFrameworkElement *parent, const util::tString &name)
     input(new core::tPortGroup(this, "Input", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cINPUT_PORT)),
     output(new core::tPortGroup(this, "Output", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cOUTPUT_PORT)),
 
-    stimulation("stimulation", this),     // TODO: use port_name_generator for this block
-    activity("activity", this),
-    target_rating("target_rating", this),
+    stimulation_mode("Stimulation Mode", this),     // TODO: use port_name_generator for this block
+    number_of_inhibition_ports("Number Of Inhibition Ports", this),
+
+    stimulation("Stimulation", this),               // TODO: use port_name_generator for this block
+    activity("Activity", this),
+    target_rating("Target Rating", this),
 
     update_task(this),
     input_changed(true),
@@ -89,12 +94,73 @@ tModule::tModule(core::tFrameworkElement *parent, const util::tString &name)
 }
 
 //----------------------------------------------------------------------
+// tModule ParametersChanged
+//----------------------------------------------------------------------
+void tModule::ParametersChanged()
+{
+  if (this->stimulation_mode.HasChanged())
+  {
+    if (this->stimulation_mode.Get() == tStimulationMode::ENABLED)
+    {
+      this->stimulation.Publish(1);
+    }
+    if (this->stimulation_mode.Get() == tStimulationMode::DISABLED)
+    {
+      this->stimulation.Publish(0);
+    }
+  }
+
+  if (this->number_of_inhibition_ports.HasChanged())
+  {
+    while (this->inhibition.size() > this->number_of_inhibition_ports.Get())
+    {
+      this->inhibition.back().GetWrapped()->ManagedDelete();
+      this->inhibition.pop_back();
+    }
+    for (size_t i = this->inhibition.size(); i < this->number_of_inhibition_ports.Get(); ++i)
+    {
+      this->RegisterInhibition("Inhibition " + boost::lexical_cast<std::string>(i));
+    }
+  }
+}
+
+//----------------------------------------------------------------------
 // tModule CalculateActivation
 //----------------------------------------------------------------------
 double tModule::CalculateActivation() //const FIXME
 {
+  double stimulation = 0;
+  double inhibition = this->CalculateInhibition();
+
+  switch (this->stimulation_mode.Get())
+  {
+  case tStimulationMode::AUTO:
+    if (!this->stimulation.IsConnected())
+    {
+      FINROC_LOG_PRINT(rrlib::logging::eLL_WARNING, "Stimulation mode is AUTO but stimulation port not connected. Activation is zero.");
+      return 0;
+    }
+    stimulation = this->stimulation.Get();
+    break;
+
+  case tStimulationMode::ENABLED:
+    if (this->stimulation.IsConnected())
+    {
+      FINROC_LOG_PRINT(rrlib::logging::eLL_WARNING, "Stimulation mode is ENABLED but stimulation port also connected. Ignoring incoming value.");
+    }
+    stimulation = 1;
+    break;
+
+  case tStimulationMode::DISABLED:
+    if (this->stimulation.IsConnected())
+    {
+      FINROC_LOG_PRINT(rrlib::logging::eLL_WARNING, "Stimulation mode is DISABLED but stimulation port also connected. Ignoring incoming value.");
+    }
+    stimulation = 0;
+  }
+
   assert(0 <= this->stimulation.Get() && this->stimulation.Get() <= 1 && "Stimulation out of bounds!");
-  return this->stimulation.Get() * (1 - this->CalculateInhibition());
+  return stimulation * (1 - inhibition);
 }
 
 //----------------------------------------------------------------------
@@ -106,8 +172,11 @@ double tModule::CalculateInhibition() //const FIXME
 
   for (auto it = this->inhibition.begin(); it != this->inhibition.end(); ++it)
   {
-    assert(0 <= it->Get() && it->Get() <= 1 && "Inhibition out of bounds!");
-    inhibition = std::max(inhibition, it->Get());
+    if (it->IsConnected())
+    {
+      assert(0 <= it->Get() && it->Get() <= 1 && "Inhibition out of bounds!");
+      inhibition = std::max(inhibition, it->Get());
+    }
   }
 
   return inhibition;
@@ -137,7 +206,11 @@ void tModule::UpdateTask::ExecuteTask()
     throw tViolation(message.str());
   }
 
-  this->module->ProcessTransferFunction(activation);
+  if (!this->module->ProcessTransferFunction(activation))
+  {
+    FINROC_LOG_PRINT(rrlib::logging::eLL_WARNING, "Could not process transfer function. Not updating meta signals.");
+    return;
+  }
 
   std::vector<double> derived_activities;
   double activity = this->module->CalculateActivity(derived_activities, activation);

@@ -60,6 +60,12 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
+enum class tStimulationMode
+{
+  AUTO,
+  ENABLED,
+  DISABLED
+};
 
 //----------------------------------------------------------------------
 // Class declaration
@@ -87,7 +93,7 @@ public:
   {
     template<typename ... TPortParameters>
     explicit tMetaInput(const TPortParameters &... port_parameters)
-      : tMetaSignalPort(GetContainer, port_parameters..., core::tBounds<double>(0, 1))
+      : tMetaSignalPort(GetContainer, port_parameters..., core::tBounds<double>(0, 1, false))
     {}
 
   private:
@@ -101,7 +107,7 @@ public:
   {
     template<typename ... TPortParameters>
     explicit tMetaOutput(const TPortParameters &... port_parameters)
-      : tMetaSignalPort(GetContainer, port_parameters..., core::tBounds<double>(0, 1))
+      : tMetaSignalPort(GetContainer, port_parameters..., core::tBounds<double>(0, 1, false))
     {}
 
   private:
@@ -143,6 +149,9 @@ public:
     }
   };
 
+  tParameter<tStimulationMode> stimulation_mode;
+  tParameter<size_t> number_of_inhibition_ports;
+
   tMetaInput stimulation;
   std::vector<tMetaInput> inhibition;
 
@@ -160,6 +169,8 @@ public:
   inline const tMetaInput &RegisterInhibition(const util::tString &name)
   {
     this->inhibition.push_back(tMetaInput(this, "(I) " + name));
+    this->inhibition.back().Init();
+    this->number_of_inhibition_ports.Publish(this->inhibition.size());
     return this->inhibition.back();
   }
 
@@ -171,8 +182,11 @@ protected:
   inline const tMetaOutput &RegisterDerivedActivity(const util::tString &name)
   {
     this->derived_activity.push_back(tMetaOutput(this, "(A) " + name));
+    this->derived_activity.back().Init();
     return this->derived_activity.back();
   }
+
+  virtual void ParametersChanged();
 
 //----------------------------------------------------------------------
 // Private fields and methods
@@ -185,6 +199,10 @@ private:
   public:
     UpdateTask(tModule *module);
     virtual void ExecuteTask();
+    inline const tFrameworkElement &GetLogDescription() const
+    {
+      return this->module->GetLogDescription();
+    }
   };
 
   UpdateTask update_task;
@@ -197,7 +215,7 @@ private:
 
   double CalculateInhibition(); //const FIXME
 
-  virtual void ProcessTransferFunction(double activation) = 0;
+  virtual bool ProcessTransferFunction(double activation) = 0;
 
   virtual double CalculateActivity(std::vector<double> &derived_activities, double activation) = 0; // const = 0; FIXME
 
