@@ -21,7 +21,6 @@
 //----------------------------------------------------------------------
 /*!\file    mbbFusion.cpp
  *
- * \author  Bernd-Helge Schaefer
  * \author  Tobias Föhst
  *
  * \date    2011-01-07
@@ -32,6 +31,7 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include "rrlib/data_fusion/functions.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -61,6 +61,8 @@ namespace ib2c
 template <typename ... TSignalTypes>
 finroc::core::tStandardCreateModuleAction<mbbFusion<TSignalTypes...>> mbbFusion<TSignalTypes...>::cCREATE_ACTION("Fusion");
 
+const unsigned int cMAX_NUMBER_OF_INPUT_MODULES = 1000;
+
 //----------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------
@@ -71,6 +73,10 @@ finroc::core::tStandardCreateModuleAction<mbbFusion<TSignalTypes...>> mbbFusion<
 template <typename ... TSignalTypes>
 mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name)
   : tModule(parent, name),
+
+    number_of_input_modules(2, core::tBounds<unsigned int>(2, cMAX_NUMBER_OF_INPUT_MODULES, false)),
+
+    output(this, "Output "),
 
     max_input_activity_index(0),
     max_input_activity(0),
@@ -83,7 +89,27 @@ mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, c
 // mbbFusion ProcessTransferFunction
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
-void mbbFusion<TSignalTypes...>::ProcessTransferFunction(double activation)
+void mbbFusion<TSignalTypes...>::ParametersChanged()
+{
+  if (this->number_of_input_modules.HasChanged())
+  {
+    while (this->input.size() > this->number_of_input_modules.Get())
+    {
+      this->input.back().ManagedDelete();
+      this->input.pop_back();
+    }
+    for (size_t i = this->input.size(); i < this->number_of_input_modules.Get(); ++i)
+    {
+      this->input.push_back(tChannel(this, i));
+    }
+  }
+}
+
+//----------------------------------------------------------------------
+// mbbFusion ProcessTransferFunction
+//----------------------------------------------------------------------
+template <typename ... TSignalTypes>
+bool mbbFusion<TSignalTypes...>::ProcessTransferFunction(double activation)
 {
   this->max_input_activity_index = 0;
   this->max_input_activity = 0;
@@ -91,8 +117,19 @@ void mbbFusion<TSignalTypes...>::ProcessTransferFunction(double activation)
   this->min_input_target_rating = 1;
   this->max_input_target_rating = 0;
 
-  for (size_t i = 0; 0 < this->input.size(); ++i)
+  for (size_t i = 0; i < this->input.size(); ++i)
   {
+    if (!this->input[i].activity.IsConnected())
+    {
+      FINROC_LOG_PRINT(rrlib::logging::eLL_ERROR, this->input[i].activity.GetName(), " is not connected.");
+      return false;
+    }
+    if (!this->input[i].target_rating.IsConnected())
+    {
+      FINROC_LOG_PRINT(rrlib::logging::eLL_ERROR, this->input[i].target_rating.GetName(), " is not connected.");
+      return false;
+    }
+
     double input_activity = this->input[i].activity.Get();
     double input_target_rating = this->input[i].target_rating.Get();
 
@@ -108,19 +145,7 @@ void mbbFusion<TSignalTypes...>::ProcessTransferFunction(double activation)
     this->max_input_target_rating = std::max(this->max_input_target_rating, input_target_rating);
   }
 
-  switch (this->fusion_method.Get())
-  {
-
-  case tFusionMethod::WINNER_TAKES_ALL:
-    break;
-
-  case tFusionMethod::WEIGHTED_AVERAGE:
-    break;
-
-  case tFusionMethod::WEIGHTED_SUM:
-    break;
-
-  }
+  return tDataPortFuser::ForwardFusedValues(this);
 }
 
 //----------------------------------------------------------------------
@@ -184,6 +209,55 @@ double mbbFusion<TSignalTypes...>::CalculateTargetRating() // const FIXME
   }
 
   return fused_target_rating;
+}
+
+//----------------------------------------------------------------------
+// mbbFusion::tDataPortFuser PerformFusion
+//----------------------------------------------------------------------
+template <typename ... TSignalTypes>
+template <size_t Tindex>
+bool mbbFusion<TSignalTypes...>::tDataPortFuser::PerformFusion(mbbFusion *parent, tPortPackAccessor<tInput, Tindex> input_accessor, tPortPackAccessor<tOutput, Tindex> output_accessor)
+{
+  const size_t n = parent->input.size();
+
+  typedef typename tSignalTypes::template tAt<Tindex>::tResult tPortData;
+
+  double input_activities[n];
+  tPortData values[n];
+  for (size_t i = 0; i < n; ++i)
+  {
+    input_activities[i] = parent->input[i].activity.Get();
+    tInput<tPortData> &input_port = input_accessor.GetPort(parent->input[i].data);
+    if (!input_port.IsConnected())
+    {
+      FINROC_LOG_PRINT_STATIC(rrlib::logging::eLL_ERROR, input_port.GetName(), " is not connected.");
+      return false;
+    }
+    values[i] = input_port.Get();
+  }
+
+  tPortData fused_value;
+
+  switch (parent->fusion_method.Get())
+  {
+
+  case tFusionMethod::WINNER_TAKES_ALL:
+    fused_value = values[parent->max_input_activity_index];
+    break;
+
+  case tFusionMethod::WEIGHTED_AVERAGE:
+    fused_value = rrlib::data_fusion::FuseValuesUsingWeightedAverage<tPortData>(values, values + n, input_activities, input_activities + n);
+    break;
+
+  case tFusionMethod::WEIGHTED_SUM:
+    fused_value = rrlib::data_fusion::FuseValuesUsingWeightedSum<tPortData>(values, values + n, input_activities, input_activities + n);
+    break;
+
+  }
+
+  output_accessor.GetPort(parent->output).Publish(fused_value);
+
+  return true;
 }
 
 //----------------------------------------------------------------------

@@ -21,7 +21,6 @@
 //----------------------------------------------------------------------
 /*!\file    mbbFusion.h
  *
- * \author  Bernd-Helge Schäfer
  * \author  Tobias Föhst
  *
  * \date    2011-01-07
@@ -44,6 +43,8 @@
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <boost/lexical_cast.hpp>
+
+#include "rrlib/util/tTypeList.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -84,41 +85,53 @@ class mbbFusion : public ib2c::tModule
 {
   static finroc::core::tStandardCreateModuleAction<mbbFusion> cCREATE_ACTION;
 
-  template <template <typename> class TPort, int index, typename ... TTypes>
-  struct tPortPack;
+  typedef rrlib::util::tTypeList<TSignalTypes...> tSignalTypes;
 
-  template <template <typename> class TPort, int index, typename THead, typename ... TTail>
-  struct tPortPack<TPort, index, THead, TTail...> : public tPortPack < TPort, index + 1, TTail... >
+  template <template <typename> class TPort, size_t Tindex = 0>
+  struct tPortPack : public tPortPack < TPort, Tindex + 1 >
   {
-    TPort<THead> port;
-    inline tPortPack()
-      : tPortPack < TPort, index + 1, TTail... > (),
-        port(this, "Signal " + boost::lexical_cast<std::string>(index))
-    {}
-    inline tPortPack(int group_index)
-      : tPortPack < TPort, index + 1, TTail... > (),
-        port(this, "Signal " + boost::lexical_cast<std::string>(group_index) + "." + boost::lexical_cast<std::string>(index))
-    {}
+    TPort<typename tSignalTypes::template tAt<Tindex>::tResult> port;
+    inline tPortPack(mbbFusion *module, const std::string &name_prefix)
+      : tPortPack < TPort, Tindex + 1 > (module, name_prefix),
+        port(name_prefix + boost::lexical_cast<std::string>(Tindex + 1), module)
+    {
+      this->port.Init();
+    }
+    inline void ManagedDelete()
+    {
+      this->port.GetWrapped()->ManagedDelete();
+      tPortPack < TPort, Tindex + 1 >::ManagedDelete();
+    }
   };
 
-  template <template <typename> class TPort, int index, typename THead>
-  struct tPortPack<TPort, index, THead>
+  template <template <typename> class TPort>
+  struct tPortPack<TPort, sizeof...(TSignalTypes)>
   {
-    TPort<THead> port;
-    inline tPortPack()
-      : port(this, "Signal " + boost::lexical_cast<std::string>(index))
-    {}
-    inline tPortPack(int group_index)
-      : port(this, "Signal " + boost::lexical_cast<std::string>(group_index) + "." + boost::lexical_cast<std::string>(index))
-    {}
+    inline tPortPack(mbbFusion *module, const std::string &name_prefix)
+  {}
+  inline void ManagedDelete()
+  {}
   };
 
   struct tChannel
   {
     tMetaInput activity;
     tMetaInput target_rating;
-    tPortPack<tInput, 0, TSignalTypes...> data;
-    tChannel(int group_index) : data(group_index) {}
+    tPortPack<tInput> data;
+    inline tChannel(mbbFusion *module, unsigned int group_index)
+      : activity("Input Activity " + boost::lexical_cast<std::string>(group_index), module),
+        target_rating("Input Target Rating " + boost::lexical_cast<std::string>(group_index), module),
+        data(module, "Input " + boost::lexical_cast<std::string>(group_index + 1) + ".")
+    {
+      this->activity.Init();
+      this->target_rating.Init();
+    }
+    inline void ManagedDelete()
+    {
+      this->activity.GetWrapped()->ManagedDelete();
+      this->target_rating.GetWrapped()->ManagedDelete();
+      this->data.ManagedDelete();
+    }
   };
 
 //----------------------------------------------------------------------
@@ -126,11 +139,13 @@ class mbbFusion : public ib2c::tModule
 //----------------------------------------------------------------------
 public:
 
+  tParameter<unsigned int> number_of_input_modules;
+
   tParameter<tFusionMethod> fusion_method;
 
   std::vector<tChannel> input;
 
-  tPortPack<tOutput, 0, TSignalTypes...> output;
+  tPortPack<tOutput> output;
 
 //----------------------------------------------------------------------
 // Public methods and typedefs
@@ -144,13 +159,61 @@ public:
 //----------------------------------------------------------------------
 private:
 
-  double max_input_activity_index;
+  template <template <typename> class TPort, size_t Tport_index>
+  class tPortPackAccessor
+  {
+  public:
+    typedef TPort<typename tSignalTypes::template tAt<Tport_index>::tResult> tPortType;
+    inline static tPortType &GetPort(tPortPack<TPort> &port_pack)
+    {
+      return ExtractPort(port_pack);
+    }
+
+  private:
+    template <size_t Tlevel>
+    inline static tPortType &ExtractPort(tPortPack<TPort, Tlevel> &port_pack)
+    {
+      return ExtractPort(static_cast < tPortPack < TPort, Tlevel + 1 > & >(port_pack));
+    }
+
+    inline static tPortType &ExtractPort(tPortPack<TPort, Tport_index> &port_pack)
+    {
+      return port_pack.port;
+    }
+  };
+
+  class tDataPortFuser
+  {
+  public:
+    static bool ForwardFusedValues(mbbFusion *parent)
+    {
+      return Iterate(parent, tPortPackAccessor<tInput, 0>(), tPortPackAccessor<tOutput, 0>());
+    }
+
+  private:
+    template <size_t Tindex>
+    inline static bool Iterate(mbbFusion *parent, tPortPackAccessor<tInput, Tindex> input_accessor, tPortPackAccessor<tOutput, Tindex> output_accessor)
+    {
+      bool success = PerformFusion(parent, input_accessor, output_accessor);
+      return success && Iterate(parent, tPortPackAccessor < tInput, Tindex + 1 > (), tPortPackAccessor < tOutput, Tindex + 1 > ());
+    }
+    inline static bool Iterate(mbbFusion *parent, tPortPackAccessor < tInput, sizeof...(TSignalTypes) - 1 > input_accessor, tPortPackAccessor < tOutput, sizeof...(TSignalTypes) - 1 > output_accessor)
+    {
+      return PerformFusion(parent, input_accessor, output_accessor);
+    }
+    template <size_t Tindex>
+    static bool PerformFusion(mbbFusion *parent, tPortPackAccessor<tInput, Tindex> input_accessor, tPortPackAccessor<tOutput, Tindex> output_accessor);
+  };
+
+  size_t max_input_activity_index;
   double max_input_activity;
   double sum_of_input_activities;
   double min_input_target_rating;
   double max_input_target_rating;
 
-  virtual void ProcessTransferFunction(double activation);
+  virtual void ParametersChanged();
+
+  virtual bool ProcessTransferFunction(double activation);
 
   virtual double CalculateActivity(std::vector<double> &derived_activities, double activity); // const; FIXME
 

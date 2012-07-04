@@ -84,22 +84,27 @@ mbbTestModule::~mbbTestModule()
 //----------------------------------------------------------------------
 // mbbTestModule ProcessTransferFunction
 //----------------------------------------------------------------------
-void mbbTestModule::ProcessTransferFunction(double activation)
-{}
+bool mbbTestModule::ProcessTransferFunction(double activation)
+{
+  this->output1.Publish(this->input1.Get());
+  this->output2.Publish(this->input2.Get());
+  this->output3.Publish(this->input3.Get());
+
+  return true;
+}
 
 //----------------------------------------------------------------------
 // mbbTestModule CalculateActivity
 //----------------------------------------------------------------------
-double mbbTestModule::CalculateActivity(std::vector<double> &derived_activity, double activation) // const FIXME
+double mbbTestModule::CalculateActivity(std::vector<double> &derived_activity, double activation)
 {
-  RRLIB_LOG_PRINTF(rrlib::logging::eLL_USER, "Activity = ", activation);
   return activation;
 }
 
 //----------------------------------------------------------------------
 // mbbTestModule CalculateTargetRating
 //----------------------------------------------------------------------
-double mbbTestModule::CalculateTargetRating() // const FIXME
+double mbbTestModule::CalculateTargetRating()
 {
   return 0.5;
 }

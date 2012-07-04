@@ -41,6 +41,7 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include "rrlib/math/tAngle.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -74,6 +75,14 @@ class mbbTestModule : public ib2c::tModule
 //----------------------------------------------------------------------
 public:
 
+  tInput<int> input1;
+  tInput<double> input2;
+  tInput<rrlib::math::tAngleRad> input3;
+
+  tOutput<int> output1;
+  tOutput<double> output2;
+  tOutput<rrlib::math::tAngleRad> output3;
+
 //----------------------------------------------------------------------
 // Public methods and typedefs
 //----------------------------------------------------------------------
@@ -88,11 +97,11 @@ public:
 //----------------------------------------------------------------------
 private:
 
-  virtual void ProcessTransferFunction(double activation);
+  virtual bool ProcessTransferFunction(double activation);
 
-  virtual double CalculateActivity(std::vector<double> &derived_activities, double activity); // const; FIXME
+  virtual double CalculateActivity(std::vector<double> &derived_activities, double activation);
 
-  virtual double CalculateTargetRating(); // const; FIXME
+  virtual double CalculateTargetRating();
 
 };
 

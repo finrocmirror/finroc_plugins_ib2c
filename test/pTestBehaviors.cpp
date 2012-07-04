@@ -39,6 +39,7 @@
 //----------------------------------------------------------------------
 #include "plugins/ib2c/test/mbbTestModule.h"
 #include "plugins/ib2c/mbbFusion.h"
+//#include "plugins/ib2c/mbbConditionalBehaviorStimulator.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -74,29 +75,13 @@ void StartUp()
 //----------------------------------------------------------------------
 void InitMainGroup(finroc::core::tThreadContainer *main_thread, std::vector<char *> remaining_args)
 {
-//  mbbTestBehaviour *test_behaviour = new mbbTestBehaviour (this);
-//
-//  typedef finroc::plugins::ib2c::mbbFusion <double, int> myFusion; //rrlib::math::tPose2D, rrlib::math::tPose2D
-//  myFusion *fusion = new myFusion(main_thread);
-//
-//  //  std::vector <finroc::core::tAbstractPort*> port_handles;
-//
-//  std::vector <std::string> names;
-//  names.push_back("Double Port 0");
-//  names.push_back("Int Port 0");
-//  fusion->CreateInputs(names);
-//
-//  names.clear();
-//  names.push_back("Double Port 1");
-//  names.push_back("Int Port 1");
-//
-//  fusion->CreateInputs(names);
+  new finroc::ib2c::mbbTestModule(main_thread, "Module 1");
+  new finroc::ib2c::mbbTestModule(main_thread, "Module 2");
+  new finroc::ib2c::mbbTestModule(main_thread, "Module 3");
 
-  // test_behaviour->ConnectToFusion (port_handles);
+  new finroc::ib2c::mbbFusion<int, double, rrlib::math::tAngleRad>(main_thread, "Fusion");
 
-  new finroc::ib2c::mbbTestModule(main_thread);
-
-  new finroc::ib2c::mbbFusion<int, double>(main_thread);
+//  new finroc::ib2c::mbbConditionalBehaviorStimulator(main_thread, "CBS");
 
   main_thread->SetCycleTime(500);
 }
