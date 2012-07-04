@@ -1,0 +1,95 @@
+//
+// %%INTRO%%
+//
+// Copyright (C) %%COPYRIGHT%%
+//
+// %%LICENSE%%
+//
+//----------------------------------------------------------------------
+/*!\file    %%FILE%%
+ *
+ * \author  %%AUTHOR%%
+ *
+ * \date    %%DATE%%
+ *
+ * \brief Contains mbb%%NAME%%
+ *
+ * \b mbb%%NAME%%
+ *
+ * %%DESCRIPTION%%
+ *
+ */
+//----------------------------------------------------------------------
+#ifndef %%SENTINEL%%
+#define %%SENTINEL%%
+
+#include "plugins/ib2c/tModule.h"
+
+//----------------------------------------------------------------------
+// External includes (system with <>, local with "")
+//----------------------------------------------------------------------
+
+//----------------------------------------------------------------------
+// Internal includes with ""
+//----------------------------------------------------------------------
+
+//----------------------------------------------------------------------
+// Namespace declaration
+//----------------------------------------------------------------------
+%%OPEN_NAMESPACE%%
+
+//----------------------------------------------------------------------
+// Forward declarations / typedefs / enums
+//----------------------------------------------------------------------
+
+//----------------------------------------------------------------------
+// Class declaration
+//----------------------------------------------------------------------
+//! %%SHORT_DESCRIPTION%%
+/*!
+ * %%DESCRIPTION%%
+ */
+class mbb%%NAME%% : public ib2c::tModule
+{
+  static core::tStandardCreateModuleAction<mbb%%NAME%%> cCREATE_ACTION;
+
+//----------------------------------------------------------------------
+// Ports (These are the only variables that may be declared public)
+//----------------------------------------------------------------------
+public:
+
+  tInput<double> input_signal_1;
+  tInput<double> input_signal_2;
+
+  tOutput<double> output_signal_1;
+  tOutput<double> output_signal_2;
+
+//----------------------------------------------------------------------
+// Public methods and typedefs
+//----------------------------------------------------------------------
+public:
+
+  mbb%%NAME%%(core::tFrameworkElement *parent, const util::tString &name = "%%NAME%%");
+
+  ~mbb%%NAME%%();
+
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
+
+  virtual void ProcessTransferFunction(double activation);
+
+  virtual double CalculateActivity(std::vector<double> &derived_activities, double activity);
+
+  virtual double CalculateTargetRating();
+
+};
+
+//----------------------------------------------------------------------
+// End of namespace declaration
+//----------------------------------------------------------------------
+%%CLOSE_NAMESPACE%%
+%%INCLUDE_HPP%%
+
+#endif
