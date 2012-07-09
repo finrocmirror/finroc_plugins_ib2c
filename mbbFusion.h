@@ -215,9 +215,9 @@ private:
 
   virtual bool ProcessTransferFunction(double activation);
 
-  virtual double CalculateActivity(std::vector<double> &derived_activities, double activity); // const; FIXME
+  virtual double CalculateActivity(std::vector<double> &derived_activities, double activity) const;
 
-  virtual double CalculateTargetRating(); // const; FIXME
+  virtual double CalculateTargetRating() const;
 
 };
 

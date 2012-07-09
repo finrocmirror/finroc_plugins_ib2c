@@ -40,6 +40,7 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include "rrlib/thread/tTask.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -99,7 +100,7 @@ public:
   private:
     static tFrameworkElement *GetContainer(tModule *module)
     {
-      return module->input;
+      return module->meta_input;
     }
   };
 
@@ -113,7 +114,7 @@ public:
   private:
     static tFrameworkElement *GetContainer(tModule *module)
     {
-      return module->output;
+      return module->meta_output;
     }
   };
 
@@ -193,7 +194,7 @@ protected:
 //----------------------------------------------------------------------
 private:
 
-  class UpdateTask : public util::tTask
+  class UpdateTask : public rrlib::thread::tTask
   {
     tModule *const module;
   public:
@@ -211,15 +212,15 @@ private:
 
   double last_activation;
 
-  double CalculateActivation(); //const FIXME
+  double CalculateActivation() const;
 
-  double CalculateInhibition(); //const FIXME
+  double CalculateInhibition() const;
 
   virtual bool ProcessTransferFunction(double activation) = 0;
 
-  virtual double CalculateActivity(std::vector<double> &derived_activities, double activation) = 0; // const = 0; FIXME
+  virtual double CalculateActivity(std::vector<double> &derived_activities, double activation) const = 0;
 
-  virtual double CalculateTargetRating() = 0; // const = 0; FIXME
+  virtual double CalculateTargetRating() const = 0;
 
 };
 

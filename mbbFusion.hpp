@@ -152,7 +152,7 @@ bool mbbFusion<TSignalTypes...>::ProcessTransferFunction(double activation)
 // mbbFusion CalculateActivity
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
-double mbbFusion<TSignalTypes...>::CalculateActivity(std::vector<double> &derived_activities, double activation) // const FIXME
+double mbbFusion<TSignalTypes...>::CalculateActivity(std::vector<double> &derived_activities, double activation) const
 {
   double fused_activity = 0;
 
@@ -187,7 +187,7 @@ double mbbFusion<TSignalTypes...>::CalculateActivity(std::vector<double> &derive
 // mbbFusion CalculateTargetRating
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
-double mbbFusion<TSignalTypes...>::CalculateTargetRating() // const FIXME
+double mbbFusion<TSignalTypes...>::CalculateTargetRating() const
 {
   double fused_target_rating = 0;
   switch (this->fusion_method.Get())

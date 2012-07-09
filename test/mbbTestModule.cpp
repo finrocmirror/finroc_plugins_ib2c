@@ -96,7 +96,7 @@ bool mbbTestModule::ProcessTransferFunction(double activation)
 //----------------------------------------------------------------------
 // mbbTestModule CalculateActivity
 //----------------------------------------------------------------------
-double mbbTestModule::CalculateActivity(std::vector<double> &derived_activity, double activation)
+double mbbTestModule::CalculateActivity(std::vector<double> &derived_activity, double activation) const
 {
   return activation;
 }
@@ -104,7 +104,7 @@ double mbbTestModule::CalculateActivity(std::vector<double> &derived_activity, d
 //----------------------------------------------------------------------
 // mbbTestModule CalculateTargetRating
 //----------------------------------------------------------------------
-double mbbTestModule::CalculateTargetRating()
+double mbbTestModule::CalculateTargetRating() const
 {
   return 0.5;
 }

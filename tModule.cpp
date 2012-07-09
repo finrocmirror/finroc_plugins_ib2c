@@ -76,7 +76,9 @@ namespace ib2c
 tModule::tModule(core::tFrameworkElement *parent, const util::tString &name)
   : tModuleBase(parent, name),
 
+    meta_input(new core::tPortGroup(this, "iB2C Input", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cINPUT_PORT)),
     input(new core::tPortGroup(this, "Input", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cINPUT_PORT)),
+    meta_output(new core::tPortGroup(this, "iB2C Output", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cOUTPUT_PORT)),
     output(new core::tPortGroup(this, "Output", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cOUTPUT_PORT)),
 
     stimulation_mode("Stimulation Mode", this),     // TODO: use port_name_generator for this block
@@ -90,7 +92,9 @@ tModule::tModule(core::tFrameworkElement *parent, const util::tString &name)
     input_changed(true),
     last_activation(0)
 {
-  this->AddAnnotation(new core::tPeriodicFrameworkElementTask(this->input, this->output, &this->update_task));
+  std::vector<core::tEdgeAggregator *> input_ports = { this->meta_input, this->input };
+  std::vector<core::tEdgeAggregator *> output_ports = { this->meta_output, this->output };
+  this->AddAnnotation(new core::tPeriodicFrameworkElementTask(input_ports, output_ports, this->update_task));
 }
 
 //----------------------------------------------------------------------
@@ -127,7 +131,7 @@ void tModule::ParametersChanged()
 //----------------------------------------------------------------------
 // tModule CalculateActivation
 //----------------------------------------------------------------------
-double tModule::CalculateActivation() //const FIXME
+double tModule::CalculateActivation() const
 {
   double stimulation = 0;
   double inhibition = this->CalculateInhibition();
@@ -166,7 +170,7 @@ double tModule::CalculateActivation() //const FIXME
 //----------------------------------------------------------------------
 // tModule CalculateInhibition
 //----------------------------------------------------------------------
-double tModule::CalculateInhibition() //const FIXME
+double tModule::CalculateInhibition() const
 {
   double inhibition = 0;
 
