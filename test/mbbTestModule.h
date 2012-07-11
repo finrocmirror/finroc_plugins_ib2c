@@ -90,8 +90,6 @@ public:
 
   mbbTestModule(core::tFrameworkElement *parent, const util::tString &name = "TestModule");
 
-  ~mbbTestModule();
-
 //----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------

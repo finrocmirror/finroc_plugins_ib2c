@@ -75,8 +75,8 @@ class tViolation : public std::runtime_error
 //----------------------------------------------------------------------
 public:
 
-  tViolation(const std::string &message)
-    : std::runtime_error(message)
+  tViolation(const std::string &message) :
+    std::runtime_error(message)
   {};
 
 };

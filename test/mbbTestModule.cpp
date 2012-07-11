@@ -71,14 +71,8 @@ core::tStandardCreateModuleAction<mbbTestModule> mbbTestModule::cCREATE_ACTION("
 //----------------------------------------------------------------------
 // mbbTestModule constructor
 //----------------------------------------------------------------------
-mbbTestModule::mbbTestModule(core::tFrameworkElement *parent, const util::tString &name)
-  : ib2c::tModule(parent, name)
-{}
-
-//----------------------------------------------------------------------
-// mbbTestModule destructor
-//----------------------------------------------------------------------
-mbbTestModule::~mbbTestModule()
+mbbTestModule::mbbTestModule(core::tFrameworkElement *parent, const util::tString &name) :
+  ib2c::tModule(parent, name)
 {}
 
 //----------------------------------------------------------------------

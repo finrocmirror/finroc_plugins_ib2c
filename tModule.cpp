@@ -73,24 +73,24 @@ namespace ib2c
 //----------------------------------------------------------------------
 // tModule constructors
 //----------------------------------------------------------------------
-tModule::tModule(core::tFrameworkElement *parent, const util::tString &name)
-  : tModuleBase(parent, name),
+tModule::tModule(core::tFrameworkElement *parent, const util::tString &name) :
+  tModuleBase(parent, name),
 
-    meta_input(new core::tPortGroup(this, "iB2C Input", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cINPUT_PORT)),
-    input(new core::tPortGroup(this, "Input", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cINPUT_PORT)),
-    meta_output(new core::tPortGroup(this, "iB2C Output", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cOUTPUT_PORT)),
-    output(new core::tPortGroup(this, "Output", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cOUTPUT_PORT)),
+  meta_input(new core::tPortGroup(this, "iB2C Input", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cINPUT_PORT)),
+  input(new core::tPortGroup(this, "Input", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cINPUT_PORT)),
+  meta_output(new core::tPortGroup(this, "iB2C Output", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cOUTPUT_PORT)),
+  output(new core::tPortGroup(this, "Output", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cOUTPUT_PORT)),
 
-    stimulation_mode("Stimulation Mode", this),     // TODO: use port_name_generator for this block
-    number_of_inhibition_ports("Number Of Inhibition Ports", this),
+  stimulation_mode("Stimulation Mode", this),     // TODO: use port_name_generator for this block
+  number_of_inhibition_ports("Number Of Inhibition Ports", this),
 
-    stimulation("Stimulation", this),               // TODO: use port_name_generator for this block
-    activity("Activity", this),
-    target_rating("Target Rating", this),
+  stimulation("Stimulation", this),               // TODO: use port_name_generator for this block
+  activity("Activity", this),
+  target_rating("Target Rating", this),
 
-    update_task(this),
-    input_changed(true),
-    last_activation(0)
+  update_task(this),
+  input_changed(true),
+  last_activation(0)
 {
   std::vector<core::tEdgeAggregator *> input_ports = { this->meta_input, this->input };
   std::vector<core::tEdgeAggregator *> output_ports = { this->meta_output, this->output };
@@ -98,9 +98,9 @@ tModule::tModule(core::tFrameworkElement *parent, const util::tString &name)
 }
 
 //----------------------------------------------------------------------
-// tModule ParametersChanged
+// tModule EvaluateParameters
 //----------------------------------------------------------------------
-void tModule::ParametersChanged()
+void tModule::EvaluateParameters()
 {
   if (this->stimulation_mode.HasChanged())
   {

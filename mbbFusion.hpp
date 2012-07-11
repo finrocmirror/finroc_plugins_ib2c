@@ -71,25 +71,25 @@ const unsigned int cMAX_NUMBER_OF_INPUT_MODULES = 1000;
 // mbbFusion constructors
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
-mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name)
-  : tModule(parent, name),
+mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name) :
+  tModule(parent, name),
 
-    number_of_input_modules(2, core::tBounds<unsigned int>(2, cMAX_NUMBER_OF_INPUT_MODULES, false)),
+  number_of_input_modules(2, core::tBounds<unsigned int>(2, cMAX_NUMBER_OF_INPUT_MODULES, false)),
 
-    output(this, "Output "),
+  output(this, "Output "),
 
-    max_input_activity_index(0),
-    max_input_activity(0),
-    sum_of_input_activities(0),
-    min_input_target_rating(1),
-    max_input_target_rating(0)
+  max_input_activity_index(0),
+  max_input_activity(0),
+  sum_of_input_activities(0),
+  min_input_target_rating(1),
+  max_input_target_rating(0)
 {}
 
 //----------------------------------------------------------------------
-// mbbFusion ProcessTransferFunction
+// mbbFusion EvaluateParameters
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
-void mbbFusion<TSignalTypes...>::ParametersChanged()
+void mbbFusion<TSignalTypes...>::EvaluateParameters()
 {
   if (this->number_of_input_modules.HasChanged())
   {

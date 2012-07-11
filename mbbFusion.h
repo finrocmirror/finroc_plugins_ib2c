@@ -91,9 +91,9 @@ class mbbFusion : public ib2c::tModule
   struct tPortPack : public tPortPack < TPort, Tindex + 1 >
   {
     TPort<typename tSignalTypes::template tAt<Tindex>::tResult> port;
-    inline tPortPack(mbbFusion *module, const std::string &name_prefix)
-      : tPortPack < TPort, Tindex + 1 > (module, name_prefix),
-        port(name_prefix + boost::lexical_cast<std::string>(Tindex + 1), module)
+    inline tPortPack(mbbFusion *module, const std::string &name_prefix) :
+      tPortPack < TPort, Tindex + 1 > (module, name_prefix),
+      port(name_prefix + boost::lexical_cast<std::string>(Tindex + 1), module)
     {
       this->port.Init();
     }
@@ -118,10 +118,10 @@ class mbbFusion : public ib2c::tModule
     tMetaInput activity;
     tMetaInput target_rating;
     tPortPack<tInput> data;
-    inline tChannel(mbbFusion *module, unsigned int group_index)
-      : activity("Input Activity " + boost::lexical_cast<std::string>(group_index), module),
-        target_rating("Input Target Rating " + boost::lexical_cast<std::string>(group_index), module),
-        data(module, "Input " + boost::lexical_cast<std::string>(group_index + 1) + ".")
+    inline tChannel(mbbFusion *module, unsigned int group_index) :
+      activity("Input Activity " + boost::lexical_cast<std::string>(group_index), module),
+      target_rating("Input Target Rating " + boost::lexical_cast<std::string>(group_index), module),
+      data(module, "Input " + boost::lexical_cast<std::string>(group_index + 1) + ".")
     {
       this->activity.Init();
       this->target_rating.Init();
@@ -211,7 +211,7 @@ private:
   double min_input_target_rating;
   double max_input_target_rating;
 
-  virtual void ParametersChanged();
+  virtual void EvaluateParameters();
 
   virtual bool ProcessTransferFunction(double activation);
 

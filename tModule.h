@@ -93,8 +93,8 @@ public:
   struct tMetaInput : public tMetaSignalPort
   {
     template<typename ... TPortParameters>
-    explicit tMetaInput(const TPortParameters &... port_parameters)
-      : tMetaSignalPort(GetContainer, port_parameters..., core::tBounds<double>(0, 1, false))
+    explicit tMetaInput(const TPortParameters &... port_parameters) :
+      tMetaSignalPort(GetContainer, port_parameters..., core::tBounds<double>(0, 1, false))
     {}
 
   private:
@@ -107,8 +107,8 @@ public:
   struct tMetaOutput : public tMetaSignalPort
   {
     template<typename ... TPortParameters>
-    explicit tMetaOutput(const TPortParameters &... port_parameters)
-      : tMetaSignalPort(GetContainer, port_parameters..., core::tBounds<double>(0, 1, false))
+    explicit tMetaOutput(const TPortParameters &... port_parameters) :
+      tMetaSignalPort(GetContainer, port_parameters..., core::tBounds<double>(0, 1, false))
     {}
 
   private:
@@ -123,8 +123,8 @@ public:
   {
   public:
     template<typename ... TPortParameters>
-    explicit tInput(const TPortParameters &... port_parameters)
-      : core::structure::tConveniencePort<T, tModule, core::tPort<T>>(GetContainer, port_parameters...)
+    explicit tInput(const TPortParameters &... port_parameters) :
+      core::structure::tConveniencePort<T, tModule, core::tPort<T>>(GetContainer, port_parameters...)
     {}
 
   private:
@@ -139,8 +139,8 @@ public:
   {
   public:
     template<typename ... TPortParameters>
-    explicit tOutput(const TPortParameters &... port_parameters)
-      : core::structure::tConveniencePort<T, tModule, core::tPort<T>>(GetContainer, port_parameters...)
+    explicit tOutput(const TPortParameters &... port_parameters) :
+      core::structure::tConveniencePort<T, tModule, core::tPort<T>>(GetContainer, port_parameters...)
     {}
 
   private:
@@ -175,6 +175,26 @@ public:
     return this->inhibition.back();
   }
 
+  inline finroc::core::tPortGroup &GetMetaInputs()
+  {
+    return *this->meta_input;
+  }
+
+  inline finroc::core::tPortGroup &GetInputs()
+  {
+    return *this->input;
+  }
+
+  inline finroc::core::tPortGroup &GetMetaOutputs()
+  {
+    return *this->meta_output;
+  }
+
+  inline finroc::core::tPortGroup &GetOutputs()
+  {
+    return *this->output;
+  }
+
 //----------------------------------------------------------------------
 // Protected methods
 //----------------------------------------------------------------------
@@ -187,7 +207,16 @@ protected:
     return this->derived_activity.back();
   }
 
-  virtual void ParametersChanged();
+  /*!
+   * May be called in ProcessTransferFunction() method to check
+   * whether any input port has changed, since last call to ProcessTransferFunction().
+   *
+   * (Changed flags are reset automatically)
+   */
+  bool InputChanged()
+  {
+    return input_changed;
+  }
 
 //----------------------------------------------------------------------
 // Private fields and methods
@@ -211,6 +240,8 @@ private:
   bool input_changed;
 
   double last_activation;
+
+  virtual void EvaluateParameters();
 
   double CalculateActivation() const;
 

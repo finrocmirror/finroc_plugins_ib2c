@@ -70,20 +70,22 @@ core::tStandardCreateModuleAction<mbbConditionalBehaviorStimulator> mbbCondition
 //----------------------------------------------------------------------
 // mbbConditionalBehaviorStimulator constructor
 //----------------------------------------------------------------------
-mbbConditionalBehaviorStimulator::mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const util::tString &name)
-  : ib2c::tModule(parent, name)
+mbbConditionalBehaviorStimulator::mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const util::tString &name) :
+  ib2c::tModule(parent, name)
 {}
 
 //----------------------------------------------------------------------
 // mbbConditionalBehaviorStimulator ProcessTransferFunction
 //----------------------------------------------------------------------
-void mbbConditionalBehaviorStimulator::ProcessTransferFunction(double activation)
-{}
+bool mbbConditionalBehaviorStimulator::ProcessTransferFunction(double activation)
+{
+  return false;
+}
 
 //----------------------------------------------------------------------
 // mbbConditionalBehaviorStimulator CalculateActivity
 //----------------------------------------------------------------------
-double mbbConditionalBehaviorStimulator::CalculateActivity(std::vector<double> &derived_activity, double activation) // const FIXME
+double mbbConditionalBehaviorStimulator::CalculateActivity(std::vector<double> &derived_activity, double activation) const
 {
   return 0;
 }
@@ -91,7 +93,7 @@ double mbbConditionalBehaviorStimulator::CalculateActivity(std::vector<double> &
 //----------------------------------------------------------------------
 // mbbConditionalBehaviorStimulator CalculateTargetRating
 //----------------------------------------------------------------------
-double mbbConditionalBehaviorStimulator::CalculateTargetRating() // const FIXME
+double mbbConditionalBehaviorStimulator::CalculateTargetRating() const
 {
   return 0;
 }
