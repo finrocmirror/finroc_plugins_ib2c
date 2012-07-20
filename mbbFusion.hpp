@@ -121,12 +121,12 @@ bool mbbFusion<TSignalTypes...>::ProcessTransferFunction(double activation)
   {
     if (!this->input[i].activity.IsConnected())
     {
-      FINROC_LOG_PRINT(rrlib::logging::eLL_ERROR, this->input[i].activity.GetName(), " is not connected.");
+      FINROC_LOG_PRINT(ERROR, this->input[i].activity.GetName(), " is not connected.");
       return false;
     }
     if (!this->input[i].target_rating.IsConnected())
     {
-      FINROC_LOG_PRINT(rrlib::logging::eLL_ERROR, this->input[i].target_rating.GetName(), " is not connected.");
+      FINROC_LOG_PRINT(ERROR, this->input[i].target_rating.GetName(), " is not connected.");
       return false;
     }
 
@@ -230,7 +230,7 @@ bool mbbFusion<TSignalTypes...>::tDataPortFuser::PerformFusion(mbbFusion *parent
     tInput<tPortData> &input_port = input_accessor.GetPort(parent->input[i].data);
     if (!input_port.IsConnected())
     {
-      FINROC_LOG_PRINT_STATIC(rrlib::logging::eLL_ERROR, input_port.GetName(), " is not connected.");
+      FINROC_LOG_PRINT_STATIC(ERROR, input_port.GetName(), " is not connected.");
       return false;
     }
     values[i] = input_port.Get();

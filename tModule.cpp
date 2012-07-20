@@ -141,7 +141,7 @@ double tModule::CalculateActivation() const
   case tStimulationMode::AUTO:
     if (!this->stimulation.IsConnected())
     {
-      FINROC_LOG_PRINT(rrlib::logging::eLL_WARNING, "Stimulation mode is AUTO but stimulation port not connected. Activation is zero.");
+      FINROC_LOG_PRINT(WARNING, "Stimulation mode is AUTO but stimulation port not connected. Activation is zero.");
       return 0;
     }
     stimulation = this->stimulation.Get();
@@ -150,7 +150,7 @@ double tModule::CalculateActivation() const
   case tStimulationMode::ENABLED:
     if (this->stimulation.IsConnected())
     {
-      FINROC_LOG_PRINT(rrlib::logging::eLL_WARNING, "Stimulation mode is ENABLED but stimulation port also connected. Ignoring incoming value.");
+      FINROC_LOG_PRINT(WARNING, "Stimulation mode is ENABLED but stimulation port also connected. Ignoring incoming value.");
     }
     stimulation = 1;
     break;
@@ -158,7 +158,7 @@ double tModule::CalculateActivation() const
   case tStimulationMode::DISABLED:
     if (this->stimulation.IsConnected())
     {
-      FINROC_LOG_PRINT(rrlib::logging::eLL_WARNING, "Stimulation mode is DISABLED but stimulation port also connected. Ignoring incoming value.");
+      FINROC_LOG_PRINT(WARNING, "Stimulation mode is DISABLED but stimulation port also connected. Ignoring incoming value.");
     }
     stimulation = 0;
   }
@@ -212,7 +212,7 @@ void tModule::UpdateTask::ExecuteTask()
 
   if (!this->module->ProcessTransferFunction(activation))
   {
-    FINROC_LOG_PRINT(rrlib::logging::eLL_WARNING, "Could not process transfer function. Not updating meta signals.");
+    FINROC_LOG_PRINT(WARNING, "Could not process transfer function. Not updating meta signals.");
     return;
   }
 
