@@ -133,8 +133,8 @@ class mbbFusion : public ib2c::tModule
     tMetaInput target_rating;
     tPortPack<tInput> data;
     inline tChannel(mbbFusion *module, unsigned int group_index) :
-      activity("Input Activity " + boost::lexical_cast<std::string>(group_index), module),
-      target_rating("Input Target Rating " + boost::lexical_cast<std::string>(group_index), module),
+      activity("Input Activity " + boost::lexical_cast<std::string>(group_index + 1), module),
+      target_rating("Input Target Rating " + boost::lexical_cast<std::string>(group_index + 1), module),
       data(module, "Input " + boost::lexical_cast<std::string>(group_index + 1) + ".")
     {
       this->activity.Init();
