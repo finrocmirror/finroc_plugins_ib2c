@@ -87,7 +87,7 @@ class mbbFusion : public ib2c::tModule
 
   typedef rrlib::util::tTypeList<TSignalTypes...> tSignalTypes;
 
-  template < template <typename> class TPort, int Tindex = sizeof...(TSignalTypes) - 1 >
+  template < template <typename> class TPort, size_t Tindex = sizeof...(TSignalTypes) - 1 >
   struct tPortPack : public tPortPack < TPort, Tindex - 1 >
   {
     TPort<typename tSignalTypes::template tAt<Tindex>::tResult> port;
@@ -181,50 +181,16 @@ public:
 //----------------------------------------------------------------------
 private:
 
-  template <template <typename> class TPort, size_t Tport_index>
-  class tPortPackAccessor
+  template <size_t Tindex, typename dummy = int>
+  struct tDataPortFuser
   {
-  public:
-    typedef TPort<typename tSignalTypes::template tAt<Tport_index>::tResult> tPortType;
-    inline static tPortType &GetPort(tPortPack<TPort> &port_pack)
-    {
-      return ExtractPort(port_pack);
-    }
-
-  private:
-    template <size_t Tlevel>
-    inline static tPortType &ExtractPort(tPortPack<TPort, Tlevel> &port_pack)
-    {
-      return ExtractPort(static_cast < tPortPack < TPort, Tlevel + 1 > & >(port_pack));
-    }
-
-    inline static tPortType &ExtractPort(tPortPack<TPort, Tport_index> &port_pack)
-    {
-      return port_pack.port;
-    }
+    static bool PerformFusion(mbbFusion *parent);
   };
 
-  class tDataPortFuser
+  template <typename dummy>
+  struct tDataPortFuser<sizeof...(TSignalTypes), dummy>
   {
-  public:
-    static bool ForwardFusedValues(mbbFusion *parent)
-    {
-      return Iterate(parent, tPortPackAccessor<tInput, 0>(), tPortPackAccessor<tOutput, 0>());
-    }
-
-  private:
-    template <size_t Tindex>
-    inline static bool Iterate(mbbFusion *parent, tPortPackAccessor<tInput, Tindex> input_accessor, tPortPackAccessor<tOutput, Tindex> output_accessor)
-    {
-      bool success = PerformFusion(parent, input_accessor, output_accessor);
-      return success && Iterate(parent, tPortPackAccessor < tInput, Tindex + 1 > (), tPortPackAccessor < tOutput, Tindex + 1 > ());
-    }
-    inline static bool Iterate(mbbFusion *parent, tPortPackAccessor < tInput, sizeof...(TSignalTypes) - 1 > input_accessor, tPortPackAccessor < tOutput, sizeof...(TSignalTypes) - 1 > output_accessor)
-    {
-      return PerformFusion(parent, input_accessor, output_accessor);
-    }
-    template <size_t Tindex>
-    static bool PerformFusion(mbbFusion *parent, tPortPackAccessor<tInput, Tindex> input_accessor, tPortPackAccessor<tOutput, Tindex> output_accessor);
+    static bool PerformFusion(mbbFusion *parent);
   };
 
   size_t max_input_activity_index;
