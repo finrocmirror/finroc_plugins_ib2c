@@ -58,10 +58,14 @@ class mbb%%NAME%% : public ib2c::tModule
 //----------------------------------------------------------------------
 public:
 
-  tInput<double> input_signal_1;
+  tStaticParameter<double> static_parameter_1;   Example for a static parameter. Replace or delete it!
+  
+  tParameter<double> parameter_1;   Example for a runtime parameter. Replace or delete it!
+
+  tInput<double> input_signal_1;   Example for input ports. Replace or delete them!
   tInput<double> input_signal_2;
 
-  tOutput<double> output_signal_1;
+  tOutput<double> output_signal_1;   Examples for output ports. Replace or delete them!
   tOutput<double> output_signal_2;
 
 //----------------------------------------------------------------------
@@ -71,12 +75,23 @@ public:
 
   mbb%%NAME%%(core::tFrameworkElement *parent, const util::tString &name = "%%NAME%%");
 
-  ~mbb%%NAME%%();
-
 //----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------
 private:
+
+  Here is the right place for your variables. Replace this line by your declarations!
+
+  /*! Destructor
+   *
+   * The destructor of modules is declared private to avoid accidental deletion. Deleting
+   * modules is already handled by the framework.
+   */
+  ~m%%NAME%%();
+
+  virtual void EvaluateStaticParameters();   Might be needed to process static parameters. Delete otherwise!
+
+  virtual void EvaluateParameters();   Might be needed to react to changes in parameters independent from Update() calls. Delete otherwise!
 
   virtual void ProcessTransferFunction(double activation);
 

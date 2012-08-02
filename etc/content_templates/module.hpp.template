@@ -55,8 +55,9 @@ core::tStandardCreateModuleAction<mbb%%NAME%%<>> mbb%%NAME%%<>::cCREATE_ACTION("
 // mbb%%NAME%% constructor
 //----------------------------------------------------------------------
 template <>
-mbb%%NAME%%<>::mbb%%NAME%%(core::tFrameworkElement *parent, const util::tString &name)
-  : ib2c::tModule(parent, name)
+mbb%%NAME%%<>::mbb%%NAME%%(core::tFrameworkElement *parent, const util::tString &name) :
+  ib2c::tModule(parent, name),
+  If you have some member variables, please initialize them here. Especially built-in types (like pointers!). Delete this line otherwise!
 {}
 
 //----------------------------------------------------------------------
@@ -65,6 +66,27 @@ mbb%%NAME%%<>::mbb%%NAME%%(core::tFrameworkElement *parent, const util::tString 
 template <>
 mbb%%NAME%%<>::~mbb%%NAME%%()
 {}
+
+//----------------------------------------------------------------------
+// mbb%%NAME%% EvaluateStaticParameters
+//----------------------------------------------------------------------
+template <>
+void mbb%%NAME%%<>::EvaluateStaticParameters()
+{
+  if (this->static_parameter_1.HasChanged())
+  {
+    As this static parameter has changed, do something with its value!
+  }
+}
+
+//----------------------------------------------------------------------
+// mbb%%NAME%% EvaluateParameters
+//----------------------------------------------------------------------
+template <>
+void mbb%%NAME%%<>::EvaluateParameters()
+{
+  If this method is called, at least on of your parameters has changed. However, each can be checked using its .HasChanged() method.
+}
 
 //----------------------------------------------------------------------
 // mbb%%NAME%% ProcessTransferFunction
@@ -81,7 +103,7 @@ void mbb%%NAME%%<>::ProcessTransferFunction(double activation)
 template <>
 double mbb%%NAME%%<>::CalculateActivity(std::vector<double> &derived_activity, double activation)
 {
-  Return a meaningful activity value here. You also want to set the derived activity vector, if you registered derived activities.
+  Return a meaningful activity value here. You also want to set the derived activity vector, if you registered derived activities e.g. in the constructor.
 }
 
 //----------------------------------------------------------------------
