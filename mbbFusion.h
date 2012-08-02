@@ -2,7 +2,7 @@
 // You received this file as part of Finroc
 // A framework for intelligent robot control
 //
-// Copyright (C) AG Robotersysteme TU Kaiserslautern
+// Copyright (C) Finroc GbR (finroc.org)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -87,30 +87,44 @@ class mbbFusion : public ib2c::tModule
 
   typedef rrlib::util::tTypeList<TSignalTypes...> tSignalTypes;
 
-  template <template <typename> class TPort, size_t Tindex = 0>
-  struct tPortPack : public tPortPack < TPort, Tindex + 1 >
+  template < template <typename> class TPort, int Tindex = sizeof...(TSignalTypes) - 1 >
+  struct tPortPack : public tPortPack < TPort, Tindex - 1 >
   {
     TPort<typename tSignalTypes::template tAt<Tindex>::tResult> port;
+
     inline tPortPack(mbbFusion *module, const std::string &name_prefix) :
-      tPortPack < TPort, Tindex + 1 > (module, name_prefix),
+      tPortPack < TPort, Tindex - 1 > (module, name_prefix),
       port(name_prefix + boost::lexical_cast<std::string>(Tindex + 1), module)
     {
       this->port.Init();
     }
+
+    inline core::tPortWrapperBase &GetPort(size_t index)
+    {
+      assert(index < tSignalTypes::cSIZE);
+      if (index == Tindex)
+      {
+        return this->port;
+      }
+      return tPortPack < TPort, Tindex - 1 >::GetPort(index);
+    }
+
     inline void ManagedDelete()
     {
       this->port.GetWrapped()->ManagedDelete();
-      tPortPack < TPort, Tindex + 1 >::ManagedDelete();
+      tPortPack < TPort, Tindex - 1 >::ManagedDelete();
     }
   };
 
   template <template <typename> class TPort>
-  struct tPortPack<TPort, sizeof...(TSignalTypes)>
+  struct tPortPack < TPort, -1 >
   {
-    inline tPortPack(mbbFusion *module, const std::string &name_prefix)
-  {}
-  inline void ManagedDelete()
-  {}
+    inline tPortPack(mbbFusion *module, const std::string &name_prefix) {}
+    inline core::tPortWrapperBase &GetPort(size_t index)
+    {
+      return *reinterpret_cast<core::tPortWrapperBase *>(0);
+    };
+    inline void ManagedDelete() {}
   };
 
   struct tChannel
@@ -153,6 +167,14 @@ public:
 public:
 
   mbbFusion(core::tFrameworkElement *parent, const util::tString &name = "mbbFusion");
+
+  tMetaInput &InputActivity(size_t channel_index);
+
+  tMetaInput &InputTargetRating(size_t channel_index);
+
+  core::tPortWrapperBase &InputPort(size_t channel_index, size_t port_index);
+
+  core::tPortWrapperBase &OutputPort(size_t port_index);
 
 //----------------------------------------------------------------------
 // Private fields and methods

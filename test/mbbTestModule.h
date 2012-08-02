@@ -95,6 +95,9 @@ public:
 //----------------------------------------------------------------------
 private:
 
+  ~mbbTestModule()
+  {}
+
   virtual bool ProcessTransferFunction(double activation);
 
   virtual double CalculateActivity(std::vector<double> &derived_activities, double activation) const;

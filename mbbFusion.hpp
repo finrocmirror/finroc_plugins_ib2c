@@ -2,7 +2,7 @@
 // You received this file as part of Finroc
 // A framework for intelligent robot control
 //
-// Copyright (C) AG Robotersysteme TU Kaiserslautern
+// Copyright (C) Finroc GbR (finroc.org)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -76,14 +76,54 @@ mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, c
 
   number_of_input_modules(2, core::tBounds<unsigned int>(2, cMAX_NUMBER_OF_INPUT_MODULES, false)),
 
-  output(this, "Output "),
+  input {tChannel(this, 0), tChannel(this, 1)},
+      output(this, "Output "),
 
-  max_input_activity_index(0),
-  max_input_activity(0),
-  sum_of_input_activities(0),
-  min_input_target_rating(1),
-  max_input_target_rating(0)
+      max_input_activity_index(0),
+      max_input_activity(0),
+      sum_of_input_activities(0),
+      min_input_target_rating(1),
+      max_input_target_rating(0)
 {}
+
+//----------------------------------------------------------------------
+// mbbFusion InputActivity
+//----------------------------------------------------------------------
+template <typename ... TSignalTypes>
+tModule::tMetaInput &mbbFusion<TSignalTypes...>::InputActivity(size_t channel_index)
+{
+  assert(channel_index < this->input.size());
+  return this->input[channel_index].activity;
+}
+
+//----------------------------------------------------------------------
+// mbbFusion InputTargetRating
+//----------------------------------------------------------------------
+template <typename ... TSignalTypes>
+tModule::tMetaInput &mbbFusion<TSignalTypes...>::InputTargetRating(size_t channel_index)
+{
+  assert(channel_index < this->input.size());
+  return this->input[channel_index].target_rating;
+}
+
+//----------------------------------------------------------------------
+// mbbFusion InputPort
+//----------------------------------------------------------------------
+template <typename ... TSignalTypes>
+core::tPortWrapperBase &mbbFusion<TSignalTypes...>::InputPort(size_t channel_index, size_t port_index)
+{
+  assert(channel_index < this->input.size());
+  return this->input[channel_index].data.GetPort(port_index);
+}
+
+//----------------------------------------------------------------------
+// mbbFusion OutputPort
+//----------------------------------------------------------------------
+template <typename ... TSignalTypes>
+core::tPortWrapperBase &mbbFusion<TSignalTypes...>::OutputPort(size_t port_index)
+{
+  return this->output.GetPort(port_index);
+}
 
 //----------------------------------------------------------------------
 // mbbFusion EvaluateParameters
@@ -236,26 +276,22 @@ bool mbbFusion<TSignalTypes...>::tDataPortFuser::PerformFusion(mbbFusion *parent
     values[i] = input_port.Get();
   }
 
-  tPortData fused_value;
-
   switch (parent->fusion_method.Get())
   {
 
   case tFusionMethod::WINNER_TAKES_ALL:
-    fused_value = values[parent->max_input_activity_index];
+    output_accessor.GetPort(parent->output).Publish(values[parent->max_input_activity_index]);
     break;
 
   case tFusionMethod::WEIGHTED_AVERAGE:
-    fused_value = rrlib::data_fusion::FuseValuesUsingWeightedAverage<tPortData>(values, values + n, input_activities, input_activities + n);
+    output_accessor.GetPort(parent->output).Publish(rrlib::data_fusion::FuseValuesUsingWeightedAverage<tPortData>(values, values + n, input_activities, input_activities + n));
     break;
 
   case tFusionMethod::WEIGHTED_SUM:
-    fused_value = rrlib::data_fusion::FuseValuesUsingWeightedSum<tPortData>(values, values + n, input_activities, input_activities + n);
+    output_accessor.GetPort(parent->output).Publish(rrlib::data_fusion::FuseValuesUsingWeightedSum<tPortData>(values, values + n, input_activities, input_activities + n));
     break;
 
   }
-
-  output_accessor.GetPort(parent->output).Publish(fused_value);
 
   return true;
 }

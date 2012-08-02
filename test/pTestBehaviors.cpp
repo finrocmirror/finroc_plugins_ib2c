@@ -2,7 +2,7 @@
 // You received this file as part of Finroc
 // A framework for intelligent robot control
 //
-// Copyright (C) AG Robotersysteme TU Kaiserslautern
+// Copyright (C) Finroc GbR (finroc.org)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -75,11 +75,16 @@ void StartUp()
 //----------------------------------------------------------------------
 void InitMainGroup(finroc::core::tThreadContainer *main_thread, std::vector<char *> remaining_args)
 {
-  new finroc::ib2c::mbbTestModule(main_thread, "Module 1");
-  new finroc::ib2c::mbbTestModule(main_thread, "Module 2");
-  new finroc::ib2c::mbbTestModule(main_thread, "Module 3");
+  finroc::ib2c::mbbTestModule *module_1 = new finroc::ib2c::mbbTestModule(main_thread, "Module 1");
+  finroc::ib2c::mbbTestModule *module_2 = new finroc::ib2c::mbbTestModule(main_thread, "Module 2");
+  finroc::ib2c::mbbTestModule *module_3 = new finroc::ib2c::mbbTestModule(main_thread, "Module 3");
 
-  new finroc::ib2c::mbbFusion<int, double, rrlib::math::tAngleRad>(main_thread, "Fusion");
+  finroc::ib2c::mbbFusion<int, double, rrlib::math::tAngleRad> *fusion = new finroc::ib2c::mbbFusion<int, double, rrlib::math::tAngleRad>(main_thread, "Fusion");
+
+  module_1->activity.ConnectTo(fusion->InputActivity(0));
+  module_1->target_rating.ConnectTo(fusion->InputTargetRating(0));
+  module_1->output1.ConnectTo(fusion->InputPort(0, 0));
+  fusion->OutputPort(1).ConnectTo(module_2->output2);
 
 //  new finroc::ib2c::mbbConditionalBehaviorStimulator(main_thread, "CBS");
 
