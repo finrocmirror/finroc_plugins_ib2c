@@ -102,7 +102,7 @@ private:
 
   virtual double CalculateActivity(std::vector<double> &derived_activities, double activation) const;
 
-  virtual double CalculateTargetRating() const;
+  virtual double CalculateTargetRating(double activation) const;
 
 };
 

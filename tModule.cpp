@@ -220,7 +220,7 @@ void tModule::UpdateTask::ExecuteTask()
   double activity = this->module->CalculateActivity(derived_activities, activation);
   assert(derived_activities.size() == this->module->derived_activity.size() && "You are not allowed to change the number of derived activities during calculation!");
 
-  double target_rating = this->module->CalculateTargetRating();
+  double target_rating = this->module->CalculateTargetRating(activation);
 
   if (activity > activation)
   {
@@ -240,7 +240,7 @@ void tModule::UpdateTask::ExecuteTask()
   }
 
   this->module->activity.Publish(activity);
-  this->module->target_rating.Publish(this->module->CalculateTargetRating());
+  this->module->target_rating.Publish(this->module->CalculateTargetRating(activation));
 
   for (size_t i = 0; i < derived_activities.size(); ++i)
   {

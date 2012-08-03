@@ -98,7 +98,7 @@ double mbbTestModule::CalculateActivity(std::vector<double> &derived_activity, d
 //----------------------------------------------------------------------
 // mbbTestModule CalculateTargetRating
 //----------------------------------------------------------------------
-double mbbTestModule::CalculateTargetRating() const
+double mbbTestModule::CalculateTargetRating(double activation) const
 {
   return 0.5;
 }

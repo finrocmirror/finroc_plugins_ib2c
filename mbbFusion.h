@@ -166,7 +166,7 @@ public:
 //----------------------------------------------------------------------
 public:
 
-  mbbFusion(core::tFrameworkElement *parent, const util::tString &name = "mbbFusion");
+  mbbFusion(core::tFrameworkElement *parent, const util::tString &name = "Fusion");
 
   tMetaInput &InputActivity(size_t channel_index);
 
@@ -205,7 +205,7 @@ private:
 
   virtual double CalculateActivity(std::vector<double> &derived_activities, double activity) const;
 
-  virtual double CalculateTargetRating() const;
+  virtual double CalculateTargetRating(double activation) const;
 
 };
 

@@ -87,15 +87,16 @@ void mbb%%NAME%%::EvaluateParameters()
 //----------------------------------------------------------------------
 // mbb%%NAME%% ProcessTransferFunction
 //----------------------------------------------------------------------
-void mbb%%NAME%%::ProcessTransferFunction(double activation)
+bool mbb%%NAME%%::ProcessTransferFunction(double activation)
 {
-  Use your input and output ports to transfer data through this module
+  Use your input and output ports to transfer data through this module.
+  Return whether this transfer was successful or not.
 }
 
 //----------------------------------------------------------------------
 // mbb%%NAME%% CalculateActivity
 //----------------------------------------------------------------------
-double mbb%%NAME%%::CalculateActivity(std::vector<double> &derived_activity, double activation)
+double mbb%%NAME%%::CalculateActivity(std::vector<double> &derived_activity, double activation) const
 {
   Return a meaningful activity value here. You also want to set the derived activity vector, if you registered derived activities e.g. in the constructor.
 }
@@ -103,9 +104,10 @@ double mbb%%NAME%%::CalculateActivity(std::vector<double> &derived_activity, dou
 //----------------------------------------------------------------------
 // mbb%%NAME%% CalculateTargetRating
 //----------------------------------------------------------------------
-double mbb%%NAME%%::CalculateTargetRating()
+double mbb%%NAME%%::CalculateTargetRating(double activation) const
 {
   Return a meaningful target rating here. Choosing 0.5 just because you have no better idea is not "meaningful"!
+  If you do not want to use the activation in this calculation remove its name to rid of the warning.
 }
 
 //----------------------------------------------------------------------

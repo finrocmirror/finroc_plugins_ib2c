@@ -71,7 +71,7 @@ core::tStandardCreateModuleAction<mbbConditionalBehaviorStimulator> mbbCondition
 // mbbConditionalBehaviorStimulator constructor
 //----------------------------------------------------------------------
 mbbConditionalBehaviorStimulator::mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const util::tString &name) :
-  ib2c::tModule(parent, name)
+  ib2c::tModule(parent, "(CBS) " + name)
 {}
 
 //----------------------------------------------------------------------
@@ -93,7 +93,7 @@ double mbbConditionalBehaviorStimulator::CalculateActivity(std::vector<double> &
 //----------------------------------------------------------------------
 // mbbConditionalBehaviorStimulator CalculateTargetRating
 //----------------------------------------------------------------------
-double mbbConditionalBehaviorStimulator::CalculateTargetRating() const
+double mbbConditionalBehaviorStimulator::CalculateTargetRating(double activation) const
 {
   return 0;
 }

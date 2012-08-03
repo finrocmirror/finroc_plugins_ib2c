@@ -72,7 +72,7 @@ const unsigned int cMAX_NUMBER_OF_INPUT_MODULES = 1000;
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
 mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name) :
-  tModule(parent, name),
+  tModule(parent, "(F) " + name),
 
   number_of_input_modules(2, core::tBounds<unsigned int>(2, cMAX_NUMBER_OF_INPUT_MODULES, false)),
 
@@ -227,7 +227,7 @@ double mbbFusion<TSignalTypes...>::CalculateActivity(std::vector<double> &derive
 // mbbFusion CalculateTargetRating
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
-double mbbFusion<TSignalTypes...>::CalculateTargetRating() const
+double mbbFusion<TSignalTypes...>::CalculateTargetRating(double) const
 {
   double fused_target_rating = 0;
   switch (this->fusion_method.Get())

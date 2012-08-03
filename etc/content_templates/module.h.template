@@ -87,17 +87,17 @@ private:
    * The destructor of modules is declared private to avoid accidental deletion. Deleting
    * modules is already handled by the framework.
    */
-  ~m%%NAME%%();
+  ~mbb%%NAME%%();
 
   virtual void EvaluateStaticParameters();   Might be needed to process static parameters. Delete otherwise!
 
   virtual void EvaluateParameters();   Might be needed to react to changes in parameters independent from Update() calls. Delete otherwise!
 
-  virtual void ProcessTransferFunction(double activation);
+  virtual bool ProcessTransferFunction(double activation);
 
-  virtual double CalculateActivity(std::vector<double> &derived_activities, double activity);
+  virtual double CalculateActivity(std::vector<double> &derived_activities, double activity) const;
 
-  virtual double CalculateTargetRating();
+  virtual double CalculateTargetRating(double activation) const;
 
 };
 
