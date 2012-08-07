@@ -90,7 +90,7 @@ tModule::tModule(core::tFrameworkElement *parent, const util::tString &name) :
 
   update_task(this),
   input_changed(true),
-  last_activation(0)
+  last_activity(0)
 {
   std::vector<core::tEdgeAggregator *> input_ports = { this->meta_input, this->input };
   std::vector<core::tEdgeAggregator *> output_ports = { this->meta_output, this->output };
@@ -202,13 +202,7 @@ void tModule::UpdateTask::ExecuteTask()
   this->module->input_changed = this->module->ProcessChangedFlags(*this->module->input);
 
   double activation = this->module->CalculateActivation();
-
-  if (!(0 <= activation && activation <= 1))
-  {
-    std::stringstream message;
-    message << "Activation out of bounds: " << activation;
-    throw tViolation(message.str());
-  }
+  assert(0 <= activation && activation <= 1);
 
   if (!this->module->ProcessTransferFunction(activation))
   {
@@ -226,18 +220,21 @@ void tModule::UpdateTask::ExecuteTask()
   {
     std::stringstream message;
     message << "Activity limitation: Activity = " << activity << " exceeds Activation = " << activation << "!";
+    FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
     throw tViolation(message.str());
   }
 
   if (target_rating == 0)
   {
-    if (activity != this->module->last_activation) // FIXME activity transfer inputs??? probably derived_activities
+    if (activity != this->module->last_activity) // FIXME activity transfer inputs??? probably derived_activities
     {
       std::stringstream message;
       message << "Goal state activity: Target rating = 0 but Activity not constant!";
+      FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
       throw tViolation(message.str());
     }
   }
+  this->module->last_activity = activity;
 
   this->module->activity.Publish(activity);
   this->module->target_rating.Publish(this->module->CalculateTargetRating(activation));
@@ -248,6 +245,7 @@ void tModule::UpdateTask::ExecuteTask()
     {
       std::stringstream message;
       message << "Derived activity \"" << this->module->derived_activity[i].GetName() << "\" out of bounds: " << derived_activities[i];
+      FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
       throw tViolation(message.str());
     }
 
@@ -255,6 +253,7 @@ void tModule::UpdateTask::ExecuteTask()
     {
       std::stringstream message;
       message << "Derived activity \"" << this->module->derived_activity[i].GetName() << "\" = " << derived_activities[i] << " exceeds Activity = " << activity << "!";
+      FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
       throw tViolation(message.str());
     }
 

@@ -76,7 +76,7 @@ class tViolation : public std::runtime_error
 public:
 
   tViolation(const std::string &message) :
-    std::runtime_error(message)
+    std::runtime_error("iB2C principle violation: " + message)
   {};
 
 };

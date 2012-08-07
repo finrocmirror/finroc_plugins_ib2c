@@ -239,7 +239,7 @@ private:
 
   bool input_changed;
 
-  double last_activation;
+  double last_activity;
 
   virtual void EvaluateParameters();
 
