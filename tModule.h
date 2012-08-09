@@ -169,7 +169,7 @@ public:
 
   inline const tMetaInput &RegisterInhibition(const util::tString &name)
   {
-    this->inhibition.push_back(tMetaInput(this, "(I) " + name));
+    this->inhibition.push_back(tMetaInput("(I) " + name, this));
     this->inhibition.back().Init();
     this->number_of_inhibition_ports.Publish(this->inhibition.size());
     return this->inhibition.back();
