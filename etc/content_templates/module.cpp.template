@@ -81,7 +81,10 @@ void mbb%%NAME%%::EvaluateStaticParameters()
 //----------------------------------------------------------------------
 void mbb%%NAME%%::EvaluateParameters()
 {
-  If this method is called, at least on of your parameters has changed. However, each can be checked using its .HasChanged() method.
+  tModule::EvaluateParameters();
+
+  Add handling of your own parameters here.
+  If this method is called, at least on of our parameters has changed. However, each can be checked using its .HasChanged() method.
 }
 
 //----------------------------------------------------------------------

@@ -131,6 +131,8 @@ core::tPortWrapperBase &mbbFusion<TSignalTypes...>::OutputPort(size_t port_index
 template <typename ... TSignalTypes>
 void mbbFusion<TSignalTypes...>::EvaluateParameters()
 {
+  tModule::EvaluateParameters();
+
   if (this->number_of_input_modules.HasChanged())
   {
     while (this->input.size() > this->number_of_input_modules.Get())

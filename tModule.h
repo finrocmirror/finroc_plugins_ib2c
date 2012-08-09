@@ -200,6 +200,8 @@ public:
 //----------------------------------------------------------------------
 protected:
 
+  virtual void EvaluateParameters();
+
   inline const tMetaOutput &RegisterDerivedActivity(const util::tString &name)
   {
     this->derived_activity.push_back(tMetaOutput(this, "(A) " + name));
@@ -240,8 +242,6 @@ private:
   bool input_changed;
 
   double last_activity;
-
-  virtual void EvaluateParameters();
 
   double CalculateActivation() const;
 
