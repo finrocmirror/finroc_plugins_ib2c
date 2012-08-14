@@ -167,6 +167,7 @@ bool mbbFusion<TSignalTypes...>::ProcessTransferFunction(double activation)
     }
 
     this->input_activities[i] = this->input[i].activity.Get();
+    this->input_target_ratings[i] = this->input[i].target_rating.Get();
 
     if (this->input_activities[i] > this->input_activities[this->max_input_activity_index])
     {
