@@ -79,11 +79,7 @@ mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, c
   input {tChannel(this, 0), tChannel(this, 1)},
       output(this, "Output "),
 
-      max_input_activity_index(0),
-      max_input_activity(0),
-      sum_of_input_activities(0),
-      min_input_target_rating(1),
-      max_input_target_rating(0)
+      max_input_activity_index(0)
 {}
 
 //----------------------------------------------------------------------
@@ -153,11 +149,9 @@ void mbbFusion<TSignalTypes...>::EvaluateParameters()
 template <typename ... TSignalTypes>
 bool mbbFusion<TSignalTypes...>::ProcessTransferFunction(double activation)
 {
+  this->input_activities.resize(this->input.size());
+  this->input_target_ratings.resize(this->input.size());
   this->max_input_activity_index = 0;
-  this->max_input_activity = 0;
-  this->sum_of_input_activities = 0;
-  this->min_input_target_rating = 1;
-  this->max_input_target_rating = 0;
 
   for (size_t i = 0; i < this->input.size(); ++i)
   {
@@ -172,19 +166,12 @@ bool mbbFusion<TSignalTypes...>::ProcessTransferFunction(double activation)
       return false;
     }
 
-    double input_activity = this->input[i].activity.Get();
-    double input_target_rating = this->input[i].target_rating.Get();
+    this->input_activities[i] = this->input[i].activity.Get();
 
-    if (input_activity > this->max_input_activity)
+    if (this->input_activities[i] > this->input_activities[this->max_input_activity_index])
     {
       this->max_input_activity_index = i;
-      this->max_input_activity = input_activity;
     }
-
-    this->sum_of_input_activities += input_activity;
-
-    this->min_input_target_rating = std::min(this->min_input_target_rating, input_target_rating);
-    this->max_input_target_rating = std::max(this->max_input_target_rating, input_target_rating);
   }
 
   return tDataPortFuser<0>::PerformFusion(this);
@@ -202,23 +189,17 @@ double mbbFusion<TSignalTypes...>::CalculateActivity(std::vector<double> &derive
   {
 
   case tFusionMethod::WINNER_TAKES_ALL:
-    fused_activity = this->max_input_activity;
+    fused_activity = this->input_activities[this->max_input_activity_index];
     break;
 
   case tFusionMethod::WEIGHTED_AVERAGE:
-    for (auto it = this->input.begin(); it != this->input.end(); ++it)
-    {
-      fused_activity += it->activity.Get() * it->activity.Get();
-    }
-    fused_activity /= this->sum_of_input_activities;
+    fused_activity = rrlib::data_fusion::FuseValuesUsingWeightedAverage<double>(this->input_activities.begin(), this->input_activities.end(), this->input_activities.begin(), this->input_activities.end());
     break;
 
   case tFusionMethod::WEIGHTED_SUM:
-    for (auto it = this->input.begin(); it != this->input.end(); ++it)
-    {
-      fused_activity += it->activity.Get() * it->activity.Get() / this->max_input_activity;
-    }
+    fused_activity = rrlib::data_fusion::FuseValuesUsingWeightedSum<double>(this->input_activities.begin(), this->input_activities.end(), this->input_activities.begin(), this->input_activities.end());
     fused_activity = std::min(1.0, fused_activity);
+    break;
 
   }
 
@@ -236,16 +217,12 @@ double mbbFusion<TSignalTypes...>::CalculateTargetRating(double) const
   {
 
   case tFusionMethod::WINNER_TAKES_ALL:
-    fused_target_rating = this->input[this->max_input_activity_index].target_rating.Get();
+    fused_target_rating = this->input_target_ratings[this->max_input_activity_index];
     break;
 
   case tFusionMethod::WEIGHTED_AVERAGE:
   case tFusionMethod::WEIGHTED_SUM:
-    for (auto it = this->input.begin(); it != this->input.end(); ++it)
-    {
-      fused_target_rating += it->activity.Get() * it->target_rating.Get();
-    }
-    fused_target_rating /= this->sum_of_input_activities;
+    fused_target_rating = rrlib::data_fusion::FuseValuesUsingWeightedAverage<double>(this->input_target_ratings.begin(), this->input_target_ratings.end(), this->input_activities.begin(), this->input_activities.end());
     break;
 
   }
@@ -264,11 +241,9 @@ bool mbbFusion<TSignalTypes...>::tDataPortFuser<Tindex, dummy>::PerformFusion(mb
 
   typedef typename tSignalTypes::template tAt<Tindex>::tResult tPortData;
 
-  double input_activities[n];
   tPortData values[n];
   for (size_t i = 0; i < n; ++i)
   {
-    input_activities[i] = parent->input[i].activity.Get();
     tInput<tPortData> &input_port = dynamic_cast<tInput<tPortData> &>(parent->input[i].data.GetPort(Tindex));
     if (!input_port.IsConnected())
     {
@@ -288,11 +263,11 @@ bool mbbFusion<TSignalTypes...>::tDataPortFuser<Tindex, dummy>::PerformFusion(mb
     break;
 
   case tFusionMethod::WEIGHTED_AVERAGE:
-    output_port.Publish(rrlib::data_fusion::FuseValuesUsingWeightedAverage<tPortData>(values, values + n, input_activities, input_activities + n));
+    output_port.Publish(rrlib::data_fusion::FuseValuesUsingWeightedAverage<tPortData>(values, values + n, parent->input_activities.begin(), parent->input_activities.end()));
     break;
 
   case tFusionMethod::WEIGHTED_SUM:
-    output_port.Publish(rrlib::data_fusion::FuseValuesUsingWeightedSum<tPortData>(values, values + n, input_activities, input_activities + n));
+    output_port.Publish(rrlib::data_fusion::FuseValuesUsingWeightedSum<tPortData>(values, values + n, parent->input_activities.begin(), parent->input_activities.end()));
     break;
 
   }

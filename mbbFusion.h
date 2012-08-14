@@ -132,6 +132,7 @@ class mbbFusion : public ib2c::tModule
     tMetaInput activity;
     tMetaInput target_rating;
     tPortPack<tInput> data;
+
     inline tChannel(mbbFusion *module, unsigned int group_index) :
       activity("Input Activity " + boost::lexical_cast<std::string>(group_index + 1), module),
       target_rating("Input Target Rating " + boost::lexical_cast<std::string>(group_index + 1), module),
@@ -140,6 +141,7 @@ class mbbFusion : public ib2c::tModule
       this->activity.Init();
       this->target_rating.Init();
     }
+
     inline void ManagedDelete()
     {
       this->activity.GetWrapped()->ManagedDelete();
@@ -193,11 +195,9 @@ private:
     static bool PerformFusion(mbbFusion *parent);
   };
 
+  std::vector<double> input_activities;
+  std::vector<double> input_target_ratings;
   size_t max_input_activity_index;
-  double max_input_activity;
-  double sum_of_input_activities;
-  double min_input_target_rating;
-  double max_input_target_rating;
 
   virtual void EvaluateParameters();
 
