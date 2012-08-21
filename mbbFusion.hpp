@@ -74,12 +74,12 @@ template <typename ... TSignalTypes>
 mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name) :
   tModule(parent, "(F) " + name),
 
-  number_of_input_modules(2, core::tBounds<unsigned int>(2, cMAX_NUMBER_OF_INPUT_MODULES, false)),
+  number_of_input_modules(1, core::tBounds<unsigned int>(1, cMAX_NUMBER_OF_INPUT_MODULES, false)),
 
-  input {tChannel(this, 0), tChannel(this, 1)},
-      output(this, "Output "),
+  input(1, tChannel(this, 0)),
+  output(this, "Output "),
 
-      max_input_activity_index(0)
+  max_input_activity_index(0)
 {}
 
 //----------------------------------------------------------------------
