@@ -168,7 +168,7 @@ public:
 //----------------------------------------------------------------------
 public:
 
-  mbbFusion(core::tFrameworkElement *parent, const util::tString &name = "Fusion");
+  mbbFusion(core::tFrameworkElement *parent, const util::tString &name = "Fusion", unsigned int number_of_input_modules = 1);
 
   tMetaInput &InputActivity(size_t channel_index);
 
@@ -198,6 +198,8 @@ private:
   std::vector<double> input_activities;
   std::vector<double> input_target_ratings;
   size_t max_input_activity_index;
+
+  void AdjustInputChannels();
 
   virtual void EvaluateParameters();
 

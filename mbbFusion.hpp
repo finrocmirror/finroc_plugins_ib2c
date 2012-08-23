@@ -71,16 +71,18 @@ const unsigned int cMAX_NUMBER_OF_INPUT_MODULES = 1000;
 // mbbFusion constructors
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
-mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name) :
+mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name, unsigned int number_of_input_modules) :
   tModule(parent, "(F) " + name),
 
-  number_of_input_modules(1, core::tBounds<unsigned int>(1, cMAX_NUMBER_OF_INPUT_MODULES, false)),
+  number_of_input_modules(number_of_input_modules, core::tBounds<unsigned int>(1, cMAX_NUMBER_OF_INPUT_MODULES, false)),
 
-  input(1, tChannel(this, 0)),
   output(this, "Output "),
 
   max_input_activity_index(0)
-{}
+{
+  this->number_of_input_modules.SetDefault(number_of_input_modules);
+  this->AdjustInputChannels();
+}
 
 //----------------------------------------------------------------------
 // mbbFusion InputActivity
@@ -122,6 +124,23 @@ core::tPortWrapperBase &mbbFusion<TSignalTypes...>::OutputPort(size_t port_index
 }
 
 //----------------------------------------------------------------------
+// mbbFusion AdjustInputChannels
+//----------------------------------------------------------------------
+template <typename ... TSignalTypes>
+void mbbFusion<TSignalTypes...>::AdjustInputChannels()
+{
+  while (this->input.size() > this->number_of_input_modules.Get())
+  {
+    this->input.back().ManagedDelete();
+    this->input.pop_back();
+  }
+  for (size_t i = this->input.size(); i < this->number_of_input_modules.Get(); ++i)
+  {
+    this->input.push_back(tChannel(this, i));
+  }
+}
+
+//----------------------------------------------------------------------
 // mbbFusion EvaluateParameters
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
@@ -131,15 +150,7 @@ void mbbFusion<TSignalTypes...>::EvaluateParameters()
 
   if (this->number_of_input_modules.HasChanged())
   {
-    while (this->input.size() > this->number_of_input_modules.Get())
-    {
-      this->input.back().ManagedDelete();
-      this->input.pop_back();
-    }
-    for (size_t i = this->input.size(); i < this->number_of_input_modules.Get(); ++i)
-    {
-      this->input.push_back(tChannel(this, i));
-    }
+    this->AdjustInputChannels();
   }
 }
 
