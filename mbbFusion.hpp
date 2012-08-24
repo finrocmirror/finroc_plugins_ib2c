@@ -80,7 +80,6 @@ mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, c
 
   max_input_activity_index(0)
 {
-  this->number_of_input_modules.SetDefault(number_of_input_modules);
   this->AdjustInputChannels();
 }
 
