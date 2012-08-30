@@ -98,9 +98,9 @@ private:
 
   virtual bool ProcessTransferFunction(double activation);
 
-  virtual double CalculateActivity(std::vector<double> &derived_activities, double activity) const;
+  virtual tActivity CalculateActivity(std::vector<tActivity> &derived_activities, double activity) const;
 
-  virtual double CalculateTargetRating(double activation) const;
+  virtual tTargetRating CalculateTargetRating(double activation) const;
 
 };
 

@@ -87,10 +87,13 @@ tModule::tModule(core::tFrameworkElement *parent, const util::tString &name) :
   stimulation("Stimulation", this),               // TODO: use port_name_generator for this block
   activity("Activity", this),
   target_rating("Target Rating", this),
+  activation("Activation", this),
 
   update_task(this),
   input_changed(true),
-  last_activity(0)
+  last_activation(0),
+  last_activity(0),
+  last_target_rating(0)
 {
   std::vector<core::tEdgeAggregator *> input_ports = { this->meta_input, this->input };
   std::vector<core::tEdgeAggregator *> output_ports = { this->meta_output, this->output };
@@ -133,8 +136,8 @@ void tModule::EvaluateParameters()
 //----------------------------------------------------------------------
 double tModule::CalculateActivation() const
 {
-  double stimulation = 0;
-  double inhibition = this->CalculateInhibition();
+  tStimulation stimulation = 0;
+  tInhibition inhibition = this->CalculateInhibition();
 
   switch (this->stimulation_mode.Get())
   {
@@ -170,20 +173,91 @@ double tModule::CalculateActivation() const
 //----------------------------------------------------------------------
 // tModule CalculateInhibition
 //----------------------------------------------------------------------
-double tModule::CalculateInhibition() const
+tInhibition tModule::CalculateInhibition() const
 {
-  double inhibition = 0;
+  tInhibition inhibition = 0;
 
   for (auto it = this->inhibition.begin(); it != this->inhibition.end(); ++it)
   {
     if (it->IsConnected())
     {
-      assert(0 <= it->Get() && it->Get() <= 1 && "Inhibition out of bounds!");
       inhibition = std::max(inhibition, it->Get());
     }
   }
 
   return inhibition;
+}
+
+//----------------------------------------------------------------------
+// tModule CheckActivityLimitation
+//----------------------------------------------------------------------
+void tModule::CheckActivityLimitation(tActivity activity, double activation)
+{
+  if (activity > activation)
+  {
+    std::stringstream message;
+    message << "Activity limitation: Activity = " << activity << " exceeds Activation = " << activation << "!";
+    FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
+    throw tViolation(message.str());
+  }
+}
+
+//----------------------------------------------------------------------
+// tModule CheckGoalStateActivity
+//----------------------------------------------------------------------
+void tModule::CheckGoalStateActivity(tActivity activity, tTargetRating target_rating, double activation)
+{
+  if (target_rating == 0 && this->last_target_rating == 0 && activation != this->last_activation)
+  {
+    bool activity_transfer_inputs_changed = false;
+
+    core::tFrameworkElement::tChildIterator input_port_iterator(this->GetInputs());
+    while (core::tAbstractPort *port = input_port_iterator.NextPort())
+    {
+      if (port->HasChanged() && port->GetDataType() == rrlib::rtti::tDataType<tActivity>())
+      {
+        activity_transfer_inputs_changed = true;
+        break;
+      }
+    }
+
+    if (activity != this->last_activity && !activity_transfer_inputs_changed)
+    {
+      std::stringstream message;
+      message << "Goal state activity: Target rating = 0 but Activity not constant!";
+      FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
+      throw tViolation(message.str());
+    }
+  }
+
+  this->last_activation = activation;
+  this->last_activity = activity;
+  this->last_target_rating = target_rating;
+}
+
+//----------------------------------------------------------------------
+// tModule CheckDerivedActivities
+//----------------------------------------------------------------------
+void tModule::CheckDerivedActivities(std::vector<tActivity> &derived_activities, tActivity activity)
+{
+  for (size_t i = 0; i < derived_activities.size(); ++i)
+  {
+    if (!(0 <= derived_activities[i] && derived_activities[i] <= 1))
+    {
+      std::stringstream message;
+      message << "Derived activity \"" << this->derived_activity[i].GetName() << "\" out of bounds: " << derived_activities[i];
+      FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
+      throw tViolation(message.str());
+    }
+
+    if (derived_activities[i] > activity)
+    {
+      std::stringstream message;
+      message << "Derived activity \"" << this->derived_activity[i].GetName() << "\" = " << derived_activities[i] << " exceeds Activity = " << activity << "!";
+      FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
+      throw tViolation(message.str());
+    }
+  }
 }
 
 //----------------------------------------------------------------------
@@ -210,56 +284,25 @@ void tModule::UpdateTask::ExecuteTask()
     return;
   }
 
-  std::vector<double> derived_activities;
-  double activity = this->module->CalculateActivity(derived_activities, activation);
+  std::vector<tActivity> derived_activities;
+  tActivity activity = this->module->CalculateActivity(derived_activities, activation);
   assert(derived_activities.size() == this->module->derived_activity.size() && "You are not allowed to change the number of derived activities during calculation!");
 
-  double target_rating = this->module->CalculateTargetRating(activation);
+  tTargetRating target_rating = this->module->CalculateTargetRating(activation);
 
-  if (activity > activation)
-  {
-    std::stringstream message;
-    message << "Activity limitation: Activity = " << activity << " exceeds Activation = " << activation << "!";
-    FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
-    throw tViolation(message.str());
-  }
-
-  if (target_rating == 0)
-  {
-    if (activity != this->module->last_activity) // FIXME activity transfer inputs??? probably derived_activities
-    {
-      std::stringstream message;
-      message << "Goal state activity: Target rating = 0 but Activity not constant!";
-      FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
-      throw tViolation(message.str());
-    }
-  }
-  this->module->last_activity = activity;
+  this->module->CheckActivityLimitation(activity, activation);
+  this->module->CheckGoalStateActivity(activity, target_rating, activation);
+  this->module->CheckDerivedActivities(derived_activities, activity);
 
   this->module->activity.Publish(activity);
-  this->module->target_rating.Publish(this->module->CalculateTargetRating(activation));
+  this->module->target_rating.Publish(target_rating);
 
   for (size_t i = 0; i < derived_activities.size(); ++i)
   {
-    if (!(0 <= derived_activities[i] && derived_activities[i] <= 1))
-    {
-      std::stringstream message;
-      message << "Derived activity \"" << this->module->derived_activity[i].GetName() << "\" out of bounds: " << derived_activities[i];
-      FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
-      throw tViolation(message.str());
-    }
-
-    if (derived_activities[i] > activity)
-    {
-      std::stringstream message;
-      message << "Derived activity \"" << this->module->derived_activity[i].GetName() << "\" = " << derived_activities[i] << " exceeds Activity = " << activity << "!";
-      FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
-      throw tViolation(message.str());
-    }
-
     this->module->derived_activity[i].Publish(derived_activities[i]);
   }
 
+  this->module->activation.Publish(activation);
 }
 
 //----------------------------------------------------------------------

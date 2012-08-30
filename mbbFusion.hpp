@@ -87,7 +87,7 @@ mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, c
 // mbbFusion InputActivity
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
-tModule::tMetaInput &mbbFusion<TSignalTypes...>::InputActivity(size_t channel_index)
+auto mbbFusion<TSignalTypes...>::InputActivity(size_t channel_index) -> tInputActivityPort&
 {
   assert(channel_index < this->input.size());
   return this->input[channel_index].activity;
@@ -97,7 +97,7 @@ tModule::tMetaInput &mbbFusion<TSignalTypes...>::InputActivity(size_t channel_in
 // mbbFusion InputTargetRating
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
-tModule::tMetaInput &mbbFusion<TSignalTypes...>::InputTargetRating(size_t channel_index)
+auto mbbFusion<TSignalTypes...>::InputTargetRating(size_t channel_index) -> tInputTargetRatingPort&
 {
   assert(channel_index < this->input.size());
   return this->input[channel_index].target_rating;
@@ -192,7 +192,7 @@ bool mbbFusion<TSignalTypes...>::ProcessTransferFunction(double activation)
 // mbbFusion CalculateActivity
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
-double mbbFusion<TSignalTypes...>::CalculateActivity(std::vector<double> &derived_activities, double activation) const
+tActivity mbbFusion<TSignalTypes...>::CalculateActivity(std::vector<tActivity> &derived_activities, double activation) const
 {
   double fused_activity = 0;
 
@@ -221,7 +221,7 @@ double mbbFusion<TSignalTypes...>::CalculateActivity(std::vector<double> &derive
 // mbbFusion CalculateTargetRating
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
-double mbbFusion<TSignalTypes...>::CalculateTargetRating(double) const
+tTargetRating mbbFusion<TSignalTypes...>::CalculateTargetRating(double) const
 {
   double fused_target_rating = 0;
   switch (this->fusion_method.Get())

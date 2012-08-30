@@ -85,7 +85,7 @@ bool mbbConditionalBehaviorStimulator::ProcessTransferFunction(double activation
 //----------------------------------------------------------------------
 // mbbConditionalBehaviorStimulator CalculateActivity
 //----------------------------------------------------------------------
-double mbbConditionalBehaviorStimulator::CalculateActivity(std::vector<double> &derived_activity, double activation) const
+tActivity mbbConditionalBehaviorStimulator::CalculateActivity(std::vector<tActivity> &derived_activity, double activation) const
 {
   return 0;
 }
@@ -93,7 +93,7 @@ double mbbConditionalBehaviorStimulator::CalculateActivity(std::vector<double> &
 //----------------------------------------------------------------------
 // mbbConditionalBehaviorStimulator CalculateTargetRating
 //----------------------------------------------------------------------
-double mbbConditionalBehaviorStimulator::CalculateTargetRating(double activation) const
+tTargetRating mbbConditionalBehaviorStimulator::CalculateTargetRating(double activation) const
 {
   return 0;
 }

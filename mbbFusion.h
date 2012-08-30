@@ -127,10 +127,13 @@ class mbbFusion : public ib2c::tModule
     inline void ManagedDelete() {}
   };
 
+  typedef tMetaInput<tActivity> tInputActivityPort;
+  typedef tMetaInput<tTargetRating> tInputTargetRatingPort;
+
   struct tChannel
   {
-    tMetaInput activity;
-    tMetaInput target_rating;
+    tInputActivityPort activity;
+    tInputTargetRatingPort target_rating;
     tPortPack<tInput> data;
 
     inline tChannel(mbbFusion *module, unsigned int group_index) :
@@ -170,9 +173,9 @@ public:
 
   mbbFusion(core::tFrameworkElement *parent, const util::tString &name = "Fusion", unsigned int number_of_input_modules = 1);
 
-  tMetaInput &InputActivity(size_t channel_index);
+  tInputActivityPort &InputActivity(size_t channel_index);
 
-  tMetaInput &InputTargetRating(size_t channel_index);
+  tInputTargetRatingPort &InputTargetRating(size_t channel_index);
 
   core::tPortWrapperBase &InputPort(size_t channel_index, size_t port_index);
 
@@ -205,9 +208,9 @@ private:
 
   virtual bool ProcessTransferFunction(double activation);
 
-  virtual double CalculateActivity(std::vector<double> &derived_activities, double activity) const;
+  virtual tActivity CalculateActivity(std::vector<tActivity> &derived_activities, double activity) const;
 
-  virtual double CalculateTargetRating(double activation) const;
+  virtual tTargetRating CalculateTargetRating(double activation) const;
 
 };
 

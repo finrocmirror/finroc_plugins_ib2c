@@ -45,6 +45,7 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
+#include "plugins/ib2c/tMetaSignal.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -78,8 +79,6 @@ enum class tStimulationMode
 class tModule : public core::structure::tModuleBase
 {
 
-  typedef core::structure::tConveniencePort<double, tModule, core::tPort<double>> tMetaSignalPort;
-
   core::tPortGroup *meta_input;
   core::tPortGroup *input;
   core::tPortGroup *meta_output;
@@ -90,11 +89,22 @@ class tModule : public core::structure::tModuleBase
 //----------------------------------------------------------------------
 public:
 
-  struct tMetaInput : public tMetaSignalPort
+  template <typename TSignal>
+  class tMetaSignalPort : public core::structure::tConveniencePort<TSignal, tModule, core::tPort<TSignal>>  // FIXME: can be replaced by template alias with gcc 4.7
+  {
+  public:
+    template<typename ... TPortParameters>
+    explicit tMetaSignalPort(const TPortParameters &... port_parameters) :
+      core::structure::tConveniencePort<TSignal, tModule, core::tPort<TSignal>>(port_parameters...)
+    {}
+  };
+
+  template <typename TSignal>
+  struct tMetaInput : public tMetaSignalPort<TSignal>
   {
     template<typename ... TPortParameters>
     explicit tMetaInput(const TPortParameters &... port_parameters) :
-      tMetaSignalPort(GetContainer, port_parameters..., core::tBounds<double>(0, 1, false))
+      tMetaSignalPort<TSignal>(GetContainer, port_parameters..., core::tBounds<TSignal>(0, 1, false))
     {}
 
   private:
@@ -104,11 +114,15 @@ public:
     }
   };
 
-  struct tMetaOutput : public tMetaSignalPort
+  typedef tMetaInput<tStimulation> tStimulationPort;
+  typedef tMetaInput<tInhibition> tInhibitionPort;
+
+  template <typename TSignal>
+  struct tMetaOutput : public tMetaSignalPort<TSignal>
   {
     template<typename ... TPortParameters>
     explicit tMetaOutput(const TPortParameters &... port_parameters) :
-      tMetaSignalPort(GetContainer, port_parameters..., core::tBounds<double>(0, 1, false))
+      tMetaSignalPort<TSignal>(GetContainer, port_parameters..., core::tBounds<TSignal>(0, 1, false))
     {}
 
   private:
@@ -117,6 +131,11 @@ public:
       return module->meta_output;
     }
   };
+
+  typedef tMetaOutput<tActivity> tActivityPort;
+  typedef tMetaOutput<tTargetRating> tTargetRatingPort;
+
+  typedef tMetaOutput<double> tActivationPort;
 
   template <typename T = double>
   class tInput : public core::structure::tConveniencePort<T, tModule, core::tPort<T>>
@@ -153,12 +172,14 @@ public:
   tParameter<tStimulationMode> stimulation_mode;
   tParameter<size_t> number_of_inhibition_ports;
 
-  tMetaInput stimulation;
-  std::vector<tMetaInput> inhibition;
+  tStimulationPort stimulation;
+  std::vector<tInhibitionPort> inhibition;
 
-  tMetaOutput activity;
-  std::vector<tMetaOutput> derived_activity;
-  tMetaOutput target_rating;
+  tActivityPort activity;
+  std::vector<tActivityPort> derived_activity;
+  tTargetRatingPort target_rating;
+
+  tActivationPort activation;
 
 //----------------------------------------------------------------------
 // Public methods and typedefs
@@ -167,9 +188,9 @@ public:
 
   tModule(core::tFrameworkElement *parent, const util::tString &name);
 
-  inline const tMetaInput &RegisterInhibition(const util::tString &name)
+  inline const tInhibitionPort &RegisterInhibition(const util::tString &name)
   {
-    this->inhibition.push_back(tMetaInput("(I) " + name, this));
+    this->inhibition.push_back(tInhibitionPort("(I) " + name, this));
     this->inhibition.back().Init();
     this->number_of_inhibition_ports.Publish(this->inhibition.size());
     return this->inhibition.back();
@@ -202,9 +223,9 @@ protected:
 
   virtual void EvaluateParameters();
 
-  inline const tMetaOutput &RegisterDerivedActivity(const util::tString &name)
+  inline const tActivityPort &RegisterDerivedActivity(const util::tString &name)
   {
-    this->derived_activity.push_back(tMetaOutput(this, "(A) " + name));
+    this->derived_activity.push_back(tActivityPort(this, "(A) " + name));
     this->derived_activity.back().Init();
     return this->derived_activity.back();
   }
@@ -241,17 +262,25 @@ private:
 
   bool input_changed;
 
-  double last_activity;
+  double last_activation;
+  tActivity last_activity;
+  tTargetRating last_target_rating;
 
   double CalculateActivation() const;
 
-  double CalculateInhibition() const;
+  tInhibition CalculateInhibition() const;
+
+  void CheckActivityLimitation(tActivity activity, double activation);
+
+  void CheckGoalStateActivity(tActivity activity, tTargetRating target_rating, double activation);
+
+  void CheckDerivedActivities(std::vector<tActivity> &derived_activities, tActivity activity);
 
   virtual bool ProcessTransferFunction(double activation) = 0;
 
-  virtual double CalculateActivity(std::vector<double> &derived_activities, double activation) const = 0;
+  virtual tActivity CalculateActivity(std::vector<tActivity> &derived_activities, double activation) const = 0;
 
-  virtual double CalculateTargetRating(double activation) const = 0;
+  virtual tTargetRating CalculateTargetRating(double activation) const = 0;
 
 };
 

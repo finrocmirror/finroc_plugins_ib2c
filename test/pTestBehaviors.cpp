@@ -81,10 +81,12 @@ void InitMainGroup(finroc::core::tThreadContainer *main_thread, std::vector<char
 
   finroc::ib2c::mbbFusion<int, double, rrlib::math::tAngleRad> *fusion = new finroc::ib2c::mbbFusion<int, double, rrlib::math::tAngleRad>(main_thread, "Fusion");
 
+  finroc::ib2c::mbbFusion<finroc::ib2c::tActivity> *fusion2 = new finroc::ib2c::mbbFusion<finroc::ib2c::tActivity>(main_thread, "Fusion2");
+
   module_1->activity.ConnectTo(fusion->InputActivity(0));
-  module_1->target_rating.ConnectTo(fusion->InputTargetRating(0));
-  module_1->output1.ConnectTo(fusion->InputPort(0, 0));
-  fusion->OutputPort(1).ConnectTo(module_2->output2);
+//  module_1->target_rating.ConnectTo(fusion->InputTargetRating(0));
+//  module_1->output1.ConnectTo(fusion->InputPort(0, 0));
+//  fusion->OutputPort(1).ConnectTo(module_2->output2);
 
 //  new finroc::ib2c::mbbConditionalBehaviorStimulator(main_thread, "CBS");
 
