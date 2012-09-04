@@ -211,8 +211,7 @@ void tModule::CheckGoalStateActivity(tActivity activity, tTargetRating target_ra
   {
     bool activity_transfer_inputs_changed = false;
 
-    core::tFrameworkElement::tChildIterator input_port_iterator(this->GetInputs());
-    while (core::tAbstractPort *port = input_port_iterator.NextPort())
+    for (auto port = this->GetInputs().ChildPortsBegin(); port != this->GetInputs().ChildPortsEnd(); ++port)
     {
       if (port->HasChanged() && port->GetDataType() == rrlib::rtti::tDataType<tActivity>())
       {
