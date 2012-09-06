@@ -21,7 +21,7 @@
 //----------------------------------------------------------------------
 /*!\file    plugins/ib2c/tModule.h
  *
- * \author  Bernd-Helge Schaefer
+ * \author  Bernd-Helge Schäfer
  * \author  Tobias Föhst
  *
  * \date    2010-12-31
@@ -145,12 +145,22 @@ public:
     template<typename ... TPortParameters>
     explicit tInput(const TPortParameters &... port_parameters) :
       core::structure::tConveniencePort<T, tModule, core::tPort<T>>(GetContainer, port_parameters...)
-    {}
+    {
+      this->RegisterActivityTransferInput(this);
+    }
 
   private:
     static tFrameworkElement *GetContainer(tModule *module)
     {
       return module->input;
+    }
+
+    void RegisterActivityTransferInput(...)
+    {};
+    void RegisterActivityTransferInput(tInput<tActivity> *port)
+    {
+      static_cast<tModule *>(this->GetWrapped()->GetParent()->GetParent())->activity_transfer_inputs.push_back(*port);
+      std::cout << port->GetName() << std::endl;
     }
   };
 
@@ -266,6 +276,8 @@ private:
   double last_activation;
   tActivity last_activity;
   tTargetRating last_target_rating;
+
+  std::vector<tInput<tActivity>> activity_transfer_inputs;
 
   double CalculateActivation() const;
 

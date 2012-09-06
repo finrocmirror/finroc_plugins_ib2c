@@ -177,23 +177,6 @@ inline rrlib::serialization::tInputStream &operator >> (rrlib::serialization::tI
   return stream;
 }
 
-template <int Tmeta_signal_type>
-inline rrlib::serialization::tStringOutputStream &operator << (rrlib::serialization::tStringOutputStream &stream, const tMetaSignal<Tmeta_signal_type> &meta_signal)
-{
-  std::stringstream string_stream;
-  string_stream << meta_signal;
-  stream << string_stream.str();
-  return stream;
-}
-
-template <int Tmeta_signal_type>
-inline rrlib::serialization::tStringInputStream &operator >> (rrlib::serialization::tStringInputStream &stream, tMetaSignal<Tmeta_signal_type> &meta_signal)
-{
-  std::istringstream string_stream(stream.ReadLine());
-  string_stream >> meta_signal;
-  return stream;
-}
-
 //----------------------------------------------------------------------
 // End of namespace declaration
 //----------------------------------------------------------------------
