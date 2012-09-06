@@ -36,6 +36,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "core/thread/tPeriodicFrameworkElementTask.h"
+#include "core/tFrameworkElementTags.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -98,6 +99,7 @@ tModule::tModule(core::tFrameworkElement *parent, const util::tString &name) :
   std::vector<core::tEdgeAggregator *> input_ports = { this->meta_input, this->input };
   std::vector<core::tEdgeAggregator *> output_ports = { this->meta_output, this->output };
   this->AddAnnotation(new core::tPeriodicFrameworkElementTask(input_ports, output_ports, this->update_task));
+  core::tFrameworkElementTags::AddTag(*this, "ib2c_module");
 }
 
 //----------------------------------------------------------------------

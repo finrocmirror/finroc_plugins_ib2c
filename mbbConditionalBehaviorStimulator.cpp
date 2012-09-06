@@ -32,6 +32,7 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include "core/tFrameworkElementTags.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -72,7 +73,9 @@ core::tStandardCreateModuleAction<mbbConditionalBehaviorStimulator> mbbCondition
 //----------------------------------------------------------------------
 mbbConditionalBehaviorStimulator::mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const util::tString &name) :
   ib2c::tModule(parent, "(CBS) " + name)
-{}
+{
+  core::tFrameworkElementTags::AddTag(*this, "ib2c_cbs");
+}
 
 //----------------------------------------------------------------------
 // mbbConditionalBehaviorStimulator ProcessTransferFunction

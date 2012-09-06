@@ -33,6 +33,8 @@
 //----------------------------------------------------------------------
 #include "rrlib/data_fusion/functions.h"
 
+#include "core/tFrameworkElementTags.h"
+
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
@@ -80,6 +82,7 @@ mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, c
 
   max_input_activity_index(0)
 {
+  core::tFrameworkElementTags::AddTag(*this, "ib2c_fusion");
   this->AdjustInputChannels();
 }
 
