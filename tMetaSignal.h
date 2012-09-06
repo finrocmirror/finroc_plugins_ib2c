@@ -42,6 +42,8 @@
 
 #include "rrlib/serialization/serialization.h"
 
+#include "core/portdatabase/typeutil.h"
+
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------

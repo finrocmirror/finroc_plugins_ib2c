@@ -2,13 +2,14 @@
 <!DOCTYPE targets PUBLIC "-//RRLIB//DTD make 1.0" "http://rrlib.org/xml/1.0/make.dtd">
 <targets>
 
-  <finrocplugin name="ib2c"
-        libs="dl">
+  <finrocplugin name="ib2c">
     <sources>
       mbbConditionalBehaviorStimulator.cpp
       mbbFusion.h
+      tMetaSignal.h
       tModule.cpp
       tViolation.h
+      typeutil.h
     </sources>
   </finrocplugin>
 
