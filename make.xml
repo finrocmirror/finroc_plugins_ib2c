@@ -8,6 +8,7 @@
       mbbFusion.h
       tMetaSignal.h
       tModule.cpp
+      tPortConnectionConstraint.cpp
       tViolation.h
       typeutil.h
     </sources>
