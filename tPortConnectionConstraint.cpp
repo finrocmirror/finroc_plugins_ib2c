@@ -75,7 +75,7 @@ bool tPortConnectionConstraint::AllowPortConnection(const core::tAbstractPort &s
   auto source_type =  source_port.GetWrapperDataType();
   auto destination_type = destination_port.GetWrapperDataType();
 
-  if (destination_tye == source_type)
+  if (destination_type == source_type)
   {
     return true;
   }
