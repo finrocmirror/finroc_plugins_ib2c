@@ -75,16 +75,15 @@ bool tPortConnectionConstraint::AllowPortConnection(const core::tAbstractPort &s
   auto source_type =  source_port.GetWrapperDataType();
   auto destination_type = destination_port.GetWrapperDataType();
 
-  if (destination_type == source_type)
-  {
-    return true;
-  }
-
   if (destination_type == rrlib::rtti::tDataType<tStimulation>() || destination_type == rrlib::rtti::tDataType<tInhibition>())
   {
-    return source_type == rrlib::rtti::tDataType<tActivity>();
+    if (source_type == rrlib::rtti::tDataType<tActivity>())
+    {
+      return true;
+    }
   }
-  return true;
+
+  return source_type == destination_type;
 }
 
 //----------------------------------------------------------------------
