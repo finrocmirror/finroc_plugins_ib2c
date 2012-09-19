@@ -183,4 +183,6 @@ inline rrlib::serialization::tInputStream &operator >> (rrlib::serialization::tI
 }
 }
 
+#include "plugins/ib2c/typeutil.h"
+
 #endif

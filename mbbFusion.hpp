@@ -207,11 +207,11 @@ tActivity mbbFusion<TSignalTypes...>::CalculateActivity(std::vector<tActivity> &
     break;
 
   case tFusionMethod::WEIGHTED_AVERAGE:
-    fused_activity = rrlib::data_fusion::FuseValuesUsingWeightedAverage<double>(this->input_activities.begin(), this->input_activities.end(), this->input_activities.begin(), this->input_activities.end());
+    fused_activity = rrlib::data_fusion::FuseValuesUsingWeightedAverage<tActivity>(this->input_activities.begin(), this->input_activities.end(), this->input_activities.begin(), this->input_activities.end());
     break;
 
   case tFusionMethod::WEIGHTED_SUM:
-    fused_activity = rrlib::data_fusion::FuseValuesUsingWeightedSum<double>(this->input_activities.begin(), this->input_activities.end(), this->input_activities.begin(), this->input_activities.end());
+    fused_activity = rrlib::data_fusion::FuseValuesUsingWeightedSum<tActivity>(this->input_activities.begin(), this->input_activities.end(), this->input_activities.begin(), this->input_activities.end());
     fused_activity = std::min(1.0, fused_activity);
     break;
 
@@ -236,7 +236,7 @@ tTargetRating mbbFusion<TSignalTypes...>::CalculateTargetRating(double) const
 
   case tFusionMethod::WEIGHTED_AVERAGE:
   case tFusionMethod::WEIGHTED_SUM:
-    fused_target_rating = rrlib::data_fusion::FuseValuesUsingWeightedAverage<double>(this->input_target_ratings.begin(), this->input_target_ratings.end(), this->input_activities.begin(), this->input_activities.end());
+    fused_target_rating = rrlib::data_fusion::FuseValuesUsingWeightedAverage<tTargetRating>(this->input_target_ratings.begin(), this->input_target_ratings.end(), this->input_activities.begin(), this->input_activities.end());
     break;
 
   }

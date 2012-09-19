@@ -1,6 +1,6 @@
 //
 // You received this file as part of Finroc
-// A framework for intelligent robot control
+// A Framework for intelligent robot control
 //
 // Copyright (C) Finroc GbR (finroc.org)
 //
@@ -19,16 +19,26 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    pTestBehaviours.cpp
+/*!\file    plugins/ib2c/mNumberToActivityConverter.h
  *
- * \author  Bernd-Helge Schäfer
  * \author  Tobias Föhst
  *
- * \date    2011-01-09
+ * \date    2012-09-19
+ *
+ * \brief Contains mNumberToActivityConverter
+ *
+ * \b mNumberToActivityConverter
+ *
+ * This module acts as adapter and converts each numeric type into an
+ * ib2c::tActivity to allow connecting arbitray numeric ports to the
+ * stimulation and inhibition ports at network edges.
  *
  */
 //----------------------------------------------------------------------
-#include "core/default_main_wrapper.h"
+#ifndef __plugins__ib2c__mNumberToActivityConverter_h__
+#define __plugins__ib2c__mNumberToActivityConverter_h__
+
+#include "core/structure/tModule.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -37,61 +47,71 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "plugins/ib2c/test/mbbTestModule.h"
-#include "plugins/ib2c/mbbFusion.h"
-//#include "plugins/ib2c/mbbConditionalBehaviorStimulator.h"
-#include "plugins/ib2c/mNumberToActivityConverter.h"
+#include "plugins/ib2c/tMetaSignal.h"
 
 //----------------------------------------------------------------------
-// Debugging
+// Namespace declaration
 //----------------------------------------------------------------------
-#include <cassert>
-
-//----------------------------------------------------------------------
-// Namespace usage
-//----------------------------------------------------------------------
+namespace finroc
+{
+namespace ib2c
+{
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// Const values
+// Class declaration
 //----------------------------------------------------------------------
-const char * const cPROGRAM_VERSION = "ver 1.0";
-const char * const cPROGRAM_DESCRIPTION = "This program executes the TestBehaviors module/group.";
-
-//----------------------------------------------------------------------
-// Implementation
-//----------------------------------------------------------------------
-
-//----------------------------------------------------------------------
-// StartUp
-//----------------------------------------------------------------------
-void StartUp()
-{}
-
-//----------------------------------------------------------------------
-// InitMainGroup
-//----------------------------------------------------------------------
-void InitMainGroup(finroc::core::tThreadContainer *main_thread, std::vector<char *> remaining_args)
+//! SHORT_DESCRIPTION
+/*!
+ * This module acts as adapter and converts each numeric type into an
+ * ib2c::tActivity to allow connecting arbitray numeric ports to the
+ * stimulation and inhibition ports at network edges.
+ */
+class mNumberToActivityConverter : public core::structure::tModule
 {
-  finroc::ib2c::mbbTestModule *module_1 = new finroc::ib2c::mbbTestModule(main_thread, "Module 1");
-  finroc::ib2c::mbbTestModule *module_2 = new finroc::ib2c::mbbTestModule(main_thread, "Module 2");
-  finroc::ib2c::mbbTestModule *module_3 = new finroc::ib2c::mbbTestModule(main_thread, "Module 3");
+  static core::tStandardCreateModuleAction<mNumberToActivityConverter> cCREATE_ACTION;
 
-  new finroc::ib2c::mNumberToActivityConverter(main_thread);
+//----------------------------------------------------------------------
+// Ports (These are the only variables that may be declared public)
+//----------------------------------------------------------------------
+public:
 
-  finroc::ib2c::mbbFusion<int, double, rrlib::math::tAngleRad> *fusion = new finroc::ib2c::mbbFusion<int, double, rrlib::math::tAngleRad>(main_thread, "Fusion");
+  tInput<double> input;
 
-  finroc::ib2c::mbbFusion<finroc::ib2c::tActivity> *fusion2 = new finroc::ib2c::mbbFusion<finroc::ib2c::tActivity>(main_thread, "Fusion2");
+  tOutput<tActivity> output;
 
-  module_1->activity.ConnectTo(fusion->InputActivity(0));
-//  module_1->target_rating.ConnectTo(fusion->InputTargetRating(0));
-//  module_1->output1.ConnectTo(fusion->InputPort(0, 0));
-//  fusion->OutputPort(1).ConnectTo(module_2->output2);
+//----------------------------------------------------------------------
+// Public methods and typedefs
+//----------------------------------------------------------------------
+public:
 
-//  new finroc::ib2c::mbbConditionalBehaviorStimulator(main_thread, "CBS");
+  mNumberToActivityConverter(core::tFrameworkElement *parent, const util::tString &name = "NumberToActivityConverter");
 
-  main_thread->SetCycleTime(500);
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
+
+  /*! Destructor
+   *
+   * The destructor of modules is declared private to avoid accidental deletion. Deleting
+   * modules is already handled by the framework.
+   */
+  ~mNumberToActivityConverter();
+
+  virtual void Update();
+
+};
+
+//----------------------------------------------------------------------
+// End of namespace declaration
+//----------------------------------------------------------------------
 }
+}
+
+
+
+#endif

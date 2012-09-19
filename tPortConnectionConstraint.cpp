@@ -72,18 +72,18 @@ const tPortConnectionConstraint cPORT_CONNECTION_CONSTRAINT;
 //----------------------------------------------------------------------
 bool tPortConnectionConstraint::AllowPortConnection(const core::tAbstractPort &source_port, const core::tAbstractPort &destination_port) const
 {
-  auto source_type =  source_port.GetWrapperDataType();
+  auto source_type = source_port.GetWrapperDataType();
   auto destination_type = destination_port.GetWrapperDataType();
 
   if (destination_type == rrlib::rtti::tDataType<tStimulation>() || destination_type == rrlib::rtti::tDataType<tInhibition>())
   {
-    if (source_type == rrlib::rtti::tDataType<tActivity>())
+    if (source_type != rrlib::rtti::tDataType<tActivity>())
     {
-      return true;
+      return false;
     }
   }
 
-  return source_type == destination_type;
+  return true;
 }
 
 //----------------------------------------------------------------------
@@ -91,7 +91,7 @@ bool tPortConnectionConstraint::AllowPortConnection(const core::tAbstractPort &s
 //----------------------------------------------------------------------
 const char *tPortConnectionConstraint::Description() const
 {
-  return "";
+  return "Only activities may be connected to stimulation or inhibition ports!";
 }
 
 //----------------------------------------------------------------------

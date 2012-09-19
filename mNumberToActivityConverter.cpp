@@ -1,6 +1,6 @@
 //
 // You received this file as part of Finroc
-// A framework for intelligent robot control
+// A Framework for intelligent robot control
 //
 // Copyright (C) Finroc GbR (finroc.org)
 //
@@ -19,16 +19,15 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    pTestBehaviours.cpp
+/*!\file    plugins/ib2c/mNumberToActivityConverter.cpp
  *
- * \author  Bernd-Helge Schäfer
  * \author  Tobias Föhst
  *
- * \date    2011-01-09
+ * \date    2012-09-19
  *
  */
 //----------------------------------------------------------------------
-#include "core/default_main_wrapper.h"
+#include "plugins/ib2c/mNumberToActivityConverter.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -37,10 +36,6 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "plugins/ib2c/test/mbbTestModule.h"
-#include "plugins/ib2c/mbbFusion.h"
-//#include "plugins/ib2c/mbbConditionalBehaviorStimulator.h"
-#include "plugins/ib2c/mNumberToActivityConverter.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -52,46 +47,52 @@
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
+// Namespace declaration
+//----------------------------------------------------------------------
+namespace finroc
+{
+namespace ib2c
+{
+
+//----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-const char * const cPROGRAM_VERSION = "ver 1.0";
-const char * const cPROGRAM_DESCRIPTION = "This program executes the TestBehaviors module/group.";
+core::tStandardCreateModuleAction<mNumberToActivityConverter> mNumberToActivityConverter::cCREATE_ACTION("NumberToActivityConverter");
 
 //----------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// StartUp
+// mNumberToActivityConverter constructor
 //----------------------------------------------------------------------
-void StartUp()
+mNumberToActivityConverter::mNumberToActivityConverter(core::tFrameworkElement *parent, const util::tString &name) :
+  tModule(parent, name)
 {}
 
 //----------------------------------------------------------------------
-// InitMainGroup
+// mNumberToActivityConverter destructor
 //----------------------------------------------------------------------
-void InitMainGroup(finroc::core::tThreadContainer *main_thread, std::vector<char *> remaining_args)
+mNumberToActivityConverter::~mNumberToActivityConverter()
+{}
+
+//----------------------------------------------------------------------
+// mNumberToActivityConverter Update
+//----------------------------------------------------------------------
+void mNumberToActivityConverter::Update()
 {
-  finroc::ib2c::mbbTestModule *module_1 = new finroc::ib2c::mbbTestModule(main_thread, "Module 1");
-  finroc::ib2c::mbbTestModule *module_2 = new finroc::ib2c::mbbTestModule(main_thread, "Module 2");
-  finroc::ib2c::mbbTestModule *module_3 = new finroc::ib2c::mbbTestModule(main_thread, "Module 3");
+  if (this->InputChanged())
+  {
+    this->output.Publish(this->input.Get());
+  }
+}
 
-  new finroc::ib2c::mNumberToActivityConverter(main_thread);
-
-  finroc::ib2c::mbbFusion<int, double, rrlib::math::tAngleRad> *fusion = new finroc::ib2c::mbbFusion<int, double, rrlib::math::tAngleRad>(main_thread, "Fusion");
-
-  finroc::ib2c::mbbFusion<finroc::ib2c::tActivity> *fusion2 = new finroc::ib2c::mbbFusion<finroc::ib2c::tActivity>(main_thread, "Fusion2");
-
-  module_1->activity.ConnectTo(fusion->InputActivity(0));
-//  module_1->target_rating.ConnectTo(fusion->InputTargetRating(0));
-//  module_1->output1.ConnectTo(fusion->InputPort(0, 0));
-//  fusion->OutputPort(1).ConnectTo(module_2->output2);
-
-//  new finroc::ib2c::mbbConditionalBehaviorStimulator(main_thread, "CBS");
-
-  main_thread->SetCycleTime(500);
+//----------------------------------------------------------------------
+// End of namespace declaration
+//----------------------------------------------------------------------
+}
 }

@@ -46,7 +46,6 @@
 // Internal includes with ""
 //----------------------------------------------------------------------
 #include "plugins/ib2c/tMetaSignal.h"
-#include "plugins/ib2c/typeutil.h"
 
 //----------------------------------------------------------------------
 // Debugging
