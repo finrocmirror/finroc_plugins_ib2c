@@ -77,10 +77,7 @@ bool tPortConnectionConstraint::AllowPortConnection(const core::tAbstractPort &s
 
   if (destination_type == rrlib::rtti::tDataType<tStimulation>() || destination_type == rrlib::rtti::tDataType<tInhibition>())
   {
-    if (source_type != rrlib::rtti::tDataType<tActivity>())
-    {
-      return false;
-    }
+    return source_type == destination_type || source_type == rrlib::rtti::tDataType<tActivity>();
   }
 
   return true;
