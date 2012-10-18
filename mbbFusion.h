@@ -49,6 +49,7 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
+#include "plugins/ib2c/tPortPack.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -87,46 +88,6 @@ class mbbFusion : public ib2c::tModule
 
   typedef rrlib::util::tTypeList<TSignalTypes...> tSignalTypes;
 
-  template < template <typename> class TPort, size_t Tindex = sizeof...(TSignalTypes) - 1 >
-  struct tPortPack : public tPortPack < TPort, Tindex - 1 >
-  {
-    TPort<typename tSignalTypes::template tAt<Tindex>::tResult> port;
-
-    inline tPortPack(mbbFusion *module, const std::string &name_prefix) :
-      tPortPack < TPort, Tindex - 1 > (module, name_prefix),
-      port(name_prefix + boost::lexical_cast<std::string>(Tindex + 1), module)
-    {
-      this->port.Init();
-    }
-
-    inline core::tPortWrapperBase &GetPort(size_t index)
-    {
-      assert(index < tSignalTypes::cSIZE);
-      if (index == Tindex)
-      {
-        return this->port;
-      }
-      return tPortPack < TPort, Tindex - 1 >::GetPort(index);
-    }
-
-    inline void ManagedDelete()
-    {
-      this->port.GetWrapped()->ManagedDelete();
-      tPortPack < TPort, Tindex - 1 >::ManagedDelete();
-    }
-  };
-
-  template <template <typename> class TPort>
-  struct tPortPack < TPort, -1 >
-  {
-    inline tPortPack(mbbFusion *module, const std::string &name_prefix) {}
-    inline core::tPortWrapperBase &GetPort(size_t index)
-    {
-      return *reinterpret_cast<core::tPortWrapperBase *>(0);
-    };
-    inline void ManagedDelete() {}
-  };
-
   typedef tMetaInput<tActivity> tInputActivityPort;
   typedef tMetaInput<tTargetRating> tInputTargetRatingPort;
 
@@ -134,7 +95,7 @@ class mbbFusion : public ib2c::tModule
   {
     tInputActivityPort activity;
     tInputTargetRatingPort target_rating;
-    tPortPack<tInput> data;
+    tPortPack<tInput, tSignalTypes> data;
 
     inline tChannel(mbbFusion *module, unsigned int group_index) :
       activity("Input Activity " + boost::lexical_cast<std::string>(group_index + 1), module),
@@ -164,7 +125,7 @@ public:
 
   std::vector<tChannel> input;
 
-  tPortPack<tOutput> output;
+  tPortPack<tOutput, tSignalTypes> output;
 
 //----------------------------------------------------------------------
 // Public methods and typedefs

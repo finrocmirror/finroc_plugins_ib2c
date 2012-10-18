@@ -10,6 +10,7 @@
       tMetaSignal.h
       tModule.cpp
       tPortConnectionConstraint.cpp
+      tPortPack.h
       tViolation.h
       typeutil.h
     </sources>
