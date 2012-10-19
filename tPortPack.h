@@ -87,6 +87,14 @@ public:
     this->port.Init();
   }
 
+  template <typename TIterator>
+  inline tPortPack(core::tFrameworkElement *parent, TIterator names_begin, TIterator names_end) :
+    tPortPack < TPort, TTypeList, Tindex - 1 > (parent, names_begin, names_end - 1),
+    port(names_end - 1, parent)
+  {
+    this->port.Init();
+  }
+
   inline size_t NumberOfPorts() const
   {
     return Tindex + 1;

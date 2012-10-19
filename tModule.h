@@ -198,7 +198,7 @@ public:
 
   tModule(core::tFrameworkElement *parent, const util::tString &name);
 
-  inline const tInhibitionPort &RegisterInhibition(const util::tString &name)
+  inline const tInhibitionPort &AddInhibition(const util::tString &name)
   {
     this->inhibition.push_back(tInhibitionPort("(I) " + name, this));
     this->inhibition.back().Init();
@@ -233,7 +233,7 @@ protected:
 
   virtual void EvaluateParameters();
 
-  inline const tActivityPort &RegisterDerivedActivity(const util::tString &name)
+  inline const tActivityPort &AddDerivedActivity(const util::tString &name)
   {
     this->derived_activity.push_back(tActivityPort(this, "(A) " + name));
     this->derived_activity.back().Init();

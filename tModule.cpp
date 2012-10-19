@@ -128,7 +128,7 @@ void tModule::EvaluateParameters()
     }
     for (size_t i = this->inhibition.size(); i < this->number_of_inhibition_ports.Get(); ++i)
     {
-      this->RegisterInhibition("Inhibition " + boost::lexical_cast<std::string>(i + 1));
+      this->AddInhibition("Inhibition " + boost::lexical_cast<std::string>(i + 1));
     }
   }
 }
