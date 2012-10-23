@@ -32,6 +32,8 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include <boost/lexical_cast.hpp>
+
 #include "core/tFrameworkElementTags.h"
 
 //----------------------------------------------------------------------
@@ -72,9 +74,116 @@ core::tStandardCreateModuleAction<mbbConditionalBehaviorStimulator> mbbCondition
 // mbbConditionalBehaviorStimulator constructor
 //----------------------------------------------------------------------
 mbbConditionalBehaviorStimulator::mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const util::tString &name) :
-  ib2c::tModule(parent, "(CBS) " + name)
+  ib2c::tModule(parent, "(CBS) " + name),
+
+  all_input_conditions_fulfilled(false)
 {
   core::tFrameworkElementTags::AddTag(*this, "ib2c_cbs");
+}
+
+//----------------------------------------------------------------------
+// mbbConditionalBehaviorStimulator EvaluateConditions
+//----------------------------------------------------------------------
+bool mbbConditionalBehaviorStimulator::EvaluateConditions(std::vector<tCondition> &conditions)
+{
+  bool all_conditions_fulfilled = true;
+
+  // Process the ordering and permanent conditions:
+  for (auto it = conditions.begin(); it != conditions.end(); ++it)
+  {
+    switch (it->Type())
+    {
+    case tConditionType::PERMANENT:
+    case tConditionType::ORDERING:
+      if (!it->Evaluate())
+      {
+        all_conditions_fulfilled = false;
+      }
+      break;
+    default:
+      ; // Enabling conditions are not evaluated in this step
+    }
+  }
+
+  // Process the enabling conditions:
+  if (all_conditions_fulfilled)
+  {
+    for (auto it = conditions.begin(); it != conditions.end(); ++it)
+    {
+      if (it->Type() == tConditionType::ENABLING)
+      {
+        if (!it->Evaluate())
+        {
+          all_conditions_fulfilled = false;
+          break;
+        }
+      }
+    }
+  }
+
+  if (!all_conditions_fulfilled)
+  {
+    for (auto it = conditions.begin(); it != conditions.end(); ++it)
+    {
+      if (it->Type() == tConditionType::ENABLING)
+      {
+        it->Reset();
+      }
+    }
+  }
+
+  return all_conditions_fulfilled;
+}
+
+//----------------------------------------------------------------------
+// mbbConditionalBehaviorStimulator Reset
+//----------------------------------------------------------------------
+void mbbConditionalBehaviorStimulator::Reset()
+{
+  for (auto it = this->input_conditions.begin(); it != this->input_conditions.end(); ++it)
+  {
+    it->Reset();
+  }
+
+  for (auto it = this->feedback_conditions.begin(); it != this->feedback_conditions.end(); ++it)
+  {
+    it->Reset();
+  }
+
+  this->all_input_conditions_fulfilled = false;
+}
+
+//----------------------------------------------------------------------
+// mbbConditionalBehaviorStimulator AdjustConditionList
+//----------------------------------------------------------------------
+void mbbConditionalBehaviorStimulator::AdjustConditionList(std::vector<tCondition> &condition_list, size_t size, const std::string &name_prefix)
+{
+  while (condition_list.size() > size)
+  {
+    condition_list.back().ManagedDelete();
+    condition_list.pop_back();
+  }
+  for (size_t i = condition_list.size(); i < size; ++i)
+  {
+    condition_list.push_back(tCondition(this, name_prefix + boost::lexical_cast<std::string>(i + 1)));
+  }
+}
+
+//----------------------------------------------------------------------
+// mbbConditionalBehaviorStimulator EvaluateParameters
+//----------------------------------------------------------------------
+void mbbConditionalBehaviorStimulator::EvaluateParameters()
+{
+  tModule::EvaluateParameters();
+
+  if (this->number_of_input_conditions.HasChanged())
+  {
+    this->AdjustConditionList(this->input_conditions, this->number_of_input_conditions.Get(), "Input Condition ");
+  }
+  if (this->number_of_feedback_conditions.HasChanged())
+  {
+    this->AdjustConditionList(this->feedback_conditions, this->number_of_feedback_conditions.Get(), "Feedback Condition ");
+  }
 }
 
 //----------------------------------------------------------------------
@@ -82,7 +191,20 @@ mbbConditionalBehaviorStimulator::mbbConditionalBehaviorStimulator(core::tFramew
 //----------------------------------------------------------------------
 bool mbbConditionalBehaviorStimulator::ProcessTransferFunction(double activation)
 {
-  return false;
+  this->all_input_conditions_fulfilled = this->EvaluateConditions(this->input_conditions);
+
+  if (this->all_input_conditions_fulfilled)
+  {
+    FINROC_LOG_PRINT(DEBUG_VERBOSE_2, "All input conditions have been fulfilled.");
+    FINROC_LOG_PRINT(DEBUG_VERBOSE_2, "Registered feedback conditions: ", this->feedback_conditions.size());
+    if (!this->feedback_conditions.empty() && this->EvaluateConditions(this->feedback_conditions))
+    {
+      FINROC_LOG_PRINT(DEBUG_VERBOSE_2, "All feedback conditions have been fulfilled. Resetting ...");
+      this->Reset();
+    }
+  }
+
+  return true;
 }
 
 //----------------------------------------------------------------------
@@ -90,7 +212,7 @@ bool mbbConditionalBehaviorStimulator::ProcessTransferFunction(double activation
 //----------------------------------------------------------------------
 tActivity mbbConditionalBehaviorStimulator::CalculateActivity(std::vector<tActivity> &derived_activity, double activation) const
 {
-  return 0;
+  return this->all_input_conditions_fulfilled ? activation : 0.0;
 }
 
 //----------------------------------------------------------------------
@@ -98,7 +220,7 @@ tActivity mbbConditionalBehaviorStimulator::CalculateActivity(std::vector<tActiv
 //----------------------------------------------------------------------
 tTargetRating mbbConditionalBehaviorStimulator::CalculateTargetRating(double activation) const
 {
-  return 0;
+  return this->all_input_conditions_fulfilled;
 }
 
 //----------------------------------------------------------------------

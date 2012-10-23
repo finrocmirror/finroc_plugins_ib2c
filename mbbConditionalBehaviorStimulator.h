@@ -42,10 +42,12 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include "rrlib/math/utilities.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
+#include "plugins/ib2c/tCondition.h"
 
 //----------------------------------------------------------------------
 // Namespace declaration
@@ -76,13 +78,8 @@ class mbbConditionalBehaviorStimulator : public ib2c::tModule
 //----------------------------------------------------------------------
 public:
 
-  std::vector<tInput<>> enabling_input;
-  std::vector<tInput<>> ordering_input;
-  std::vector<tInput<>> permanent_input;
-
-  std::vector<tInput<>> enabling_output;
-  std::vector<tInput<>> ordering_output;
-  std::vector<tInput<>> permanent_output;
+  tParameter<unsigned int> number_of_input_conditions;
+  tParameter<unsigned int> number_of_feedback_conditions;
 
 //----------------------------------------------------------------------
 // Public methods and typedefs
@@ -91,10 +88,46 @@ public:
 
   mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const util::tString &name = "ConditionalBehaviorStimulator");
 
+  inline const tInput<double> &AddInputCondition(tConditionType type, tConditionRelation relation, double threshold, const util::tString &name = "")
+  {
+    this->input_conditions.push_back(tCondition(this, name != "" ? name : ("Input Condition " + (this->input_conditions.size() + 1)), type, relation, threshold));
+    return this->input_conditions.back().Input();
+  }
+
+  inline const tInput<double> &AddFeedbackCondition(tConditionType type, tConditionRelation relation, double threshold, const util::tString &name = "")
+  {
+    this->feedback_conditions.push_back(tCondition(this, name != "" ? name : ("Feedback Condition " + (this->feedback_conditions.size() + 1)), type, relation, threshold));
+    return this->feedback_conditions.back().Input();
+  }
+
+  inline void RegisterInputBehavior(tModule &input_behavior, tConditionType type, tConditionRelation relation, double threshold)
+  {
+    input_behavior.activity.ConnectTo(this->AddFeedbackCondition(type, relation, threshold, input_behavior.GetDescription()));
+  }
+
+  inline void RegisterFeedbackBehavior(tModule &feedback_behavior, tConditionType type, tConditionRelation relation, double threshold)
+  {
+    feedback_behavior.activity.ConnectTo(this->AddFeedbackCondition(type, relation, threshold, feedback_behavior.GetDescription()));
+  }
+
 //----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------
 private:
+
+  std::vector<tCondition> input_conditions;
+  std::vector<tCondition> feedback_conditions;
+
+  bool all_input_conditions_fulfilled;
+  bool all_feedback_conditions_fulfilled;
+
+  bool EvaluateConditions(std::vector<tCondition> &conditions);
+
+  void Reset();
+
+  void AdjustConditionList(std::vector<tCondition> &condition_list, size_t size, const std::string &name_prefix);
+
+  virtual void EvaluateParameters();
 
   virtual bool ProcessTransferFunction(double activation);
 
