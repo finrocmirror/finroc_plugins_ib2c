@@ -81,6 +81,8 @@ public:
   tParameter<unsigned int> number_of_input_conditions;
   tParameter<unsigned int> number_of_feedback_conditions;
 
+  tInput<unsigned int> reset;
+
 //----------------------------------------------------------------------
 // Public methods and typedefs
 //----------------------------------------------------------------------
@@ -100,20 +102,22 @@ public:
     return this->feedback_conditions.back().Input();
   }
 
-  inline void RegisterInputBehavior(tModule &input_behavior, tConditionType type, tConditionRelation relation, double threshold)
+  inline void RegisterInputBehavior(tModule &input_behavior, tConditionType type, tConditionRelation relation, double threshold, const util::tString &name = "")
   {
-    input_behavior.activity.ConnectTo(this->AddFeedbackCondition(type, relation, threshold, input_behavior.GetDescription()));
+    input_behavior.activity.ConnectTo(this->AddFeedbackCondition(type, relation, threshold, name != "" ? name : input_behavior.GetName()));
   }
 
-  inline void RegisterFeedbackBehavior(tModule &feedback_behavior, tConditionType type, tConditionRelation relation, double threshold)
+  inline void RegisterFeedbackBehavior(tModule &feedback_behavior, tConditionType type, tConditionRelation relation, double threshold, const util::tString &name = "")
   {
-    feedback_behavior.activity.ConnectTo(this->AddFeedbackCondition(type, relation, threshold, feedback_behavior.GetDescription()));
+    feedback_behavior.activity.ConnectTo(this->AddFeedbackCondition(type, relation, threshold, name != "" ? name : feedback_behavior.GetName()));
   }
 
 //----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------
 private:
+
+  unsigned int reset_requests;
 
   std::vector<tCondition> input_conditions;
   std::vector<tCondition> feedback_conditions;

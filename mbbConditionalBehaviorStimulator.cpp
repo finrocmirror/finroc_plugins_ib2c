@@ -76,6 +76,7 @@ core::tStandardCreateModuleAction<mbbConditionalBehaviorStimulator> mbbCondition
 mbbConditionalBehaviorStimulator::mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const util::tString &name) :
   ib2c::tModule(parent, "(CBS) " + name),
 
+  reset_requests(0),
   all_input_conditions_fulfilled(false)
 {
   core::tFrameworkElementTags::AddTag(*this, "ib2c_cbs");
@@ -191,6 +192,12 @@ void mbbConditionalBehaviorStimulator::EvaluateParameters()
 //----------------------------------------------------------------------
 bool mbbConditionalBehaviorStimulator::ProcessTransferFunction(double activation)
 {
+  if (this->reset_requests != this->reset.Get())
+  {
+    this->Reset();
+    this->reset_requests = this->reset.Get();
+  }
+
   this->all_input_conditions_fulfilled = this->EvaluateConditions(this->input_conditions);
 
   if (this->all_input_conditions_fulfilled)
