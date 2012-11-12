@@ -38,6 +38,8 @@
 #include "core/thread/tPeriodicFrameworkElementTask.h"
 #include "core/tFrameworkElementTags.h"
 
+#include "rrlib/math/utilities.h"
+
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
@@ -209,10 +211,9 @@ void tModule::CheckActivityLimitation(tActivity activity, double activation)
 //----------------------------------------------------------------------
 void tModule::CheckGoalStateActivity(tActivity activity, tTargetRating target_rating, double activation)
 {
-  if (target_rating == 0 && this->last_target_rating == 0 && activation != this->last_activation)
+  if (rrlib::math::IsEqual(target_rating, 0) && rrlib::math::IsEqual(this->last_target_rating, 0) && rrlib::math::IsEqual(activation, this->last_activation))
   {
     bool activity_transfer_inputs_changed = false;
-
 
     for (auto it = this->activity_transfer_inputs.begin(); it != this->activity_transfer_inputs.end(); ++it)
     {
