@@ -79,9 +79,11 @@ class mNumberToActivityConverter : public core::structure::tModule
 //----------------------------------------------------------------------
 public:
 
-  tInput<double> input;
+  tStaticParameter<unsigned int> number_of_values;
 
-  tOutput<tActivity> output;
+  std::vector<tInput<double>> input_signals;
+
+  std::vector<tOutput<tActivity>> output_signals;
 
 //----------------------------------------------------------------------
 // Public methods and typedefs
@@ -101,6 +103,8 @@ private:
    * modules is already handled by the framework.
    */
   ~mNumberToActivityConverter();
+
+  virtual void EvaluateStaticParameters();
 
   virtual void Update();
 
