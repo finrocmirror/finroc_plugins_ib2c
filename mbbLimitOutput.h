@@ -2,7 +2,7 @@
 // You received this file as part of Finroc
 // A Framework for intelligent robot control
 //
-// Copyright (C) Finroc GbR (finroc.org)
+// Copyright (C) Robot Makers GmbH (www.robotmakers.de)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,26 +19,24 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    plugins/ib2c/mNumberToActivityConverter.h
+/*!\file    plugins/ib2c/mbbLimitOutput.h
  *
- * \author  Tobias Föhst
+ * \author  Jochen Hirth
  *
- * \date    2012-09-19
+ * \date    2012-10-30
  *
- * \brief Contains mNumberToActivityConverter
+ * \brief Contains mbbLimitOutput
  *
- * \b mNumberToActivityConverter
+ * \b mbbLimitOutput
  *
- * This module acts as adapter and converts each numeric type into an
- * ib2c::tActivity to allow connecting arbitray numeric ports to the
- * stimulation and inhibition ports at network edges.
+ * This module draws the output signals to 0 in case the activation is 0,
  *
  */
 //----------------------------------------------------------------------
-#ifndef __plugins__ib2c__mNumberToActivityConverter_h__
-#define __plugins__ib2c__mNumberToActivityConverter_h__
+#ifndef __plugins__ib2c__mbbLimitOutput_h__
+#define __plugins__ib2c__mbbLimitOutput_h__
 
-#include "core/structure/tModule.h"
+#include "plugins/ib2c/tModule.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -47,7 +45,6 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "plugins/ib2c/tMetaSignal.h"
 
 //----------------------------------------------------------------------
 // Namespace declaration
@@ -66,47 +63,47 @@ namespace ib2c
 //----------------------------------------------------------------------
 //! SHORT_DESCRIPTION
 /*!
- * This module acts as adapter and converts each numeric type into an
- * ib2c::tActivity to allow connecting arbitray numeric ports to the
- * stimulation and inhibition ports at network edges.
+ * This module draws the output signals to 0 in case the activation is 0,
  */
-class mNumberToActivityConverter : public core::structure::tModule
+class mbbLimitOutput : public ib2c::tModule
 {
-  static core::tStandardCreateModuleAction<mNumberToActivityConverter> cCREATE_ACTION;
+  static core::tStandardCreateModuleAction<mbbLimitOutput> cCREATE_ACTION;
 
 //----------------------------------------------------------------------
 // Ports (These are the only variables that may be declared public)
 //----------------------------------------------------------------------
 public:
 
-  tStaticParameter<unsigned int> number_of_values;
+  tStaticParameter<unsigned int> number_of_signals;
 
-  std::vector<tInput<double>> input_signals;
-
-  std::vector<tOutput<tActivity>> output_signals;
+  std::vector<tInput<>> input_signals;
+  std::vector<tOutput<> > output_signals;
 
 //----------------------------------------------------------------------
 // Public methods and typedefs
 //----------------------------------------------------------------------
 public:
 
-  mNumberToActivityConverter(core::tFrameworkElement *parent, const util::tString &name = "NumberToActivityConverter");
+  mbbLimitOutput(core::tFrameworkElement *parent, const util::tString &name = "LimitOutput");
 
 //----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------
 private:
-
   /*! Destructor
    *
    * The destructor of modules is declared private to avoid accidental deletion. Deleting
    * modules is already handled by the framework.
    */
-  ~mNumberToActivityConverter();
+  ~mbbLimitOutput();
 
   virtual void EvaluateStaticParameters();
 
-  virtual void Update();
+  virtual bool ProcessTransferFunction(double activation);
+
+  virtual ib2c::tActivity CalculateActivity(std::vector<ib2c::tActivity> &derived_activities, double activation) const;
+
+  virtual ib2c::tTargetRating CalculateTargetRating(double activation) const;
 
 };
 

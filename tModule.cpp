@@ -86,12 +86,15 @@ tModule::tModule(core::tFrameworkElement *parent, const util::tString &name) :
 
   stimulation_mode("Stimulation Mode", this),     // TODO: use port_name_generator for this block
   number_of_inhibition_ports("Number Of Inhibition Ports", this),
+  warn_any_n_cycles("Warn Any N Cycles", this, 250),
 
   stimulation("Stimulation", this),               // TODO: use port_name_generator for this block
   activity("Activity", this),
   target_rating("Target Rating", this),
   activation("Activation", this),
 
+  already_warned_this_cycle(false),
+  warn_cycles(0),
   update_task(this),
   input_changed(true),
   last_activation(0),
@@ -138,7 +141,7 @@ void tModule::EvaluateParameters()
 //----------------------------------------------------------------------
 // tModule CalculateActivation
 //----------------------------------------------------------------------
-double tModule::CalculateActivation() const
+double tModule::CalculateActivation()
 {
   tStimulation stimulation = 0;
   tInhibition inhibition = this->CalculateInhibition();
@@ -148,7 +151,10 @@ double tModule::CalculateActivation() const
   case tStimulationMode::AUTO:
     if (!this->stimulation.IsConnected())
     {
-      FINROC_LOG_PRINT(WARNING, "Stimulation mode is AUTO but stimulation port not connected. Activation is zero.");
+      if (this->WarnNow())
+      {
+        FINROC_LOG_PRINT(WARNING, "Stimulation mode is AUTO but stimulation port not connected. Activation is zero.");
+      }
       return 0;
     }
     stimulation = this->stimulation.Get();
@@ -157,7 +163,10 @@ double tModule::CalculateActivation() const
   case tStimulationMode::ENABLED:
     if (this->stimulation.IsConnected())
     {
-      FINROC_LOG_PRINT(WARNING, "Stimulation mode is ENABLED but stimulation port also connected. Ignoring incoming value.");
+      if (this->WarnNow())
+      {
+        FINROC_LOG_PRINT(WARNING, "Stimulation mode is ENABLED but stimulation port also connected. Ignoring incoming value.");
+      }
     }
     stimulation = 1;
     break;
@@ -165,7 +174,10 @@ double tModule::CalculateActivation() const
   case tStimulationMode::DISABLED:
     if (this->stimulation.IsConnected())
     {
-      FINROC_LOG_PRINT(WARNING, "Stimulation mode is DISABLED but stimulation port also connected. Ignoring incoming value.");
+      if (this->WarnNow())
+      {
+        FINROC_LOG_PRINT(WARNING, "Stimulation mode is DISABLED but stimulation port also connected. Ignoring incoming value.");
+      }
     }
     stimulation = 0;
   }
@@ -275,6 +287,8 @@ tModule::UpdateTask::UpdateTask(tModule *module)
 //----------------------------------------------------------------------
 void tModule::UpdateTask::ExecuteTask()
 {
+  // reset warn flag; is set on call to WarnNow()
+  this->module->SetWarningFlag(false);
   this->module->CheckParameters();
   this->module->input_changed = this->module->ProcessChangedFlags(*this->module->input);
 
@@ -283,7 +297,10 @@ void tModule::UpdateTask::ExecuteTask()
 
   if (!this->module->ProcessTransferFunction(activation))
   {
-    FINROC_LOG_PRINT(WARNING, "Could not process transfer function. Not updating meta signals.");
+    if (this->module->WarnNow())
+    {
+      FINROC_LOG_PRINT(WARNING, "Could not process transfer function. Not updating meta signals.");
+    }
     return;
   }
 

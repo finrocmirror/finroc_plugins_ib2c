@@ -14,6 +14,7 @@
       tPortPack.h
       tViolation.h
       typeutil.h
+      mbbLimitOutput.cpp
     </sources>
   </finrocplugin>
 

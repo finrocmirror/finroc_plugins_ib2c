@@ -182,6 +182,8 @@ public:
   tParameter<tStimulationMode> stimulation_mode;
   tParameter<size_t> number_of_inhibition_ports;
 
+  tStaticParameter <size_t> warn_any_n_cycles;
+
   tStimulationPort stimulation;
   std::vector<tInhibitionPort> inhibition;
 
@@ -251,6 +253,28 @@ protected:
     return input_changed;
   }
 
+  void SetWarningFlag(bool value)
+  {
+    this->already_warned_this_cycle = value;
+  }
+
+  bool WarnNow()
+  {
+    if (!this->already_warned_this_cycle)
+    {
+      this->already_warned_this_cycle = true;
+      ++this->warn_cycles;
+    }
+
+    bool warn_now = ((this->warn_cycles % this->warn_any_n_cycles.Get()) == 0);
+    if (warn_now)
+    {
+      FINROC_LOG_PRINT(WARNING, "Warn cycle: ", this->warn_cycles);
+    }
+
+    return warn_now;
+  }
+
 //----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------
@@ -268,6 +292,10 @@ private:
     }
   };
 
+  bool already_warned_this_cycle;
+
+  int warn_cycles;
+
   UpdateTask update_task;
 
   bool input_changed;
@@ -278,7 +306,7 @@ private:
 
   std::vector<tInput<tActivity>> activity_transfer_inputs;
 
-  double CalculateActivation() const;
+  double CalculateActivation();
 
   tInhibition CalculateInhibition() const;
 

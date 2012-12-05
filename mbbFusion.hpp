@@ -74,12 +74,11 @@ const unsigned int cMAX_NUMBER_OF_INPUT_MODULES = 1000;
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
 mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name, unsigned int number_of_input_modules) :
-  tModule(parent, "(F) " + name),
+  tModule(parent, (name.substr(0, 3) == "(F)") ? name : "(F) " + name),
 
   number_of_input_modules(number_of_input_modules, core::tBounds<unsigned int>(1, cMAX_NUMBER_OF_INPUT_MODULES, false)),
 
   output(this, "Output "),
-
   max_input_activity_index(0)
 {
   core::tFrameworkElementTags::AddTag(*this, "ib2c_fusion");
@@ -170,12 +169,18 @@ bool mbbFusion<TSignalTypes...>::ProcessTransferFunction(double activation)
   {
     if (!this->input[i].activity.IsConnected())
     {
-      FINROC_LOG_PRINT(ERROR, this->input[i].activity.GetName(), " is not connected.");
+      if (this->WarnNow())
+      {
+        FINROC_LOG_PRINT(ERROR, this->input[i].activity.GetName(), " is not connected.");
+      }
       return false;
     }
     if (!this->input[i].target_rating.IsConnected())
     {
-      FINROC_LOG_PRINT(ERROR, this->input[i].target_rating.GetName(), " is not connected.");
+      if (this->WarnNow())
+      {
+        FINROC_LOG_PRINT(ERROR, this->input[i].target_rating.GetName(), " is not connected.");
+      }
       return false;
     }
 

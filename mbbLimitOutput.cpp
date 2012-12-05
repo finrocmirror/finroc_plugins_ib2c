@@ -2,7 +2,7 @@
 // You received this file as part of Finroc
 // A Framework for intelligent robot control
 //
-// Copyright (C) Finroc GbR (finroc.org)
+// Copyright (C) Robot Makers GmbH (www.robotmakers.de)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,15 +19,15 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    plugins/ib2c/mNumberToActivityConverter.cpp
+/*!\file    plugins/ib2c/mbbLimitOutput.cpp
  *
- * \author  Tobias Föhst
+ * \author  Jochen Hirth
  *
- * \date    2012-09-19
+ * \date    2012-10-30
  *
  */
 //----------------------------------------------------------------------
-#include "plugins/ib2c/mNumberToActivityConverter.h"
+#include "plugins/ib2c/mbbLimitOutput.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -61,79 +61,111 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-core::tStandardCreateModuleAction<mNumberToActivityConverter> mNumberToActivityConverter::cCREATE_ACTION("NumberToActivityConverter");
+core::tStandardCreateModuleAction<mbbLimitOutput> mbbLimitOutput::cCREATE_ACTION("LimitOutput");
 
 //----------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// mNumberToActivityConverter constructor
+// mbbLimitOutput constructor
 //----------------------------------------------------------------------
-mNumberToActivityConverter::mNumberToActivityConverter(core::tFrameworkElement *parent, const util::tString &name) :
-  tModule(parent, name),
-  number_of_values(1)
+mbbLimitOutput::mbbLimitOutput(core::tFrameworkElement *parent, const util::tString &name) :
+  ib2c::tModule(parent, name)
 {}
 
 //----------------------------------------------------------------------
-// mNumberToActivityConverter destructor
+// mbbLimitOutput destructor
 //----------------------------------------------------------------------
-mNumberToActivityConverter::~mNumberToActivityConverter()
+mbbLimitOutput::~mbbLimitOutput()
 {}
 
-void mNumberToActivityConverter::EvaluateStaticParameters()
+//----------------------------------------------------------------------
+// mbbLimitOutput EvaluateStaticParameters
+//----------------------------------------------------------------------
+void mbbLimitOutput::EvaluateStaticParameters()
 {
-  if (this->number_of_values.HasChanged())
+  if (this->number_of_signals.HasChanged())
   {
-    while (this->input_signals.size() > this->number_of_values.Get())
+    FINROC_LOG_PRINTF(DEBUG, "number of signals has changed\n", this->number_of_signals.Get());
+
+    while (this->input_signals.size() > this->number_of_signals.Get())
     {
       this->input_signals.rbegin()->GetWrapped()->ManagedDelete();
       this->input_signals.pop_back();
-      FINROC_LOG_PRINTF(DEBUG, "deleted input port\n");
+      FINROC_LOG_PRINTF(DEBUG, "deleted input port");
     }
-    while (this->output_signals.size() > this->number_of_values.Get())
+    while (this->output_signals.size() > this->number_of_signals.Get())
     {
       this->output_signals.rbegin()->GetWrapped()->ManagedDelete();
       this->output_signals.pop_back();
-      FINROC_LOG_PRINTF(DEBUG, "deleted output port\n");
+      FINROC_LOG_PRINTF(DEBUG, "deleted output port");
     }
 
     int count = this->input_signals.size();
 
-    FINROC_LOG_PRINTF(DEBUG, "creating %i input port(s)\n", this->number_of_values.Get() - count);
+    FINROC_LOG_PRINTF(DEBUG, "creating %i input port(s)", this->number_of_signals.Get() - count);
 
-    while (this->input_signals.size() < this->number_of_values.Get())
+    while (this->input_signals.size() < this->number_of_signals.Get())
     {
-      this->input_signals.push_back(tInput<double>("Input signal " + rrlib::util::sStringUtils::StringOf(count), this));
-      FINROC_LOG_PRINTF(DEBUG, "created input port %i\n", count);
+      this->input_signals.push_back(tInput<>("Input signal" + rrlib::util::sStringUtils::StringOf(count), this));
+      FINROC_LOG_PRINTF(DEBUG, "created input port %i", count);
       ++count;
     }
 
     count = this->output_signals.size();
 
-    FINROC_LOG_PRINTF(DEBUG, "creating %i output port(s)", this->number_of_values.Get() - count);
+    FINROC_LOG_PRINTF(DEBUG, "creating %i output port(s)", this->number_of_signals.Get() - count);
 
-    while (this->output_signals.size() < this->number_of_values.Get())
+    while (this->output_signals.size() < this->number_of_signals.Get())
     {
-      this->output_signals.push_back(tOutput<tActivity>("Output signal " + rrlib::util::sStringUtils::StringOf(count), this));
+      this->output_signals.push_back(tOutput<>("Output signal" + rrlib::util::sStringUtils::StringOf(count), this));
       FINROC_LOG_PRINTF(DEBUG, "created output port %i", count);
       ++count;
     }
+
+    FINROC_LOG_PRINTF(DEBUG, "size of input signals: %i, size of output signals: %i", this->input_signals.size(), this->output_signals.size());
   }
 }
 
+
 //----------------------------------------------------------------------
-// mNumberToActivityConverter Update
+// mbbLimitOutput ProcessTransferFunction
 //----------------------------------------------------------------------
-void mNumberToActivityConverter::Update()
+bool mbbLimitOutput::ProcessTransferFunction(double activation)
 {
-  if (this->InputChanged())
+  if (activation > 0)
   {
-    for (unsigned int i = 0; i < this->number_of_values.Get(); ++i)
+    for (unsigned int i = 0; i < this->number_of_signals.Get(); ++i)
     {
       this->output_signals.at(i).Publish(this->input_signals.at(i).Get());
     }
   }
+  else
+  {
+    for (unsigned int i = 0; i < this->number_of_signals.Get(); ++i)
+    {
+      this->output_signals.at(i).Publish(0);
+    }
+  }
+
+  return true;
+}
+
+//----------------------------------------------------------------------
+// mbbLimitOutput CalculateActivity
+//----------------------------------------------------------------------
+ib2c::tActivity mbbLimitOutput::CalculateActivity(std::vector<ib2c::tActivity> &derived_activity, double activation) const
+{
+  return tActivity(activation);
+}
+
+//----------------------------------------------------------------------
+// mbbLimitOutput CalculateTargetRating
+//----------------------------------------------------------------------
+ib2c::tTargetRating mbbLimitOutput::CalculateTargetRating(double activation) const
+{
+  return tTargetRating(activation);
 }
 
 //----------------------------------------------------------------------
