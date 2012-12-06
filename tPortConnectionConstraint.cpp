@@ -61,7 +61,7 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-const tPortConnectionConstraint cPORT_CONNECTION_CONSTRAINT;
+const tPortConnectionConstraint cPORT_CONNECTION_CONSTRAINT();
 
 //----------------------------------------------------------------------
 // Implementation
