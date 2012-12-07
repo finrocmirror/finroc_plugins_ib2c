@@ -198,7 +198,7 @@ public:
 //----------------------------------------------------------------------
 public:
 
-  tModule(core::tFrameworkElement *parent, const util::tString &name);
+  tModule(core::tFrameworkElement *parent, const util::tString &name, const char *prefix = "");
 
   inline const tInhibitionPort &AddInhibition(const util::tString &name)
   {

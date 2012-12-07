@@ -74,7 +74,7 @@ core::tStandardCreateModuleAction<mbbConditionalBehaviorStimulator> mbbCondition
 // mbbConditionalBehaviorStimulator constructor
 //----------------------------------------------------------------------
 mbbConditionalBehaviorStimulator::mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const util::tString &name) :
-  ib2c::tModule(parent, "(CBS) " + name),
+  ib2c::tModule(parent, name, "(CBS) "),
 
   reset_requests(0),
   all_input_conditions_fulfilled(false)

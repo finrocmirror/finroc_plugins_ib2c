@@ -76,8 +76,8 @@ namespace ib2c
 //----------------------------------------------------------------------
 // tModule constructors
 //----------------------------------------------------------------------
-tModule::tModule(core::tFrameworkElement *parent, const util::tString &name) :
-  tModuleBase(parent, name),
+tModule::tModule(core::tFrameworkElement *parent, const util::tString &name, const char *prefix) :
+  tModuleBase(parent, strncmp(name.c_str(), prefix, strlen(prefix)) ? prefix + name : name),
 
   meta_input(new core::tPortGroup(this, "iB2C Input", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cINPUT_PORT)),
   input(new core::tPortGroup(this, "Input", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cINPUT_PORT)),
