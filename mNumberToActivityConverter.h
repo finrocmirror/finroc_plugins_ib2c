@@ -30,7 +30,7 @@
  * \b mNumberToActivityConverter
  *
  * This module acts as adapter and converts each numeric type into an
- * ib2c::tActivity to allow connecting arbitray numeric ports to the
+ * ib2c::tActivity to allow connecting arbitrary numeric ports to the
  * stimulation and inhibition ports at network edges.
  *
  */
@@ -67,7 +67,7 @@ namespace ib2c
 //! SHORT_DESCRIPTION
 /*!
  * This module acts as adapter and converts each numeric type into an
- * ib2c::tActivity to allow connecting arbitray numeric ports to the
+ * ib2c::tActivity to allow connecting arbitrary numeric ports to the
  * stimulation and inhibition ports at network edges.
  */
 class mNumberToActivityConverter : public core::structure::tModule
@@ -79,11 +79,11 @@ class mNumberToActivityConverter : public core::structure::tModule
 //----------------------------------------------------------------------
 public:
 
-  tStaticParameter<unsigned int> number_of_values;
+  tParameter<unsigned int> number_of_ports;
 
-  std::vector<tInput<double>> input_signals;
+  std::vector<tInput<double>> input;
 
-  std::vector<tOutput<tActivity>> output_signals;
+  std::vector<tOutput<tActivity>> output;
 
 //----------------------------------------------------------------------
 // Public methods and typedefs
@@ -104,7 +104,7 @@ private:
    */
   ~mNumberToActivityConverter();
 
-  virtual void EvaluateStaticParameters();
+  virtual void EvaluateParameters();
 
   virtual void Update();
 

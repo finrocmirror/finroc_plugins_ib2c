@@ -32,11 +32,12 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include <boost/lexical_cast.hpp>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "rrlib/util/sStringUtils.h"
+
 //----------------------------------------------------------------------
 // Debugging
 //----------------------------------------------------------------------
@@ -72,7 +73,7 @@ core::tStandardCreateModuleAction<mNumberToActivityConverter> mNumberToActivityC
 //----------------------------------------------------------------------
 mNumberToActivityConverter::mNumberToActivityConverter(core::tFrameworkElement *parent, const util::tString &name) :
   tModule(parent, name),
-  number_of_values(1)
+  number_of_ports(1)
 {}
 
 //----------------------------------------------------------------------
@@ -81,43 +82,24 @@ mNumberToActivityConverter::mNumberToActivityConverter(core::tFrameworkElement *
 mNumberToActivityConverter::~mNumberToActivityConverter()
 {}
 
-void mNumberToActivityConverter::EvaluateStaticParameters()
+//----------------------------------------------------------------------
+// mNumberToActivityConverter EvaluateParameters
+//----------------------------------------------------------------------
+void mNumberToActivityConverter::EvaluateParameters()
 {
-  if (this->number_of_values.HasChanged())
+  if (this->number_of_ports.HasChanged())
   {
-    while (this->input_signals.size() > this->number_of_values.Get())
+    while (this->input.size() > this->number_of_ports.Get())
     {
-      this->input_signals.rbegin()->GetWrapped()->ManagedDelete();
-      this->input_signals.pop_back();
-      FINROC_LOG_PRINTF(DEBUG, "deleted input port\n");
+      this->input.back().GetWrapped()->ManagedDelete();
+      this->input.pop_back();
+      this->output.back().GetWrapped()->ManagedDelete();
+      this->output.pop_back();
     }
-    while (this->output_signals.size() > this->number_of_values.Get())
+    for (size_t i = this->input.size(); i < this->number_of_ports.Get(); ++i)
     {
-      this->output_signals.rbegin()->GetWrapped()->ManagedDelete();
-      this->output_signals.pop_back();
-      FINROC_LOG_PRINTF(DEBUG, "deleted output port\n");
-    }
-
-    int count = this->input_signals.size();
-
-    FINROC_LOG_PRINTF(DEBUG, "creating %i input port(s)\n", this->number_of_values.Get() - count);
-
-    while (this->input_signals.size() < this->number_of_values.Get())
-    {
-      this->input_signals.push_back(tInput<double>("Input signal " + rrlib::util::sStringUtils::StringOf(count), this));
-      FINROC_LOG_PRINTF(DEBUG, "created input port %i\n", count);
-      ++count;
-    }
-
-    count = this->output_signals.size();
-
-    FINROC_LOG_PRINTF(DEBUG, "creating %i output port(s)", this->number_of_values.Get() - count);
-
-    while (this->output_signals.size() < this->number_of_values.Get())
-    {
-      this->output_signals.push_back(tOutput<tActivity>("Output signal " + rrlib::util::sStringUtils::StringOf(count), this));
-      FINROC_LOG_PRINTF(DEBUG, "created output port %i", count);
-      ++count;
+      this->input.push_back(tInput<double>("Input Signal " + boost::lexical_cast<std::string>(i + 1), this));
+      this->output.push_back(tOutput<tActivity>("Output Signal " + boost::lexical_cast<std::string>(i + 1), this));
     }
   }
 }
@@ -129,9 +111,12 @@ void mNumberToActivityConverter::Update()
 {
   if (this->InputChanged())
   {
-    for (unsigned int i = 0; i < this->number_of_values.Get(); ++i)
+    for (size_t i = 0; i < this->input.size(); ++i)
     {
-      this->output_signals.at(i).Publish(this->input_signals.at(i).Get());
+      if (this->input[i].HasChanged())
+      {
+        this->output[i].Publish(this->input[i].Get());
+      }
     }
   }
 }
