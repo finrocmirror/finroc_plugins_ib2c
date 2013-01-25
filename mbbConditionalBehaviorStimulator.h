@@ -78,8 +78,8 @@ class mbbConditionalBehaviorStimulator : public ib2c::tModule
 //----------------------------------------------------------------------
 public:
 
-  tParameter<unsigned int> number_of_input_conditions;
-  tParameter<unsigned int> number_of_feedback_conditions;
+  tStaticParameter<unsigned int> number_of_input_conditions;
+  tStaticParameter<unsigned int> number_of_feedback_conditions;
 
   tInput<unsigned int> reset;
 
@@ -109,7 +109,7 @@ public:
 
   inline void RegisterFeedbackBehavior(tModule &feedback_behavior, tConditionType type, tConditionRelation relation, double threshold, const util::tString &name = "")
   {
-    feedback_behavior.activity.ConnectTo(this->AddFeedbackCondition(type, relation, threshold, name != "" ? name : feedback_behavior.GetName()));
+    feedback_behavior.target_rating.ConnectTo(this->AddFeedbackCondition(type, relation, threshold, name != "" ? name : feedback_behavior.GetName()));
   }
 
 //----------------------------------------------------------------------
@@ -131,7 +131,7 @@ private:
 
   void AdjustConditionList(std::vector<tCondition> &condition_list, size_t size, const std::string &name_prefix);
 
-  virtual void EvaluateParameters();
+  virtual void EvaluateStaticParameters();
 
   virtual bool ProcessTransferFunction(double activation);
 

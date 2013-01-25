@@ -73,6 +73,8 @@ mbb%%NAME%%<>::~mbb%%NAME%%()
 template <>
 void mbb%%NAME%%<>::EvaluateStaticParameters()
 {
+  tModule::EvaluateStaticParameters();
+
   if (this->static_parameter_1.HasChanged())
   {
     As this static parameter has changed, do something with its value!

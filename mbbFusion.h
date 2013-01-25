@@ -119,7 +119,7 @@ class mbbFusion : public ib2c::tModule
 //----------------------------------------------------------------------
 public:
 
-  tParameter<unsigned int> number_of_input_modules;
+  tStaticParameter<unsigned int> number_of_input_modules;
 
   tParameter<tFusionMethod> fusion_method;
 
@@ -165,7 +165,7 @@ private:
 
   void AdjustInputChannels();
 
-  virtual void EvaluateParameters();
+  virtual void EvaluateStaticParameters();
 
   virtual bool ProcessTransferFunction(double activation);
 

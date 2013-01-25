@@ -171,11 +171,11 @@ void mbbConditionalBehaviorStimulator::AdjustConditionList(std::vector<tConditio
 }
 
 //----------------------------------------------------------------------
-// mbbConditionalBehaviorStimulator EvaluateParameters
+// mbbConditionalBehaviorStimulator EvaluateStaticParameters
 //----------------------------------------------------------------------
-void mbbConditionalBehaviorStimulator::EvaluateParameters()
+void mbbConditionalBehaviorStimulator::EvaluateStaticParameters()
 {
-  tModule::EvaluateParameters();
+  tModule::EvaluateStaticParameters();
 
   if (this->number_of_input_conditions.HasChanged())
   {

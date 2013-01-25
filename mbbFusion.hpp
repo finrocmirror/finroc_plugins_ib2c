@@ -142,10 +142,10 @@ void mbbFusion<TSignalTypes...>::AdjustInputChannels()
 }
 
 //----------------------------------------------------------------------
-// mbbFusion EvaluateParameters
+// mbbFusion EvaluateStaticParameters
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
-void mbbFusion<TSignalTypes...>::EvaluateParameters()
+void mbbFusion<TSignalTypes...>::EvaluateStaticParameters()
 {
   tModule::EvaluateParameters();
 

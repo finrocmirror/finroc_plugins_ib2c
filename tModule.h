@@ -179,10 +179,10 @@ public:
     }
   };
 
-  tParameter<tStimulationMode> stimulation_mode;
-  tParameter<size_t> number_of_inhibition_ports;
+  tStaticParameter<size_t> number_of_inhibition_ports;
 
-  tStaticParameter <size_t> warn_any_n_cycles;
+  tParameter <size_t> warn_any_n_cycles;
+  tParameter<tStimulationMode> stimulation_mode;
 
   tStimulationPort stimulation;
   std::vector<tInhibitionPort> inhibition;
@@ -204,7 +204,7 @@ public:
   {
     this->inhibition.push_back(tInhibitionPort("(I) " + name, this));
     this->inhibition.back().Init();
-    this->number_of_inhibition_ports.Publish(this->inhibition.size());
+    this->number_of_inhibition_ports.Set(this->inhibition.size());
     return this->inhibition.back();
   }
 
@@ -232,6 +232,8 @@ public:
 // Protected methods
 //----------------------------------------------------------------------
 protected:
+
+  virtual void EvaluateStaticParameters();
 
   virtual void EvaluateParameters();
 
