@@ -68,6 +68,7 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
+const size_t cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS = 250;
 
 //----------------------------------------------------------------------
 // Implementation
@@ -86,7 +87,7 @@ tModule::tModule(core::tFrameworkElement *parent, const util::tString &name, con
 
   number_of_inhibition_ports("Number Of Inhibition Ports", this),     // TODO: use port_name_generator for this block
 
-  warn_any_n_cycles("Warn Any N Cycles", this, 250),     // TODO: use port_name_generator for this block
+  number_of_cycles_with_suppressed_warnings("Number Of Cycles With Suppressed Warnings", this, cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS),     // TODO: use port_name_generator for this block
   stimulation_mode("Stimulation Mode", this),
 
   stimulation("Stimulation", this),               // TODO: use port_name_generator for this block
@@ -94,10 +95,9 @@ tModule::tModule(core::tFrameworkElement *parent, const util::tString &name, con
   target_rating("Target Rating", this),
   activation("Activation", this),
 
-  already_warned_this_cycle(false),
-  warn_cycles(0),
   update_task(this),
   input_changed(true),
+  cycles_since_last_warning(-1),
   last_activation(0),
   last_activity(0),
   last_target_rating(0)
@@ -294,8 +294,8 @@ tModule::UpdateTask::UpdateTask(tModule *module)
 //----------------------------------------------------------------------
 void tModule::UpdateTask::ExecuteTask()
 {
-  // reset warn flag; is set on call to WarnNow()
-  this->module->SetWarningFlag(false);
+  this->module->cycles_since_last_warning++;
+
   this->module->CheckParameters();
   this->module->input_changed = this->module->ProcessChangedFlags(*this->module->input);
 

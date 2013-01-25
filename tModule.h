@@ -181,7 +181,7 @@ public:
 
   tStaticParameter<size_t> number_of_inhibition_ports;
 
-  tParameter <size_t> warn_any_n_cycles;
+  tParameter <size_t> number_of_cycles_with_suppressed_warnings;
   tParameter<tStimulationMode> stimulation_mode;
 
   tStimulationPort stimulation;
@@ -255,26 +255,13 @@ protected:
     return input_changed;
   }
 
-  void SetWarningFlag(bool value)
+  bool WarnNow() const
   {
-    this->already_warned_this_cycle = value;
-  }
-
-  bool WarnNow()
-  {
-    if (!this->already_warned_this_cycle)
+    if (this->cycles_since_last_warning > this->number_of_cycles_with_suppressed_warnings.Get())
     {
-      this->already_warned_this_cycle = true;
-      ++this->warn_cycles;
+      const_cast<tModule *>(this)->cycles_since_last_warning = 0;
     }
-
-    bool warn_now = ((this->warn_cycles % this->warn_any_n_cycles.Get()) == 0);
-    if (warn_now)
-    {
-      FINROC_LOG_PRINT(WARNING, "Warn cycle: ", this->warn_cycles);
-    }
-
-    return warn_now;
+    return this->cycles_since_last_warning == 0;
   }
 
 //----------------------------------------------------------------------
@@ -294,14 +281,11 @@ private:
     }
   };
 
-  bool already_warned_this_cycle;
-
-  int warn_cycles;
-
   UpdateTask update_task;
 
   bool input_changed;
 
+  unsigned int cycles_since_last_warning;
   double last_activation;
   tActivity last_activity;
   tTargetRating last_target_rating;
