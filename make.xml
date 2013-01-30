@@ -5,7 +5,7 @@
   <finrocplugin name="ib2c">
     <sources>
       mbbConditionalBehaviorStimulator.cpp
-      mbbFusion.h
+      mbbFusion.cpp
       mNumberToActivityConverter.cpp
       tCondition.h
       tMetaSignal.h

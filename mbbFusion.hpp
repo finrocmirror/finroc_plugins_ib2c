@@ -19,7 +19,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    mbbFusion.cpp
+/*!\file    mbbFusion.hpp
  *
  * \author  Tobias Föhst
  *
@@ -60,9 +60,6 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-template <typename ... TSignalTypes>
-finroc::core::tStandardCreateModuleAction<mbbFusion<TSignalTypes...>> mbbFusion<TSignalTypes...>::cCREATE_ACTION("Fusion");
-
 const unsigned int cMAX_NUMBER_OF_INPUT_MODULES = 1000;
 
 //----------------------------------------------------------------------

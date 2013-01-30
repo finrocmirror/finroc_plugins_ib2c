@@ -84,8 +84,6 @@ enum class tFusionMethod
 template <typename ... TSignalTypes>
 class mbbFusion : public ib2c::tModule
 {
-  static finroc::core::tStandardCreateModuleAction<mbbFusion> cCREATE_ACTION;
-
   typedef rrlib::util::tTypeList<TSignalTypes...> tSignalTypes;
 
   typedef tMetaInput<tActivity> tInputActivityPort;
