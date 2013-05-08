@@ -267,8 +267,7 @@ void tModule::CheckGoalStateActivity(tActivity activity, tTargetRating target_ra
         break;
       }
     }
-
-    if (activity != this->last_activity && !activity_transfer_inputs_changed)
+    if (!rrlib::math::IsEqual(activity, this->last_activity) && !activity_transfer_inputs_changed)
     {
       std::stringstream message;
       message << "Goal state activity: Target rating = 0 but Activity not constant!";
