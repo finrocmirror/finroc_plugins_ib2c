@@ -61,7 +61,7 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-core::tStandardCreateModuleAction<mbbLimitOutput> mbbLimitOutput::cCREATE_ACTION("LimitOutput");
+runtime_construction::tStandardCreateModuleAction<mbbLimitOutput> mbbLimitOutput::cCREATE_ACTION("LimitOutput");
 
 //----------------------------------------------------------------------
 // Implementation
@@ -70,7 +70,7 @@ core::tStandardCreateModuleAction<mbbLimitOutput> mbbLimitOutput::cCREATE_ACTION
 //----------------------------------------------------------------------
 // mbbLimitOutput constructor
 //----------------------------------------------------------------------
-mbbLimitOutput::mbbLimitOutput(core::tFrameworkElement *parent, const util::tString &name) :
+mbbLimitOutput::mbbLimitOutput(core::tFrameworkElement *parent, const std::string &name) :
   ib2c::tModule(parent, name)
 {}
 
@@ -83,7 +83,7 @@ mbbLimitOutput::~mbbLimitOutput()
 //----------------------------------------------------------------------
 // mbbLimitOutput EvaluateStaticParameters
 //----------------------------------------------------------------------
-void mbbLimitOutput::EvaluateStaticParameters()
+void mbbLimitOutput::OnStaticParameterChange()
 {
   if (this->number_of_signals.HasChanged())
   {

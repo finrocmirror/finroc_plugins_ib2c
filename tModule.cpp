@@ -35,7 +35,7 @@
 //----------------------------------------------------------------------
 #include <boost/lexical_cast.hpp>
 
-#include "core/thread/tPeriodicFrameworkElementTask.h"
+#include "plugins/scheduling/tPeriodicFrameworkElementTask.h"
 #include "core/tFrameworkElementTags.h"
 
 #include "rrlib/math/utilities.h"
@@ -77,13 +77,13 @@ const size_t cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS = 250;
 //----------------------------------------------------------------------
 // tModule constructors
 //----------------------------------------------------------------------
-tModule::tModule(core::tFrameworkElement *parent, const util::tString &name, const char *prefix) :
+tModule::tModule(core::tFrameworkElement *parent, const std::string &name, const char *prefix, bool shared_output_ports, bool share_input_ports) :
   tModuleBase(parent, strncmp(name.c_str(), prefix, strlen(prefix)) ? prefix + name : name),
 
-  meta_input(new core::tPortGroup(this, "iB2C Input", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cINPUT_PORT)),
-  input(new core::tPortGroup(this, "Input", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cINPUT_PORT)),
-  meta_output(new core::tPortGroup(this, "iB2C Output", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cOUTPUT_PORT)),
-  output(new core::tPortGroup(this, "Output", core::tEdgeAggregator::cIS_INTERFACE, core::tPortFlags::cOUTPUT_PORT)),
+  meta_input(new core::tPortGroup(this, "iB2C Input", tFlag::INTERFACE, share_input_ports ? tFlags(tFlag::SHARED) : tFlags())),
+  input(new core::tPortGroup(this, "Input", tFlag::INTERFACE, share_input_ports ? tFlags(tFlag::SHARED) : tFlags())),
+  meta_output(new core::tPortGroup(this, "iB2C Output", tFlag::INTERFACE, shared_output_ports ? tFlags(tFlag::SHARED) : tFlags())),
+  output(new core::tPortGroup(this, "Output", tFlag::INTERFACE, shared_output_ports ? tFlags(tFlag::SHARED) : tFlags())),
 
   number_of_inhibition_ports("Number Of Inhibition Ports", this),     // TODO: use port_name_generator for this block
 
@@ -104,14 +104,20 @@ tModule::tModule(core::tFrameworkElement *parent, const util::tString &name, con
 {
   std::vector<core::tEdgeAggregator *> input_ports = { this->meta_input, this->input };
   std::vector<core::tEdgeAggregator *> output_ports = { this->meta_output, this->output };
-  this->AddAnnotation(new core::tPeriodicFrameworkElementTask(input_ports, output_ports, this->update_task));
+  this->AddAnnotation(*new scheduling::tPeriodicFrameworkElementTask(input_ports, output_ports, this->update_task));
   core::tFrameworkElementTags::AddTag(*this, "ib2c_module");
 }
 
 //----------------------------------------------------------------------
+// tModule destructor
+//----------------------------------------------------------------------
+tModule::~tModule()
+{}
+
+//----------------------------------------------------------------------
 // tModule EvaluateStaticParameters
 //----------------------------------------------------------------------
-void tModule::EvaluateStaticParameters()
+void tModule::OnStaticParameterChange()
 {
   if (this->number_of_inhibition_ports.HasChanged())
   {
@@ -130,17 +136,17 @@ void tModule::EvaluateStaticParameters()
 //----------------------------------------------------------------------
 // tModule EvaluateParameters
 //----------------------------------------------------------------------
-void tModule::EvaluateParameters()
+void tModule::OnParameterChange()
 {
   if (this->stimulation_mode.HasChanged())
   {
     if (this->stimulation_mode.Get() == tStimulationMode::ENABLED)
     {
-      this->stimulation.Publish(1);
+      this->stimulation.Set(1);
     }
     if (this->stimulation_mode.Get() == tStimulationMode::DISABLED)
     {
-      this->stimulation.Publish(0);
+      this->stimulation.Set(0);
     }
   }
 }

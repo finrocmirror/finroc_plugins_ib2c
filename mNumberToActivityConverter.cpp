@@ -62,7 +62,7 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-core::tStandardCreateModuleAction<mNumberToActivityConverter> mNumberToActivityConverter::cCREATE_ACTION("NumberToActivityConverter");
+runtime_construction::tStandardCreateModuleAction<mNumberToActivityConverter> mNumberToActivityConverter::cCREATE_ACTION("NumberToActivityConverter");
 
 //----------------------------------------------------------------------
 // Implementation
@@ -71,7 +71,7 @@ core::tStandardCreateModuleAction<mNumberToActivityConverter> mNumberToActivityC
 //----------------------------------------------------------------------
 // mNumberToActivityConverter constructor
 //----------------------------------------------------------------------
-mNumberToActivityConverter::mNumberToActivityConverter(core::tFrameworkElement *parent, const util::tString &name) :
+mNumberToActivityConverter::mNumberToActivityConverter(core::tFrameworkElement *parent, const std::string &name) :
   tModule(parent, name),
   number_of_ports(1)
 {}
@@ -85,7 +85,7 @@ mNumberToActivityConverter::~mNumberToActivityConverter()
 //----------------------------------------------------------------------
 // mNumberToActivityConverter EvaluateParameters
 //----------------------------------------------------------------------
-void mNumberToActivityConverter::EvaluateParameters()
+void mNumberToActivityConverter::OnParameterChange()
 {
   if (this->number_of_ports.HasChanged())
   {

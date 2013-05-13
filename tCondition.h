@@ -92,7 +92,7 @@ class tCondition
 //----------------------------------------------------------------------
 public:
 
-  tCondition(mbbConditionalBehaviorStimulator *parent, const util::tString &name,
+  tCondition(mbbConditionalBehaviorStimulator *parent, const std::string &name,
              tConditionType type = tConditionType::PERMANENT, tConditionRelation relation = tConditionRelation::GREATER_THAN_THRESHOLD, double threshold = 0) :
     type(name + " Type", parent, type),
     relation(name + " Relation", parent, relation),

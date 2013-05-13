@@ -68,7 +68,7 @@ namespace ib2c
  */
 class mbbTestModule : public ib2c::tModule
 {
-  static core::tStandardCreateModuleAction<mbbTestModule> cCREATE_ACTION;
+  static runtime_construction::tStandardCreateModuleAction<mbbTestModule> cCREATE_ACTION;
 
 //----------------------------------------------------------------------
 // Ports (These are the only variables that may be declared public)
@@ -88,7 +88,7 @@ public:
 //----------------------------------------------------------------------
 public:
 
-  mbbTestModule(core::tFrameworkElement *parent, const util::tString &name = "TestModule");
+  mbbTestModule(core::tFrameworkElement *parent, const std::string &name = "TestModule");
 
 //----------------------------------------------------------------------
 // Private fields and methods

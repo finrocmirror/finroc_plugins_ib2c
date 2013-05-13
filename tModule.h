@@ -35,7 +35,7 @@
 #ifndef __plugins__ib2c__tModule_h__
 #define __plugins__ib2c__tModule_h__
 
-#include "core/structure/tModuleBase.h"
+#include "plugins/structure/tModuleBase.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -76,7 +76,7 @@ enum class tStimulationMode
 /*!
  *
  */
-class tModule : public core::structure::tModuleBase
+class tModule : public structure::tModuleBase
 {
 
   core::tPortGroup *meta_input;
@@ -89,47 +89,47 @@ class tModule : public core::structure::tModuleBase
 //----------------------------------------------------------------------
 public:
 
+  inline core::tPortGroup &GetMetaInputs()
+  {
+    return *this->meta_input;
+  }
+
+  inline core::tPortGroup &GetInputs()
+  {
+    return *this->input;
+  }
+
+  inline core::tPortGroup &GetMetaOutputs()
+  {
+    return *this->meta_output;
+  }
+
+  inline core::tPortGroup &GetOutputs()
+  {
+    return *this->output;
+  }
+
   template <typename TSignal>
-  class tMetaSignalPort : public core::structure::tConveniencePort<TSignal, tModule, core::tPort<TSignal>>  // FIXME: can be replaced by template alias with gcc 4.7
+  class tMetaInput : public structure::tConveniencePort<data_ports::tInputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaInputs>  // FIXME: can be replaced by template alias with gcc 4.7
   {
   public:
     template<typename ... TPortParameters>
-    explicit tMetaSignalPort(const TPortParameters &... port_parameters) :
-      core::structure::tConveniencePort<TSignal, tModule, core::tPort<TSignal>>(port_parameters...)
-    {}
-  };
-
-  template <typename TSignal>
-  struct tMetaInput : public tMetaSignalPort<TSignal>
-  {
-    template<typename ... TPortParameters>
     explicit tMetaInput(const TPortParameters &... port_parameters) :
-      tMetaSignalPort<TSignal>(GetContainer, port_parameters..., core::tBounds<TSignal>(0, 1, false))
+      structure::tConveniencePort<data_ports::tInputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaInputs>(port_parameters..., data_ports::tBounds<TSignal>(0, 1, false))
     {}
-
-  private:
-    static tFrameworkElement *GetContainer(tModule *module)
-    {
-      return module->meta_input;
-    }
   };
 
   typedef tMetaInput<tStimulation> tStimulationPort;
   typedef tMetaInput<tInhibition> tInhibitionPort;
 
   template <typename TSignal>
-  struct tMetaOutput : public tMetaSignalPort<TSignal>
+  class tMetaOutput : public structure::tConveniencePort<data_ports::tOutputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaOutputs>  // FIXME: can be replaced by template alias with gcc 4.7
   {
+  public:
     template<typename ... TPortParameters>
     explicit tMetaOutput(const TPortParameters &... port_parameters) :
-      tMetaSignalPort<TSignal>(GetContainer, port_parameters..., core::tBounds<TSignal>(0, 1, false))
+      structure::tConveniencePort<data_ports::tOutputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaOutputs>(port_parameters..., data_ports::tBounds<TSignal>(0, 1, false))
     {}
-
-  private:
-    static tFrameworkElement *GetContainer(tModule *module)
-    {
-      return module->meta_output;
-    }
   };
 
   typedef tMetaOutput<tActivity> tActivityPort;
@@ -138,22 +138,17 @@ public:
   typedef tMetaOutput<double> tActivationPort;
 
   template <typename T = double>
-  class tInput : public core::structure::tConveniencePort<T, tModule, core::tPort<T>>
+  class tInput : public structure::tConveniencePort<data_ports::tInputPort<T>, tModule, core::tPortGroup, &tModule::GetInputs>
   {
   public:
     template<typename ... TPortParameters>
     explicit tInput(const TPortParameters &... port_parameters) :
-      core::structure::tConveniencePort<T, tModule, core::tPort<T>>(GetContainer, port_parameters...)
+      structure::tConveniencePort<data_ports::tInputPort<T>, tModule, core::tPortGroup, &tModule::GetInputs>(port_parameters...)
     {
       this->RegisterActivityTransferInput(this);
     }
 
   private:
-    static tFrameworkElement *GetContainer(tModule *module)
-    {
-      return module->input;
-    }
-
     void RegisterActivityTransferInput(...)
     {};
     void RegisterActivityTransferInput(tInput<tActivity> *port)
@@ -164,19 +159,13 @@ public:
   };
 
   template <typename T = double>
-  class tOutput : public core::structure::tConveniencePort<T, tModule, core::tPort<T>>
+  class tOutput : public structure::tConveniencePort<data_ports::tOutputPort<T>, tModule, core::tPortGroup, &tModule::GetOutputs>
   {
   public:
     template<typename ... TPortParameters>
     explicit tOutput(const TPortParameters &... port_parameters) :
-      core::structure::tConveniencePort<T, tModule, core::tPort<T>>(GetContainer, port_parameters...)
+      structure::tConveniencePort<data_ports::tOutputPort<T>, tModule, core::tPortGroup, &tModule::GetOutputs>(port_parameters...)
     {}
-
-  private:
-    static tFrameworkElement *GetContainer(tModule *module)
-    {
-      return module->output;
-    }
   };
 
   tStaticParameter<size_t> number_of_inhibition_ports;
@@ -198,9 +187,9 @@ public:
 //----------------------------------------------------------------------
 public:
 
-  tModule(core::tFrameworkElement *parent, const util::tString &name, const char *prefix = "");
+  tModule(core::tFrameworkElement *parent, const std::string &name, const char *prefix = "", bool shared_output_ports = false, bool share_input_ports = false);
 
-  inline const tInhibitionPort &AddInhibition(const util::tString &name)
+  inline const tInhibitionPort &AddInhibition(const std::string &name)
   {
     this->inhibition.push_back(tInhibitionPort("(I) " + name, this));
     this->inhibition.back().Init();
@@ -208,36 +197,18 @@ public:
     return this->inhibition.back();
   }
 
-  inline finroc::core::tPortGroup &GetMetaInputs()
-  {
-    return *this->meta_input;
-  }
-
-  inline finroc::core::tPortGroup &GetInputs()
-  {
-    return *this->input;
-  }
-
-  inline finroc::core::tPortGroup &GetMetaOutputs()
-  {
-    return *this->meta_output;
-  }
-
-  inline finroc::core::tPortGroup &GetOutputs()
-  {
-    return *this->output;
-  }
-
 //----------------------------------------------------------------------
 // Protected methods
 //----------------------------------------------------------------------
 protected:
 
-  virtual void EvaluateStaticParameters();
+  virtual ~tModule();
 
-  virtual void EvaluateParameters();
+  virtual void OnStaticParameterChange();
 
-  inline const tActivityPort &AddDerivedActivity(const util::tString &name)
+  virtual void OnParameterChange();
+
+  inline const tActivityPort &AddDerivedActivity(const std::string &name)
   {
     this->derived_activity.push_back(tActivityPort(this, "(A) " + name));
     this->derived_activity.back().Init();

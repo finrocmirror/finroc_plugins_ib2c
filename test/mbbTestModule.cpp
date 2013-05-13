@@ -62,7 +62,7 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-core::tStandardCreateModuleAction<mbbTestModule> mbbTestModule::cCREATE_ACTION("TestModule");
+runtime_construction::tStandardCreateModuleAction<mbbTestModule> mbbTestModule::cCREATE_ACTION("TestModule");
 
 //----------------------------------------------------------------------
 // Implementation
@@ -71,7 +71,7 @@ core::tStandardCreateModuleAction<mbbTestModule> mbbTestModule::cCREATE_ACTION("
 //----------------------------------------------------------------------
 // mbbTestModule constructor
 //----------------------------------------------------------------------
-mbbTestModule::mbbTestModule(core::tFrameworkElement *parent, const util::tString &name) :
+mbbTestModule::mbbTestModule(core::tFrameworkElement *parent, const std::string &name) :
   ib2c::tModule(parent, name)
 {}
 

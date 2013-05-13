@@ -130,7 +130,7 @@ public:
 //----------------------------------------------------------------------
 public:
 
-  mbbFusion(core::tFrameworkElement *parent, const util::tString &name = "Fusion", unsigned int number_of_input_modules = 1);
+  mbbFusion(core::tFrameworkElement *parent, const std::string &name = "Fusion", unsigned int number_of_input_modules = 1);
 
   tInputActivityPort &InputActivity(size_t channel_index);
 
@@ -163,7 +163,7 @@ private:
 
   void AdjustInputChannels();
 
-  virtual void EvaluateStaticParameters();
+  virtual void OnStaticParameterChange();
 
   virtual bool ProcessTransferFunction(double activation);
 

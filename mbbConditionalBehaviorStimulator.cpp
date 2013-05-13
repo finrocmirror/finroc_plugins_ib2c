@@ -64,7 +64,7 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-core::tStandardCreateModuleAction<mbbConditionalBehaviorStimulator> mbbConditionalBehaviorStimulator::cCREATE_ACTION("ConditionalBehaviorStimulator");
+runtime_construction::tStandardCreateModuleAction<mbbConditionalBehaviorStimulator> mbbConditionalBehaviorStimulator::cCREATE_ACTION("ConditionalBehaviorStimulator");
 
 //----------------------------------------------------------------------
 // Implementation
@@ -73,7 +73,7 @@ core::tStandardCreateModuleAction<mbbConditionalBehaviorStimulator> mbbCondition
 //----------------------------------------------------------------------
 // mbbConditionalBehaviorStimulator constructor
 //----------------------------------------------------------------------
-mbbConditionalBehaviorStimulator::mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const util::tString &name) :
+mbbConditionalBehaviorStimulator::mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const std::string &name) :
   ib2c::tModule(parent, name, "(CBS) "),
 
   reset_requests(0),
@@ -173,9 +173,9 @@ void mbbConditionalBehaviorStimulator::AdjustConditionList(std::vector<tConditio
 //----------------------------------------------------------------------
 // mbbConditionalBehaviorStimulator EvaluateStaticParameters
 //----------------------------------------------------------------------
-void mbbConditionalBehaviorStimulator::EvaluateStaticParameters()
+void mbbConditionalBehaviorStimulator::OnStaticParameterChange()
 {
-  tModule::EvaluateStaticParameters();
+  tModule::OnStaticParameterChange();
 
   if (this->number_of_input_conditions.HasChanged())
   {

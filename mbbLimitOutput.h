@@ -67,7 +67,7 @@ namespace ib2c
  */
 class mbbLimitOutput : public ib2c::tModule
 {
-  static core::tStandardCreateModuleAction<mbbLimitOutput> cCREATE_ACTION;
+  static runtime_construction::tStandardCreateModuleAction<mbbLimitOutput> cCREATE_ACTION;
 
 //----------------------------------------------------------------------
 // Ports (These are the only variables that may be declared public)
@@ -84,7 +84,7 @@ public:
 //----------------------------------------------------------------------
 public:
 
-  mbbLimitOutput(core::tFrameworkElement *parent, const util::tString &name = "LimitOutput");
+  mbbLimitOutput(core::tFrameworkElement *parent, const std::string &name = "LimitOutput");
 
 //----------------------------------------------------------------------
 // Private fields and methods
@@ -97,7 +97,7 @@ private:
    */
   ~mbbLimitOutput();
 
-  virtual void EvaluateStaticParameters();
+  virtual void OnStaticParameterChange();
 
   virtual bool ProcessTransferFunction(double activation);
 

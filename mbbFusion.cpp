@@ -58,9 +58,9 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-static finroc::core::tStandardCreateModuleAction<mbbFusion<>> cCREATE_ACTION_EMPTY("Fusion<>");
+static runtime_construction::tStandardCreateModuleAction<mbbFusion<>> cCREATE_ACTION_EMPTY("Fusion<>");
 
-static finroc::core::tStandardCreateModuleAction<mbbFusion<double>> cCREATE_ACTION_DOUBLE("Fusion<double>");
+//static runtime_construction::tStandardCreateModuleAction<mbbFusion<double>> cCREATE_ACTION_DOUBLE("Fusion<double>");
 
 //----------------------------------------------------------------------
 // Implementation

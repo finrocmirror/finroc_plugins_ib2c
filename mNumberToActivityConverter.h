@@ -38,7 +38,7 @@
 #ifndef __plugins__ib2c__mNumberToActivityConverter_h__
 #define __plugins__ib2c__mNumberToActivityConverter_h__
 
-#include "core/structure/tModule.h"
+#include "plugins/structure/tModule.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -70,9 +70,9 @@ namespace ib2c
  * ib2c::tActivity to allow connecting arbitrary numeric ports to the
  * stimulation and inhibition ports at network edges.
  */
-class mNumberToActivityConverter : public core::structure::tModule
+class mNumberToActivityConverter : public structure::tModule
 {
-  static core::tStandardCreateModuleAction<mNumberToActivityConverter> cCREATE_ACTION;
+  static runtime_construction::tStandardCreateModuleAction<mNumberToActivityConverter> cCREATE_ACTION;
 
 //----------------------------------------------------------------------
 // Ports (These are the only variables that may be declared public)
@@ -90,7 +90,7 @@ public:
 //----------------------------------------------------------------------
 public:
 
-  mNumberToActivityConverter(core::tFrameworkElement *parent, const util::tString &name = "NumberToActivityConverter");
+  mNumberToActivityConverter(core::tFrameworkElement *parent, const std::string &name = "NumberToActivityConverter");
 
 //----------------------------------------------------------------------
 // Private fields and methods
@@ -104,7 +104,7 @@ private:
    */
   ~mNumberToActivityConverter();
 
-  virtual void EvaluateParameters();
+  virtual void OnParameterChange();
 
   virtual void Update();
 

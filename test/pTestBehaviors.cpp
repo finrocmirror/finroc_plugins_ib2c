@@ -28,7 +28,7 @@
  *
  */
 //----------------------------------------------------------------------
-#include "core/default_main_wrapper.h"
+#include "plugins/structure/default_main_wrapper.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -74,20 +74,25 @@ void StartUp()
 //----------------------------------------------------------------------
 // InitMainGroup
 //----------------------------------------------------------------------
-void InitMainGroup(finroc::core::tThreadContainer *main_thread, std::vector<char *> remaining_args)
+void InitMainGroup(finroc::structure::tThreadContainer *main_thread, std::vector<char*> remaining_args)
 {
   finroc::ib2c::mbbTestModule *module_1 = new finroc::ib2c::mbbTestModule(main_thread, "Module 1");
   finroc::ib2c::mbbTestModule *module_2 = new finroc::ib2c::mbbTestModule(main_thread, "Module 2");
-  finroc::ib2c::mbbTestModule *module_3 = new finroc::ib2c::mbbTestModule(main_thread, "Module 3");
+//  finroc::ib2c::mbbTestModule *module_3 = new finroc::ib2c::mbbTestModule(main_thread, "Module 3");
 
-  new finroc::ib2c::mNumberToActivityConverter(main_thread);
+//  new finroc::ib2c::mNumberToActivityConverter(main_thread);
 
-  finroc::ib2c::mbbFusion<int, double, rrlib::math::tAngleRad> *fusion = new finroc::ib2c::mbbFusion<int, double, rrlib::math::tAngleRad>(main_thread, "Fusion");
+//  finroc::ib2c::mbbFusion<int, double, rrlib::math::tAngleRad> *fusion = new finroc::ib2c::mbbFusion<int, double, rrlib::math::tAngleRad>(main_thread, "Fusion");
 
-  finroc::ib2c::mbbFusion<finroc::ib2c::tActivity> *fusion2 = new finroc::ib2c::mbbFusion<finroc::ib2c::tActivity>(main_thread, "Fusion2");
+//  finroc::ib2c::mbbFusion<finroc::ib2c::tActivity> *fusion2 = new finroc::ib2c::mbbFusion<finroc::ib2c::tActivity>(main_thread, "Fusion2");
+
+  finroc::ib2c::mbbFusion<> *fusion = new finroc::ib2c::mbbFusion<>(main_thread, "Fusion", 2);
 
   module_1->activity.ConnectTo(fusion->InputActivity(0));
-//  module_1->target_rating.ConnectTo(fusion->InputTargetRating(0));
+  module_1->target_rating.ConnectTo(fusion->InputTargetRating(0));
+  module_2->activity.ConnectTo(fusion->InputActivity(1));
+  module_2->target_rating.ConnectTo(fusion->InputTargetRating(1));
+
 //  module_1->output1.ConnectTo(fusion->InputPort(0, 0));
 //  fusion->OutputPort(1).ConnectTo(module_2->output2);
 

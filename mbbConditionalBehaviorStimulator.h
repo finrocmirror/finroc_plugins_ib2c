@@ -71,7 +71,7 @@ namespace ib2c
  */
 class mbbConditionalBehaviorStimulator : public ib2c::tModule
 {
-  static core::tStandardCreateModuleAction<mbbConditionalBehaviorStimulator> cCREATE_ACTION;
+  static runtime_construction::tStandardCreateModuleAction<mbbConditionalBehaviorStimulator> cCREATE_ACTION;
 
 //----------------------------------------------------------------------
 // Ports (These are the only variables that may be declared public)
@@ -88,26 +88,26 @@ public:
 //----------------------------------------------------------------------
 public:
 
-  mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const util::tString &name = "ConditionalBehaviorStimulator");
+  mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const std::string &name = "ConditionalBehaviorStimulator");
 
-  inline const tInput<double> &AddInputCondition(tConditionType type, tConditionRelation relation, double threshold, const util::tString &name = "")
+  inline const tInput<double> &AddInputCondition(tConditionType type, tConditionRelation relation, double threshold, const std::string &name = "")
   {
     this->input_conditions.push_back(tCondition(this, name != "" ? name : ("Input Condition " + (this->input_conditions.size() + 1)), type, relation, threshold));
     return this->input_conditions.back().Input();
   }
 
-  inline const tInput<double> &AddFeedbackCondition(tConditionType type, tConditionRelation relation, double threshold, const util::tString &name = "")
+  inline const tInput<double> &AddFeedbackCondition(tConditionType type, tConditionRelation relation, double threshold, const std::string &name = "")
   {
     this->feedback_conditions.push_back(tCondition(this, name != "" ? name : ("Feedback Condition " + (this->feedback_conditions.size() + 1)), type, relation, threshold));
     return this->feedback_conditions.back().Input();
   }
 
-  inline void RegisterInputBehavior(tModule &input_behavior, tConditionType type, tConditionRelation relation, double threshold, const util::tString &name = "")
+  inline void RegisterInputBehavior(tModule &input_behavior, tConditionType type, tConditionRelation relation, double threshold, const std::string &name = "")
   {
     input_behavior.activity.ConnectTo(this->AddFeedbackCondition(type, relation, threshold, name != "" ? name : input_behavior.GetName()));
   }
 
-  inline void RegisterFeedbackBehavior(tModule &feedback_behavior, tConditionType type, tConditionRelation relation, double threshold, const util::tString &name = "")
+  inline void RegisterFeedbackBehavior(tModule &feedback_behavior, tConditionType type, tConditionRelation relation, double threshold, const std::string &name = "")
   {
     feedback_behavior.target_rating.ConnectTo(this->AddFeedbackCondition(type, relation, threshold, name != "" ? name : feedback_behavior.GetName()));
   }
@@ -131,7 +131,7 @@ private:
 
   void AdjustConditionList(std::vector<tCondition> &condition_list, size_t size, const std::string &name_prefix);
 
-  virtual void EvaluateStaticParameters();
+  virtual void OnStaticParameterChange();
 
   virtual bool ProcessTransferFunction(double activation);
 

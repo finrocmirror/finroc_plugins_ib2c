@@ -70,10 +70,10 @@ const unsigned int cMAX_NUMBER_OF_INPUT_MODULES = 1000;
 // mbbFusion constructors
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
-mbbFusion<TSignalTypes...>::mbbFusion(finroc::core::tFrameworkElement *parent, const finroc::util::tString &name, unsigned int number_of_input_modules) :
+mbbFusion<TSignalTypes...>::mbbFusion(core::tFrameworkElement *parent, const std::string &name, unsigned int number_of_input_modules) :
   tModule(parent, name, "(F) "),
 
-  number_of_input_modules(number_of_input_modules, core::tBounds<unsigned int>(1, cMAX_NUMBER_OF_INPUT_MODULES, false)),
+  number_of_input_modules(number_of_input_modules, data_ports::tBounds<unsigned int>(1, cMAX_NUMBER_OF_INPUT_MODULES, data_ports::tOutOfBoundsAction::ADJUST_TO_RANGE)),
 
   output(this, "Output "),
   max_input_activity_index(0)
@@ -142,9 +142,9 @@ void mbbFusion<TSignalTypes...>::AdjustInputChannels()
 // mbbFusion EvaluateStaticParameters
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
-void mbbFusion<TSignalTypes...>::EvaluateStaticParameters()
+void mbbFusion<TSignalTypes...>::OnStaticParameterChange()
 {
-  tModule::EvaluateParameters();
+  tModule::OnParameterChange();
 
   if (this->number_of_input_modules.HasChanged())
   {
@@ -260,7 +260,7 @@ bool mbbFusion<TSignalTypes...>::tDataPortFuser<Tindex, dummy>::PerformFusion(mb
   tPortData values[n];
   for (size_t i = 0; i < n; ++i)
   {
-    tInput<tPortData> &input_port = dynamic_cast<tInput<tPortData> &>(parent->input[i].data.GetPort(Tindex));
+    data_ports::tInputPort<tPortData> input_port = data_ports::tInputPort<tPortData>::Wrap(*parent->input[i].data.GetPort(Tindex).GetWrapped());
     if (!input_port.IsConnected())
     {
       FINROC_LOG_PRINT_STATIC(ERROR, input_port.GetName(), " is not connected.");
@@ -269,7 +269,7 @@ bool mbbFusion<TSignalTypes...>::tDataPortFuser<Tindex, dummy>::PerformFusion(mb
     values[i] = input_port.Get();
   }
 
-  tOutput<tPortData> &output_port = dynamic_cast<tOutput<tPortData> &>(parent->output.GetPort(Tindex));
+  data_ports::tOutputPort<tPortData> output_port = data_ports::tOutputPort<tPortData>::Wrap(*parent->output.GetPort(Tindex).GetWrapped());
 
   switch (parent->fusion_method.Get())
   {
