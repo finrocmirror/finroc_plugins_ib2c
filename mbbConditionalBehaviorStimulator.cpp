@@ -32,8 +32,6 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include <boost/lexical_cast.hpp>
-
 #include "core/tFrameworkElementTags.h"
 
 //----------------------------------------------------------------------
@@ -166,7 +164,7 @@ void mbbConditionalBehaviorStimulator::AdjustConditionList(std::vector<tConditio
   }
   for (size_t i = condition_list.size(); i < size; ++i)
   {
-    condition_list.push_back(tCondition(this, name_prefix + boost::lexical_cast<std::string>(i + 1)));
+    condition_list.push_back(tCondition(this, name_prefix + std::to_string(i + 1)));
   }
 }
 

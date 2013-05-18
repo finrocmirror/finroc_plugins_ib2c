@@ -32,7 +32,6 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include <boost/lexical_cast.hpp>
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -98,8 +97,8 @@ void mNumberToActivityConverter::OnParameterChange()
     }
     for (size_t i = this->input.size(); i < this->number_of_ports.Get(); ++i)
     {
-      this->input.push_back(tInput<double>("Input Signal " + boost::lexical_cast<std::string>(i + 1), this));
-      this->output.push_back(tOutput<tActivity>("Output Signal " + boost::lexical_cast<std::string>(i + 1), this));
+      this->input.push_back(tInput<double>("Input Signal " + std::to_string(i + 1), this));
+      this->output.push_back(tOutput<tActivity>("Output Signal " + std::to_string(i + 1), this));
     }
   }
 }

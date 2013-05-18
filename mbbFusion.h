@@ -42,8 +42,6 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include <boost/lexical_cast.hpp>
-
 #include "rrlib/util/tTypeList.h"
 
 //----------------------------------------------------------------------
@@ -96,9 +94,9 @@ class mbbFusion : public ib2c::tModule
     tPortPack<tInput, tSignalTypes> data;
 
     inline tChannel(mbbFusion *module, unsigned int group_index) :
-      activity("Input Activity " + boost::lexical_cast<std::string>(group_index + 1), module),
-      target_rating("Input Target Rating " + boost::lexical_cast<std::string>(group_index + 1), module),
-      data(module, "Input " + boost::lexical_cast<std::string>(group_index + 1) + ".")
+      activity("Input Activity " + std::to_string(group_index + 1), module),
+      target_rating("Input Target Rating " + std::to_string(group_index + 1), module),
+      data(module, "Input " + std::to_string(group_index + 1) + ".")
     {
       this->activity.Init();
       this->target_rating.Init();

@@ -137,7 +137,7 @@ public:
 
   typedef tMetaOutput<double> tActivationPort;
 
-  template <typename T = double>
+  template <typename T>
   class tInput : public structure::tConveniencePort<data_ports::tInputPort<T>, tModule, core::tPortGroup, &tModule::GetInputs>
   {
   public:
@@ -158,7 +158,7 @@ public:
     }
   };
 
-  template <typename T = double>
+  template <typename T>
   class tOutput : public structure::tConveniencePort<data_ports::tOutputPort<T>, tModule, core::tPortGroup, &tModule::GetOutputs>
   {
   public:

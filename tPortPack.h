@@ -39,8 +39,6 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include <boost/lexical_cast.hpp>
-
 #include "core/tFrameworkElement.h"
 
 //----------------------------------------------------------------------
@@ -84,7 +82,7 @@ public:
 
   inline tPortPack(core::tFrameworkElement *parent, const std::string &name_prefix) :
     tPortPack < TPort, TTypeList, Tindex - 1 > (parent, name_prefix),
-    port(name_prefix + boost::lexical_cast<std::string>(Tindex + 1), parent)
+    port(name_prefix + std::to_string(Tindex + 1), parent)
   {
     this->port.Init();
   }

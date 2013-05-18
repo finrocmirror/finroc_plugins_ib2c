@@ -33,8 +33,6 @@
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include <boost/lexical_cast.hpp>
-
 #include "plugins/scheduling/tPeriodicFrameworkElementTask.h"
 #include "core/tFrameworkElementTags.h"
 
@@ -128,7 +126,7 @@ void tModule::OnStaticParameterChange()
     }
     for (size_t i = this->inhibition.size(); i < this->number_of_inhibition_ports.Get(); ++i)
     {
-      this->AddInhibition("Inhibition " + boost::lexical_cast<std::string>(i + 1));
+      this->AddInhibition("Inhibition " + std::to_string(i + 1));
     }
   }
 }
