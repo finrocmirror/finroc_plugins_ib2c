@@ -44,8 +44,6 @@
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-template <>
-core::tStandardCreateModuleAction<mbb%%NAME%%<>> mbb%%NAME%%<>::cCREATE_ACTION("%%NAME%%<>");
 
 //----------------------------------------------------------------------
 // Implementation
@@ -68,12 +66,12 @@ mbb%%NAME%%<>::~mbb%%NAME%%()
 {}
 
 //----------------------------------------------------------------------
-// mbb%%NAME%% EvaluateStaticParameters
+// mbb%%NAME%% OnStaticParameterChange
 //----------------------------------------------------------------------
 template <>
-void mbb%%NAME%%<>::EvaluateStaticParameters()
+void mbb%%NAME%%<>::OnStaticParameterChange()
 {
-  tModule::EvaluateStaticParameters();
+  tModule::OnStaticParameterChange();
 
   if (this->static_parameter_1.HasChanged())
   {
@@ -82,12 +80,12 @@ void mbb%%NAME%%<>::EvaluateStaticParameters()
 }
 
 //----------------------------------------------------------------------
-// mbb%%NAME%% EvaluateParameters
+// mbb%%NAME%% OnParameterChange
 //----------------------------------------------------------------------
 template <>
-void mbb%%NAME%%<>::EvaluateParameters()
+void mbb%%NAME%%<>::OnParameterChange()
 {
-  tModule::EvaluateParameters();
+  tModule::OnParameterChange();
 
   Add handling of your own parameters here.
   If this method is called, at least on of our parameters has changed. However, each can be checked using its .HasChanged() method.

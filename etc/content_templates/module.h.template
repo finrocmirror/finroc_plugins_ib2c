@@ -51,7 +51,6 @@
  */
 class mbb%%NAME%% : public ib2c::tModule
 {
-  static core::tStandardCreateModuleAction<mbb%%NAME%%> cCREATE_ACTION;
 
 //----------------------------------------------------------------------
 // Ports (These are the only variables that may be declared public)
@@ -89,9 +88,9 @@ private:
    */
   ~mbb%%NAME%%();
 
-  virtual void EvaluateStaticParameters();   Might be needed to process static parameters. Delete otherwise!
+  virtual void OnStaticParameterChange();   Might be needed to process static parameters. Delete otherwise!
 
-  virtual void EvaluateParameters();   Might be needed to react to changes in parameters independent from Update() calls. Delete otherwise!
+  virtual void OnParameterChange();   Might be needed to react to changes in parameters independent from Update() calls. Delete otherwise!
 
   virtual bool ProcessTransferFunction(double activation);
 
