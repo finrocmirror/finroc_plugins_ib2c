@@ -47,7 +47,7 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "plugins/ib2c/tPortPack.h"
+#include "plugins/data_ports/tPortPack.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -91,7 +91,7 @@ class mbbFusion : public ib2c::tModule
   {
     tInputActivityPort activity;
     tInputTargetRatingPort target_rating;
-    tPortPack<tInput, tSignalTypes> data;
+    data_ports::tPortPack<tInput, tSignalTypes> data;
 
     inline tChannel(mbbFusion *module, unsigned int group_index) :
       activity("Input Activity " + std::to_string(group_index + 1), module),
@@ -121,7 +121,7 @@ public:
 
   std::vector<tChannel> input;
 
-  tPortPack<tOutput, tSignalTypes> output;
+  data_ports::tPortPack<tOutput, tSignalTypes> output;
 
 //----------------------------------------------------------------------
 // Public methods and typedefs
