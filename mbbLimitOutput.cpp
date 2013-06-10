@@ -61,7 +61,7 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-runtime_construction::tStandardCreateModuleAction<mbbLimitOutput> mbbLimitOutput::cCREATE_ACTION("LimitOutput");
+runtime_construction::tStandardCreateModuleAction<mbbLimitOutput> cCREATE_ACTION_FOR_MBB_LIMIT_OUTPUT("LimitOutput");
 
 //----------------------------------------------------------------------
 // Implementation

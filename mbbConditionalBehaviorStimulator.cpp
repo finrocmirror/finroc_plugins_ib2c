@@ -62,7 +62,7 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-runtime_construction::tStandardCreateModuleAction<mbbConditionalBehaviorStimulator> mbbConditionalBehaviorStimulator::cCREATE_ACTION("ConditionalBehaviorStimulator");
+runtime_construction::tStandardCreateModuleAction<mbbConditionalBehaviorStimulator> cCREATE_ACTION_FOR_MBB_CONDITIONAL_BEHAVIOR_STIMULATOR("ConditionalBehaviorStimulator");
 
 //----------------------------------------------------------------------
 // Implementation

@@ -61,7 +61,7 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-runtime_construction::tStandardCreateModuleAction<mNumberToActivityConverter> mNumberToActivityConverter::cCREATE_ACTION("NumberToActivityConverter");
+runtime_construction::tStandardCreateModuleAction<mNumberToActivityConverter> cCREATE_ACTION_FOR_M_NUMBER_TO_ACTIVITY_CONVERTER("NumberToActivityConverter");
 
 //----------------------------------------------------------------------
 // Implementation

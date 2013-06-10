@@ -62,7 +62,7 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-runtime_construction::tStandardCreateModuleAction<mbbTestModule> mbbTestModule::cCREATE_ACTION("TestModule");
+runtime_construction::tStandardCreateModuleAction<mbbTestModule> cCREATE_ACTION_FOR_MBB_TEST_MODULE("TestModule");
 
 //----------------------------------------------------------------------
 // Implementation
