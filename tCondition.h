@@ -71,7 +71,8 @@ enum class tConditionRelation
   GREATER_OR_EQUAL_TO_THRESHOLD,
   EQUAL_TO_THRESHOLD,
   SMALLER_OR_EQUAL_TO_THRESHOLD,
-  SMALLER_THAN_THRESHOLD
+  SMALLER_THAN_THRESHOLD,
+  UNEQUAL_TO_THRESHOLD
 };
 
 class mbbConditionalBehaviorStimulator;
@@ -165,6 +166,8 @@ private:
       return this->input.Get() <= this->threshold.Get();
     case tConditionRelation::SMALLER_THAN_THRESHOLD:
       return this->input.Get() < this->threshold.Get();
+    case tConditionRelation::UNEQUAL_TO_THRESHOLD:
+      return this->input.Get() != this->threshold.Get();
     }
 
     FINROC_LOG_PRINT(ERROR, "Unhandled relation: ", make_builder::GetEnumString(this->relation.Get()));
