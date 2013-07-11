@@ -70,8 +70,9 @@ runtime_construction::tStandardCreateModuleAction<mbbLimitOutput> cCREATE_ACTION
 //----------------------------------------------------------------------
 // mbbLimitOutput constructor
 //----------------------------------------------------------------------
-mbbLimitOutput::mbbLimitOutput(core::tFrameworkElement *parent, const std::string &name) :
-  ib2c::tModule(parent, name)
+mbbLimitOutput::mbbLimitOutput(core::tFrameworkElement *parent, const std::string &name,
+                               tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports) :
+  ib2c::tModule(parent, name, stimulation_mode, number_of_inhibition_ports)
 {}
 
 //----------------------------------------------------------------------

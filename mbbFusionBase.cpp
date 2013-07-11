@@ -2,7 +2,7 @@
 // You received this file as part of Finroc
 // A Framework for intelligent robot control
 //
-// Copyright (C) Robot Makers GmbH (www.robotmakers.de)
+// Copyright (C) Finroc GbR (finroc.org)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,31 +19,32 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    plugins/ib2c/mbbLimitOutput.h
+/*!\file    plugins/ib2c/mbbFusionBase.cpp
  *
- * \author  Jochen Hirth
+ * \author  Tobias Föhst
  *
- * \date    2012-10-30
- *
- * \brief Contains mbbLimitOutput
- *
- * \b mbbLimitOutput
- *
- * This module draws the output signals to 0 in case the activation is 0,
+ * \date    2013-06-04
  *
  */
 //----------------------------------------------------------------------
-#ifndef __plugins__ib2c__mbbLimitOutput_h__
-#define __plugins__ib2c__mbbLimitOutput_h__
-
-#include "plugins/ib2c/tModule.h"
+#include "plugins/ib2c/mbbFusionBase.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include "core/tFrameworkElementTags.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
+//----------------------------------------------------------------------
+
+//----------------------------------------------------------------------
+// Debugging
+//----------------------------------------------------------------------
+#include <cassert>
+
+//----------------------------------------------------------------------
+// Namespace usage
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
@@ -59,61 +60,35 @@ namespace ib2c
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
-// Class declaration
+// Const values
 //----------------------------------------------------------------------
-//! SHORT_DESCRIPTION
-/*!
- * This module draws the output signals to 0 in case the activation is 0,
- */
-class mbbLimitOutput : public ib2c::tModule
+const unsigned int cMAX_NUMBER_OF_INPUT_MODULES = 1000;
+
+//----------------------------------------------------------------------
+// Implementation
+//----------------------------------------------------------------------
+
+//----------------------------------------------------------------------
+// mbbFusionBase constructor
+//----------------------------------------------------------------------
+mbbFusionBase::mbbFusionBase(core::tFrameworkElement *parent, const std::string &name,
+                             unsigned int number_of_input_modules,
+                             tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports) :
+  tModule(parent, name, stimulation_mode, number_of_inhibition_ports, "(F) "),
+
+  number_of_input_modules(number_of_input_modules, data_ports::tBounds<unsigned int>(1, cMAX_NUMBER_OF_INPUT_MODULES, data_ports::tOutOfBoundsAction::ADJUST_TO_RANGE))
 {
-  static runtime_construction::tStandardCreateModuleAction<mbbLimitOutput> cCREATE_ACTION;
+  core::tFrameworkElementTags::AddTag(*this, "ib2c_fusion");
+}
 
 //----------------------------------------------------------------------
-// Ports (These are the only variables that may be declared public)
+// mbbFusionBase destructor
 //----------------------------------------------------------------------
-public:
-
-  tStaticParameter<unsigned int> number_of_signals;
-
-  std::vector<tInput<double>> input_signals;
-  std::vector<tOutput<double> > output_signals;
-
-//----------------------------------------------------------------------
-// Public methods and typedefs
-//----------------------------------------------------------------------
-public:
-
-  mbbLimitOutput(core::tFrameworkElement *parent, const std::string &name = "LimitOutput",
-                 tStimulationMode stimulation_mode = tStimulationMode::AUTO, unsigned int number_of_inhibition_ports = 0);
-
-//----------------------------------------------------------------------
-// Private fields and methods
-//----------------------------------------------------------------------
-private:
-  /*! Destructor
-   *
-   * The destructor of modules is declared private to avoid accidental deletion. Deleting
-   * modules is already handled by the framework.
-   */
-  ~mbbLimitOutput();
-
-  virtual void OnStaticParameterChange();
-
-  virtual bool ProcessTransferFunction(double activation);
-
-  virtual ib2c::tActivity CalculateActivity(std::vector<ib2c::tActivity> &derived_activities, double activation) const;
-
-  virtual ib2c::tTargetRating CalculateTargetRating(double activation) const;
-
-};
+mbbFusionBase::~mbbFusionBase()
+{}
 
 //----------------------------------------------------------------------
 // End of namespace declaration
 //----------------------------------------------------------------------
 }
 }
-
-
-
-#endif

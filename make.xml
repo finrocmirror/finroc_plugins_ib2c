@@ -6,6 +6,7 @@
     <sources>
       mbbConditionalBehaviorStimulator.cpp
       mbbFusion.cpp
+      mbbFusionBase.cpp
       mNumberToActivityConverter.cpp
       tCondition.h
       tMetaSignal.h

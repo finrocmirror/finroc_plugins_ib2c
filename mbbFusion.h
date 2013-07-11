@@ -37,7 +37,7 @@
 #ifndef __plugins__ib2c__mbbFusion_h__
 #define __plugins__ib2c__mbbFusion_h__
 
-#include "plugins/ib2c/tModule.h"
+#include "plugins/ib2c/mbbFusionBase.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -64,12 +64,6 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-enum class tFusionMethod
-{
-  WINNER_TAKES_ALL,
-  WEIGHTED_AVERAGE,
-  WEIGHTED_SUM
-};
 
 //----------------------------------------------------------------------
 // Class declaration
@@ -80,12 +74,9 @@ enum class tFusionMethod
  * between competing behaviors.
  */
 template <typename ... TSignalTypes>
-class mbbFusion : public ib2c::tModule
+class mbbFusion : public ib2c::mbbFusionBase
 {
   typedef rrlib::util::tTypeList<TSignalTypes...> tSignalTypes;
-
-  typedef tMetaInput<tActivity> tInputActivityPort;
-  typedef tMetaInput<tTargetRating> tInputTargetRatingPort;
 
   struct tChannel
   {
@@ -115,10 +106,6 @@ class mbbFusion : public ib2c::tModule
 //----------------------------------------------------------------------
 public:
 
-  tStaticParameter<unsigned int> number_of_input_modules;
-
-  tParameter<tFusionMethod> fusion_method;
-
   std::vector<tChannel> input;
 
   data_ports::tPortPack<tOutput, tSignalTypes> output;
@@ -128,15 +115,17 @@ public:
 //----------------------------------------------------------------------
 public:
 
-  mbbFusion(core::tFrameworkElement *parent, const std::string &name = "Fusion", unsigned int number_of_input_modules = 1);
+  mbbFusion(core::tFrameworkElement *parent, const std::string &name = "Fusion",
+            unsigned int number_of_input_modules = 1,
+            tStimulationMode stimulation_mode = tStimulationMode::AUTO, unsigned int number_of_inhibition_ports = 0);
 
-  tInputActivityPort &InputActivity(size_t channel_index);
+  virtual tInputActivityPort &InputActivity(size_t channel_index);
 
-  tInputTargetRatingPort &InputTargetRating(size_t channel_index);
+  virtual tInputTargetRatingPort &InputTargetRating(size_t channel_index);
 
-  core::tPortWrapperBase &InputPort(size_t channel_index, size_t port_index);
+  virtual core::tPortWrapperBase &InputPort(size_t channel_index, size_t port_index);
 
-  core::tPortWrapperBase &OutputPort(size_t port_index);
+  virtual core::tPortWrapperBase &OutputPort(size_t port_index);
 
 //----------------------------------------------------------------------
 // Private fields and methods

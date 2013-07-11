@@ -113,7 +113,7 @@ public:
   class tMetaInput : public structure::tConveniencePort<data_ports::tInputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaInputs>  // FIXME: can be replaced by template alias with gcc 4.7
   {
   public:
-    template<typename ... TPortParameters>
+    template <typename ... TPortParameters>
     explicit tMetaInput(const TPortParameters &... port_parameters) :
       structure::tConveniencePort<data_ports::tInputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaInputs>(port_parameters..., data_ports::tBounds<TSignal>(0, 1, false))
     {}
@@ -126,7 +126,7 @@ public:
   class tMetaOutput : public structure::tConveniencePort<data_ports::tOutputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaOutputs>  // FIXME: can be replaced by template alias with gcc 4.7
   {
   public:
-    template<typename ... TPortParameters>
+    template <typename ... TPortParameters>
     explicit tMetaOutput(const TPortParameters &... port_parameters) :
       structure::tConveniencePort<data_ports::tOutputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaOutputs>(port_parameters..., data_ports::tBounds<TSignal>(0, 1, false))
     {}
@@ -141,7 +141,7 @@ public:
   class tInput : public structure::tConveniencePort<data_ports::tInputPort<T>, tModule, core::tPortGroup, &tModule::GetInputs>
   {
   public:
-    template<typename ... TPortParameters>
+    template <typename ... TPortParameters>
     explicit tInput(const TPortParameters &... port_parameters) :
       structure::tConveniencePort<data_ports::tInputPort<T>, tModule, core::tPortGroup, &tModule::GetInputs>(port_parameters...)
     {
@@ -162,7 +162,7 @@ public:
   class tOutput : public structure::tConveniencePort<data_ports::tOutputPort<T>, tModule, core::tPortGroup, &tModule::GetOutputs>
   {
   public:
-    template<typename ... TPortParameters>
+    template <typename ... TPortParameters>
     explicit tOutput(const TPortParameters &... port_parameters) :
       structure::tConveniencePort<data_ports::tOutputPort<T>, tModule, core::tPortGroup, &tModule::GetOutputs>(port_parameters...)
     {}
@@ -187,7 +187,9 @@ public:
 //----------------------------------------------------------------------
 public:
 
-  tModule(core::tFrameworkElement *parent, const std::string &name, const char *prefix = "", bool shared_output_ports = false, bool share_input_ports = false);
+  tModule(core::tFrameworkElement *parent, const std::string &name,
+          tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports, const char *prefix = "",
+          bool share_output_ports = false, bool share_input_ports = false);
 
   inline const tInhibitionPort &AddInhibition(const std::string &name)
   {
@@ -263,7 +265,7 @@ private:
 
   std::vector<tInput<tActivity>> activity_transfer_inputs;
 
-  double CalculateActivation();
+  double CalculateActivation() const;
 
   tInhibition CalculateInhibition() const;
 

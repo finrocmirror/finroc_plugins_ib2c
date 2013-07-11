@@ -88,7 +88,8 @@ public:
 //----------------------------------------------------------------------
 public:
 
-  mbbTestModule(core::tFrameworkElement *parent, const std::string &name = "TestModule");
+  mbbTestModule(core::tFrameworkElement *parent, const std::string &name = "TestModule",
+                tStimulationMode stimulation_mode = tStimulationMode::AUTO, unsigned int number_of_inhibition_ports = 0);
 
 //----------------------------------------------------------------------
 // Private fields and methods

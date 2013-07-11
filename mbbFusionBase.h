@@ -2,7 +2,7 @@
 // You received this file as part of Finroc
 // A Framework for intelligent robot control
 //
-// Copyright (C) Robot Makers GmbH (www.robotmakers.de)
+// Copyright (C) Finroc GbR (finroc.org)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,22 +19,23 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    plugins/ib2c/mbbLimitOutput.h
+/*!\file    plugins/ib2c/mbbFusionBase.h
  *
- * \author  Jochen Hirth
+ * \author  Tobias Föhst
  *
- * \date    2012-10-30
+ * \date    2013-06-04
  *
- * \brief Contains mbbLimitOutput
+ * \brief Contains mbbFusionBase
  *
- * \b mbbLimitOutput
+ * \b mbbFusionBase
  *
- * This module draws the output signals to 0 in case the activation is 0,
+ * An abstract interface for mbbFusion to interact with common data
+ * without knowing about the specific template instance
  *
  */
 //----------------------------------------------------------------------
-#ifndef __plugins__ib2c__mbbLimitOutput_h__
-#define __plugins__ib2c__mbbLimitOutput_h__
+#ifndef __plugins__ib2c__mbbFusionBase_h__
+#define __plugins__ib2c__mbbFusionBase_h__
 
 #include "plugins/ib2c/tModule.h"
 
@@ -57,54 +58,64 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
+enum class tFusionMethod
+{
+  WINNER_TAKES_ALL,
+  WEIGHTED_AVERAGE,
+  WEIGHTED_SUM
+};
 
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
 //! SHORT_DESCRIPTION
 /*!
- * This module draws the output signals to 0 in case the activation is 0,
+ * An abstract interface for mbbFusion to interact with common data
+ * without knowing about the specific template instance
  */
-class mbbLimitOutput : public ib2c::tModule
+class mbbFusionBase : public ib2c::tModule
 {
-  static runtime_construction::tStandardCreateModuleAction<mbbLimitOutput> cCREATE_ACTION;
 
 //----------------------------------------------------------------------
 // Ports (These are the only variables that may be declared public)
 //----------------------------------------------------------------------
 public:
 
-  tStaticParameter<unsigned int> number_of_signals;
+  typedef tMetaInput<tActivity> tInputActivityPort;
+  typedef tMetaInput<tTargetRating> tInputTargetRatingPort;
 
-  std::vector<tInput<double>> input_signals;
-  std::vector<tOutput<double> > output_signals;
+  tStaticParameter<unsigned int> number_of_input_modules;
+
+  tParameter<tFusionMethod> fusion_method;
 
 //----------------------------------------------------------------------
 // Public methods and typedefs
 //----------------------------------------------------------------------
 public:
 
-  mbbLimitOutput(core::tFrameworkElement *parent, const std::string &name = "LimitOutput",
-                 tStimulationMode stimulation_mode = tStimulationMode::AUTO, unsigned int number_of_inhibition_ports = 0);
+  mbbFusionBase(core::tFrameworkElement *parent, const std::string &name,
+                unsigned int number_of_input_modules,
+                tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports);
+
+  virtual tInputActivityPort &InputActivity(size_t channel_index) = 0;
+
+  virtual tInputTargetRatingPort &InputTargetRating(size_t channel_index) = 0;
+
+  virtual core::tPortWrapperBase &InputPort(size_t channel_index, size_t port_index) = 0;
+
+  virtual core::tPortWrapperBase &OutputPort(size_t port_index) = 0;
 
 //----------------------------------------------------------------------
-// Private fields and methods
+// Protected methods
 //----------------------------------------------------------------------
-private:
+protected:
+
   /*! Destructor
    *
    * The destructor of modules is declared private to avoid accidental deletion. Deleting
    * modules is already handled by the framework.
    */
-  ~mbbLimitOutput();
-
-  virtual void OnStaticParameterChange();
-
-  virtual bool ProcessTransferFunction(double activation);
-
-  virtual ib2c::tActivity CalculateActivity(std::vector<ib2c::tActivity> &derived_activities, double activation) const;
-
-  virtual ib2c::tTargetRating CalculateTargetRating(double activation) const;
+  virtual ~mbbFusionBase();
 
 };
 

@@ -33,8 +33,6 @@
 //----------------------------------------------------------------------
 #include "rrlib/data_fusion/functions.h"
 
-#include "core/tFrameworkElementTags.h"
-
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
@@ -60,7 +58,6 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-const unsigned int cMAX_NUMBER_OF_INPUT_MODULES = 1000;
 
 //----------------------------------------------------------------------
 // Implementation
@@ -70,15 +67,14 @@ const unsigned int cMAX_NUMBER_OF_INPUT_MODULES = 1000;
 // mbbFusion constructors
 //----------------------------------------------------------------------
 template <typename ... TSignalTypes>
-mbbFusion<TSignalTypes...>::mbbFusion(core::tFrameworkElement *parent, const std::string &name, unsigned int number_of_input_modules) :
-  tModule(parent, name, "(F) "),
-
-  number_of_input_modules(number_of_input_modules, data_ports::tBounds<unsigned int>(1, cMAX_NUMBER_OF_INPUT_MODULES, data_ports::tOutOfBoundsAction::ADJUST_TO_RANGE)),
+mbbFusion<TSignalTypes...>::mbbFusion(core::tFrameworkElement *parent, const std::string &name,
+                                      unsigned int number_of_input_modules,
+                                      tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports) :
+  mbbFusionBase(parent, name, number_of_input_modules, stimulation_mode, number_of_inhibition_ports),
 
   output(this, "Output "),
   max_input_activity_index(0)
 {
-  core::tFrameworkElementTags::AddTag(*this, "ib2c_fusion");
   this->AdjustInputChannels();
 }
 
@@ -144,7 +140,7 @@ void mbbFusion<TSignalTypes...>::AdjustInputChannels()
 template <typename ... TSignalTypes>
 void mbbFusion<TSignalTypes...>::OnStaticParameterChange()
 {
-  tModule::OnParameterChange();
+  mbbFusionBase::OnStaticParameterChange();
 
   if (this->number_of_input_modules.HasChanged())
   {

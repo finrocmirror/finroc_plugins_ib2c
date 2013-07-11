@@ -54,8 +54,9 @@ runtime_construction::tStandardCreateModuleAction<mbb%%NAME%%> cCREATE_ACTION_FO
 //----------------------------------------------------------------------
 // mbb%%NAME%% constructor
 //----------------------------------------------------------------------
-mbb%%NAME%%::mbb%%NAME%%(core::tFrameworkElement *parent, const std::string &name) :
-  ib2c::tModule(parent, name),
+mbb%%NAME%%::mbb%%NAME%%(core::tFrameworkElement *parent, const std::string &name,
+         %%INDENT_TWO_NAMES%%tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports, const char *prefix) :
+  ib2c::tModule(parent, name, stimulation_mode, number_of_inhibition_ports),
   If you have some member variables, please initialize them here. Especially built-in types (like pointers!). Delete this line otherwise!
 {}
 

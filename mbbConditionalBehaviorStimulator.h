@@ -88,7 +88,8 @@ public:
 //----------------------------------------------------------------------
 public:
 
-  mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const std::string &name = "ConditionalBehaviorStimulator");
+  mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const std::string &name = "ConditionalBehaviorStimulator",
+                                   tStimulationMode stimulation_mode = tStimulationMode::AUTO, unsigned int number_of_inhibition_ports = 0);
 
   inline const tInput<double> &AddInputCondition(tConditionType type, tConditionRelation relation, double threshold, const std::string &name = "")
   {

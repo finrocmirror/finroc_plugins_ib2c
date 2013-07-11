@@ -75,20 +75,22 @@ const size_t cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS = 250;
 //----------------------------------------------------------------------
 // tModule constructors
 //----------------------------------------------------------------------
-tModule::tModule(core::tFrameworkElement *parent, const std::string &name, const char *prefix, bool shared_output_ports, bool share_input_ports) :
+tModule::tModule(core::tFrameworkElement *parent, const std::string &name,
+                 tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports, const char *prefix,
+                 bool share_output_ports, bool share_input_ports) :
   tModuleBase(parent, strncmp(name.c_str(), prefix, strlen(prefix)) ? prefix + name : name),
 
   meta_input(new core::tPortGroup(this, "iB2C Input", tFlag::INTERFACE, share_input_ports ? tFlags(tFlag::SHARED) : tFlags())),
   input(new core::tPortGroup(this, "Input", tFlag::INTERFACE, share_input_ports ? tFlags(tFlag::SHARED) : tFlags())),
-  meta_output(new core::tPortGroup(this, "iB2C Output", tFlag::INTERFACE, shared_output_ports ? tFlags(tFlag::SHARED) : tFlags())),
-  output(new core::tPortGroup(this, "Output", tFlag::INTERFACE, shared_output_ports ? tFlags(tFlag::SHARED) : tFlags())),
+  meta_output(new core::tPortGroup(this, "iB2C Output", tFlag::INTERFACE, share_output_ports ? tFlags(tFlag::SHARED) : tFlags())),
+  output(new core::tPortGroup(this, "Output", tFlag::INTERFACE, share_output_ports ? tFlags(tFlag::SHARED) : tFlags())),
 
-  number_of_inhibition_ports("Number Of Inhibition Ports", this),     // TODO: use port_name_generator for this block
+  number_of_inhibition_ports("Number Of Inhibition Ports", this),
 
-  number_of_cycles_with_suppressed_warnings("Number Of Cycles With Suppressed Warnings", this, cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS),     // TODO: use port_name_generator for this block
-  stimulation_mode("Stimulation Mode", this),
+  number_of_cycles_with_suppressed_warnings("Number Of Cycles With Suppressed Warnings", this, cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS),
+  stimulation_mode("Stimulation Mode", this, stimulation_mode),
 
-  stimulation("Stimulation", this),               // TODO: use port_name_generator for this block
+  stimulation("Stimulation", this),
   activity("Activity", this),
   target_rating("Target Rating", this),
   activation("Activation", this),
@@ -104,6 +106,8 @@ tModule::tModule(core::tFrameworkElement *parent, const std::string &name, const
   std::vector<core::tEdgeAggregator *> output_ports = { this->meta_output, this->output };
   this->AddAnnotation(*new scheduling::tPeriodicFrameworkElementTask(input_ports, output_ports, this->update_task));
   core::tFrameworkElementTags::AddTag(*this, "ib2c_module");
+
+  this->number_of_inhibition_ports.Set(number_of_inhibition_ports);
 }
 
 //----------------------------------------------------------------------
@@ -153,7 +157,7 @@ void tModule::OnParameterChange()
 //----------------------------------------------------------------------
 // tModule CalculateActivation
 //----------------------------------------------------------------------
-double tModule::CalculateActivation()
+double tModule::CalculateActivation() const
 {
   tStimulation stimulation = 0;
   tInhibition inhibition = this->CalculateInhibition();
