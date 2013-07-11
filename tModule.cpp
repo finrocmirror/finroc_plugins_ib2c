@@ -124,7 +124,8 @@ void tModule::OnStaticParameterChange()
       this->inhibition.back().GetWrapped()->ManagedDelete();
       this->inhibition.pop_back();
     }
-    for (size_t i = this->inhibition.size(); i < this->number_of_inhibition_ports.Get(); ++i)
+    unsigned int number_of_inhibition_ports = this->number_of_inhibition_ports.Get();
+    for (size_t i = this->inhibition.size(); i < number_of_inhibition_ports; ++i)
     {
       this->AddInhibition("Inhibition " + std::to_string(i + 1));
     }
