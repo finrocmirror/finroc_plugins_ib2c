@@ -45,7 +45,7 @@
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
-core::tStandardCreateModuleAction<gbb%%NAME%%> gbb%%NAME%%::cCREATE_ACTION("%%NAME%%");
+runtime_construction::tStandardCreateModuleAction<gbb%%NAME%%> cCREATE_ACTION_FOR_GBB_%%NAME_IN_UPPER_CASE%%("%%NAME%%");
 
 //----------------------------------------------------------------------
 // Implementation
@@ -54,9 +54,16 @@ core::tStandardCreateModuleAction<gbb%%NAME%%> gbb%%NAME%%::cCREATE_ACTION("%%NA
 //----------------------------------------------------------------------
 // g%%NAME%% constructor
 //----------------------------------------------------------------------
-gbb%%NAME%%::gbb%%NAME%%(core::tFrameworkElement *parent, const util::tString &name,
-         %%INDENT_TWO_NAMES%%const util::tString &structure_config_file)
-  : ib2c::tGroup(parent, name, structure_config_file)
+gbb%%NAME%%::gbb%%NAME%%(core::tFrameworkElement *parent, const std::string &name,
+         %%INDENT_TWO_NAMES%%const std::string &structure_config_file) :
+  ib2c::tGroup(parent, name, structure_config_file)
+  If you have some member variables, please initialize them here. Especially built-in types (like pointers!). Delete this line otherwise!
+{}
+
+//----------------------------------------------------------------------
+// gbb%%NAME%% destructor
+//----------------------------------------------------------------------
+gbb%%NAME%%::~gbb%%NAME%%()
 {}
 
 //----------------------------------------------------------------------

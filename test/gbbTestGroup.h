@@ -1,33 +1,47 @@
 //
-// %%INTRO%%
+// You received this file as part of Finroc
+// A Framework for intelligent robot control
 //
-// Copyright (C) %%COPYRIGHT%%
+// Copyright (C) Finroc GbR (finroc.org)
 //
-// %%LICENSE%%
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    %%FILE%%
+/*!\file    plugins/ib2c/test/gbbTestGroup.h
  *
- * \author  %%AUTHOR%%
+ * \author  Tobias Föhst
  *
- * \date    %%DATE%%
+ * \date    2013-07-04
  *
- * \brief Contains g%%NAME%%
+ * \brief Contains gTestGroup
  *
- * \b g%%NAME%%
+ * \b gTestGroup
  *
- * %%DESCRIPTION%%
+ * This is a test for iB2C groups.
  *
  */
 //----------------------------------------------------------------------
-#ifndef %%SENTINEL%%
-#define %%SENTINEL%%
+#ifndef __plugins__ib2c__test__gbbTestGroup_h__
+#define __plugins__ib2c__test__gbbTestGroup_h__
 
 #include "plugins/ib2c/tGroup.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include "rrlib/math/tAngle.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -36,7 +50,10 @@
 //----------------------------------------------------------------------
 // Namespace declaration
 //----------------------------------------------------------------------
-%%OPEN_NAMESPACE%%
+namespace finroc
+{
+namespace ib2c
+{
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
@@ -45,11 +62,11 @@
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
-//! %%SHORT_DESCRIPTION%%
+//! SHORT_DESCRIPTION
 /*!
- * %%DESCRIPTION%%
+ * This is a test for iB2C groups.
  */
-class gbb%%NAME%% : public ib2c::tGroup
+class gbbTestGroup : public ib2c::tGroup
 {
 
 //----------------------------------------------------------------------
@@ -57,44 +74,47 @@ class gbb%%NAME%% : public ib2c::tGroup
 //----------------------------------------------------------------------
 public:
 
-  tStaticParameter<double> static_parameter_1;   Example for a static parameter. Replace or delete it!
-  
-  tParameter<double> parameter_1;   Example for a runtime parameter. Replace or delete it!
+  tInput<int> input1_1;
+  tInput<double> input1_2;
+  tInput<rrlib::math::tAngleRad> input1_3;
 
-  tInput<double> input_signal_1;   Example for input ports. Replace or delete them!
-  tInput<double> input_signal_2;
+  tInput<int> input2_1;
+  tInput<double> input2_2;
+  tInput<rrlib::math::tAngleRad> input2_3;
 
-  tOutput<double> output_signal_1;   Examples for output ports. Replace or delete them!
-  tOutput<double> output_signal_2;
+  tOutput<int> output1;
+  tOutput<double> output2;
+  tOutput<rrlib::math::tAngleRad> output3;
 
 //----------------------------------------------------------------------
 // Public methods and typedefs
 //----------------------------------------------------------------------
 public:
 
-  gbb%%NAME%%(core::tFrameworkElement *parent, const std::string &name = "%%NAME%%",
-      %%INDENT_ONE_NAME%%const std::string &structure_config_file = __FILE__".xml");
+  gbbTestGroup(core::tFrameworkElement *parent, const std::string &name = "TestGroup",
+               tStimulationMode stimulation_mode = tStimulationMode::AUTO, unsigned int number_of_inhibition_ports = 0,
+               const std::string &structure_config_file = __FILE__".xml");
 
 //----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------
 private:
 
-  Here is the right place for your variables. Replace this line by your declarations!
-
   /*! Destructor
    *
    * The destructor of groups is declared private to avoid accidental deletion. Deleting
    * groups is already handled by the framework.
    */
-  ~gbb%%NAME%%();
+  ~gbbTestGroup();
 
 };
 
 //----------------------------------------------------------------------
 // End of namespace declaration
 //----------------------------------------------------------------------
-%%CLOSE_NAMESPACE%%
-%%INCLUDE_HPP%%
+}
+}
+
+
 
 #endif

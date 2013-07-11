@@ -38,6 +38,7 @@
 // Internal includes with ""
 //----------------------------------------------------------------------
 #include "plugins/ib2c/test/mbbTestModule.h"
+#include "plugins/ib2c/test/gbbTestGroup.h"
 #include "plugins/ib2c/mbbFusion.h"
 //#include "plugins/ib2c/mbbConditionalBehaviorStimulator.h"
 #include "plugins/ib2c/mNumberToActivityConverter.h"
@@ -79,8 +80,8 @@ void StartUp()
 //----------------------------------------------------------------------
 void InitMainGroup(finroc::structure::tThreadContainer *main_thread, const std::vector<std::string> &remaining_arguments)
 {
-  finroc::ib2c::mbbTestModule *module_1 = new finroc::ib2c::mbbTestModule(main_thread, "Module 1");
-  finroc::ib2c::mbbTestModule *module_2 = new finroc::ib2c::mbbTestModule(main_thread, "Module 2");
+//  finroc::ib2c::mbbTestModule *module_1 = new finroc::ib2c::mbbTestModule(main_thread, "Module 1");
+//  finroc::ib2c::mbbTestModule *module_2 = new finroc::ib2c::mbbTestModule(main_thread, "Module 2");
 //  finroc::ib2c::mbbTestModule *module_3 = new finroc::ib2c::mbbTestModule(main_thread, "Module 3");
 
 //  new finroc::ib2c::mNumberToActivityConverter(main_thread);
@@ -89,17 +90,20 @@ void InitMainGroup(finroc::structure::tThreadContainer *main_thread, const std::
 
 //  finroc::ib2c::mbbFusion<finroc::ib2c::tActivity> *fusion2 = new finroc::ib2c::mbbFusion<finroc::ib2c::tActivity>(main_thread, "Fusion2");
 
-  finroc::ib2c::mbbFusion<> *fusion = new finroc::ib2c::mbbFusion<>(main_thread, "Fusion", 2);
-
-  module_1->activity.ConnectTo(fusion->InputActivity(0));
-  module_1->target_rating.ConnectTo(fusion->InputTargetRating(0));
-  module_2->activity.ConnectTo(fusion->InputActivity(1));
-  module_2->target_rating.ConnectTo(fusion->InputTargetRating(1));
+//  finroc::ib2c::mbbFusion<> *fusion = new finroc::ib2c::mbbFusion<>(main_thread, "Fusion", 2);
+//
+//  module_1->activity.ConnectTo(fusion->InputActivity(0));
+//  module_1->target_rating.ConnectTo(fusion->InputTargetRating(0));
+//  module_2->activity.ConnectTo(fusion->InputActivity(1));
+//  module_2->target_rating.ConnectTo(fusion->InputTargetRating(1));
 
 //  module_1->output1.ConnectTo(fusion->InputPort(0, 0));
 //  fusion->OutputPort(1).ConnectTo(module_2->output2);
 
 //  new finroc::ib2c::mbbConditionalBehaviorStimulator(main_thread, "CBS");
+
+  finroc::ib2c::gbbTestGroup *group_1 = new finroc::ib2c::gbbTestGroup(main_thread, "Group 1");
+  group_1->number_of_inhibition_ports.Set(2);
 
   main_thread->SetCycleTime(500);
 }

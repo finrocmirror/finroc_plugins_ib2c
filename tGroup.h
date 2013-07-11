@@ -19,33 +19,34 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    plugins/ib2c/tModule.h
+/*!\file    plugins/ib2c/tGroup.h
  *
- * \author  Bernd-Helge Schäfer
  * \author  Tobias Föhst
  *
- * \date    2010-12-31
+ * \date    2012-12-07
  *
- * \brief Contains tModule
+ * \brief Contains tGroup
  *
- * \b tModule
+ * \b tGroup
  *
  */
 //----------------------------------------------------------------------
-#ifndef __plugins__ib2c__tModule_h__
-#define __plugins__ib2c__tModule_h__
+#ifndef __plugins__ib2c__tGroup_h__
+#define __plugins__ib2c__tGroup_h__
 
-#include "plugins/structure/tModuleBase.h"
+#include "plugins/structure/tGroupBase.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
+#include "plugins/data_ports/tProxyPort.h"
 #include "rrlib/thread/tTask.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
 #include "plugins/ib2c/tMetaSignal.h"
+#include "plugins/ib2c/tModule.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -62,12 +63,6 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-enum class tStimulationMode
-{
-  AUTO,
-  ENABLED,
-  DISABLED
-};
 
 //----------------------------------------------------------------------
 // Class declaration
@@ -76,14 +71,11 @@ enum class tStimulationMode
 /*!
  *
  */
-class tModule : public structure::tModuleBase
+class tGroup : public structure::tGroupBase
 {
-  friend class tGroup;
 
   core::tPortGroup *meta_input;
-  core::tPortGroup *input;
   core::tPortGroup *meta_output;
-  core::tPortGroup *output;
 
 //----------------------------------------------------------------------
 // Ports (These are the only variables that may be declared public)
@@ -97,7 +89,7 @@ public:
 
   inline core::tPortGroup &GetInputs()
   {
-    return *this->input;
+    return this->GetInterface(eINTERFACE_INPUT);
   }
 
   inline core::tPortGroup &GetMetaOutputs()
@@ -107,29 +99,29 @@ public:
 
   inline core::tPortGroup &GetOutputs()
   {
-    return *this->output;
+    return this->GetInterface(eINTERFACE_OUTPUT);
   }
 
-  template <typename TSignal>
-  class tMetaInput : public structure::tConveniencePort<data_ports::tInputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaInputs>  // FIXME: can be replaced by template alias with gcc 4.7
+  template <typename T>
+  class tMetaInput : public structure::tConveniencePort<data_ports::tProxyPort<T, false>, tGroup, core::tPortGroup, &tGroup::GetMetaInputs>
   {
   public:
-    template <typename ... TPortParameters>
+    template<typename ... TPortParameters>
     explicit tMetaInput(const TPortParameters &... port_parameters) :
-      structure::tConveniencePort<data_ports::tInputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaInputs>(port_parameters..., data_ports::tBounds<TSignal>(0, 1, false))
+      structure::tConveniencePort<data_ports::tProxyPort<T, false>, tGroup, core::tPortGroup, &tGroup::GetMetaInputs>(port_parameters...)
     {}
   };
 
   typedef tMetaInput<tStimulation> tStimulationPort;
   typedef tMetaInput<tInhibition> tInhibitionPort;
 
-  template <typename TSignal>
-  class tMetaOutput : public structure::tConveniencePort<data_ports::tOutputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaOutputs>  // FIXME: can be replaced by template alias with gcc 4.7
+  template <typename T>
+  class tMetaOutput : public structure::tConveniencePort<data_ports::tProxyPort<T, true>, tGroup, core::tPortGroup, &tGroup::GetMetaOutputs>
   {
   public:
-    template <typename ... TPortParameters>
+    template<typename ... TPortParameters>
     explicit tMetaOutput(const TPortParameters &... port_parameters) :
-      structure::tConveniencePort<data_ports::tOutputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaOutputs>(port_parameters..., data_ports::tBounds<TSignal>(0, 1, false))
+      structure::tConveniencePort<data_ports::tProxyPort<T, true>, tGroup, core::tPortGroup, &tGroup::GetMetaOutputs>(port_parameters...)
     {}
   };
 
@@ -139,33 +131,22 @@ public:
   typedef tMetaOutput<double> tActivationPort;
 
   template <typename T>
-  class tInput : public structure::tConveniencePort<data_ports::tInputPort<T>, tModule, core::tPortGroup, &tModule::GetInputs>
+  class tInput : public structure::tConveniencePort<data_ports::tProxyPort<T, false>, tGroup, core::tPortGroup, &tGroup::GetInputs>
   {
   public:
-    template <typename ... TPortParameters>
+    template<typename ... TPortParameters>
     explicit tInput(const TPortParameters &... port_parameters) :
-      structure::tConveniencePort<data_ports::tInputPort<T>, tModule, core::tPortGroup, &tModule::GetInputs>(port_parameters...)
-    {
-      this->RegisterActivityTransferInput(this);
-    }
-
-  private:
-    void RegisterActivityTransferInput(...)
-    {};
-    void RegisterActivityTransferInput(tInput<tActivity> *port)
-    {
-      static_cast<tModule *>(this->GetWrapped()->GetParent()->GetParent())->activity_transfer_inputs.push_back(*port);
-      std::cout << port->GetName() << std::endl;
-    }
+      structure::tConveniencePort<data_ports::tProxyPort<T, false>, tGroup, core::tPortGroup, &tGroup::GetInputs>(port_parameters...)
+    {}
   };
 
   template <typename T>
-  class tOutput : public structure::tConveniencePort<data_ports::tOutputPort<T>, tModule, core::tPortGroup, &tModule::GetOutputs>
+  class tOutput : public structure::tConveniencePort<data_ports::tProxyPort<T, true>, tGroup, core::tPortGroup, &tGroup::GetOutputs>
   {
   public:
-    template <typename ... TPortParameters>
+    template<typename ... TPortParameters>
     explicit tOutput(const TPortParameters &... port_parameters) :
-      structure::tConveniencePort<data_ports::tOutputPort<T>, tModule, core::tPortGroup, &tModule::GetOutputs>(port_parameters...)
+      structure::tConveniencePort<data_ports::tProxyPort<T, true>, tGroup, core::tPortGroup, &tGroup::GetOutputs>(port_parameters...)
     {}
   };
 
@@ -188,9 +169,26 @@ public:
 //----------------------------------------------------------------------
 public:
 
-  tModule(core::tFrameworkElement *parent, const std::string &name,
-          tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports, const char *prefix = "",
-          bool share_output_ports = false, bool share_input_ports = false);
+  /*!
+   * \param parent                  Parent
+   * \param name                    Name of module
+   * \param structure_config_file   XML
+   * \param share_so_and_ci_ports   Share sensor output and controller input ports so that they can be accessed from other runtime environments?
+   * \param extra_flags             Any extra flags for group
+   */
+  tGroup(core::tFrameworkElement *parent, const std::string &name,
+         tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports,
+         const std::string &structure_config_file = "",
+         bool share_output_ports = false, bool share_input_ports = false, tFlags extra_flags = tFlags());
+
+  /*!
+   * Get interface (or "port group") by name
+   *
+   * \param Interface name
+   * \return Interface with specified name (e.g. "Sensor Output")
+   * \throw std::runtime_error if no interface with this name can be obtained
+   */
+  core::tPortGroup &GetInterface(const std::string &interface_name);
 
   inline const tInhibitionPort &AddInhibition(const std::string &name)
   {
@@ -205,37 +203,14 @@ public:
 //----------------------------------------------------------------------
 protected:
 
-  virtual ~tModule();
-
   virtual void OnStaticParameterChange();
 
-  virtual void OnParameterChange();
+  void RegisterCharacteristicModule(tModule *module);
 
-  inline const tActivityPort &AddDerivedActivity(const std::string &name)
+  inline tModule &CharacteristicModule()
   {
-    this->derived_activity.push_back(tActivityPort(this, "(A) " + name));
-    this->derived_activity.back().Init();
-    return this->derived_activity.back();
-  }
-
-  /*!
-   * May be called in ProcessTransferFunction() method to check
-   * whether any input port has changed, since last call to ProcessTransferFunction().
-   *
-   * (Changed flags are reset automatically)
-   */
-  bool InputChanged()
-  {
-    return input_changed;
-  }
-
-  bool WarnNow() const
-  {
-    if (this->cycles_since_last_warning > this->number_of_cycles_with_suppressed_warnings.Get())
-    {
-      const_cast<tModule *>(this)->cycles_since_last_warning = 0;
-    }
-    return this->cycles_since_last_warning == 0;
+    assert(this->characteristic_module);
+    return *this->characteristic_module;
   }
 
 //----------------------------------------------------------------------
@@ -243,44 +218,20 @@ protected:
 //----------------------------------------------------------------------
 private:
 
-  class UpdateTask : public rrlib::thread::tTask
+  tModule *characteristic_module;
+
+  enum tInterfaceEnumeration
   {
-    tModule *const module;
-  public:
-    UpdateTask(tModule *module);
-    virtual void ExecuteTask();
-    inline const tFrameworkElement &GetLogDescription() const
-    {
-      return this->module->GetLogDescription();
-    }
+    eINTERFACE_INPUT,
+    eINTERFACE_OUTPUT,
+    eINTERFACE_DIMENSION
   };
 
-  UpdateTask update_task;
+  std::array<core::tPortGroup *, eINTERFACE_DIMENSION> interfaces;
 
-  bool input_changed;
+  core::tPortGroup &GetInterface(tInterfaceEnumeration interface);
 
-  unsigned int cycles_since_last_warning;
-  double last_activation;
-  tActivity last_activity;
-  tTargetRating last_target_rating;
-
-  std::vector<tInput<tActivity>> activity_transfer_inputs;
-
-  double CalculateActivation() const;
-
-  tInhibition CalculateInhibition() const;
-
-  void CheckActivityLimitation(tActivity activity, double activation);
-
-  void CheckGoalStateActivity(tActivity activity, tTargetRating target_rating, double activation);
-
-  void CheckDerivedActivities(std::vector<tActivity> &derived_activities, tActivity activity);
-
-  virtual bool ProcessTransferFunction(double activation) = 0;
-
-  virtual tActivity CalculateActivity(std::vector<tActivity> &derived_activities, double activation) const = 0;
-
-  virtual tTargetRating CalculateTargetRating(double activation) const = 0;
+  void ConnectCharacteristicModule();
 
 };
 

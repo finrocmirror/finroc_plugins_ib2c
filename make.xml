@@ -9,6 +9,7 @@
       mbbFusionBase.cpp
       mNumberToActivityConverter.cpp
       tCondition.h
+      tGroup.cpp
       tMetaSignal.h
       tModule.cpp
       tPortConnectionConstraint.cpp
@@ -21,6 +22,7 @@
   <finroclibrary name="test_behaviors">
     <sources>
       test/mbbTestModule.cpp
+      test/gbbTestGroup.cpp
     </sources>
   </finroclibrary>
 

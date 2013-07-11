@@ -5,13 +5,11 @@
       <file name="Implementation File (cpp)" extension="cpp" template="module.cpp.template" optional="true" preselected="true"/>
       <file name="Implementation File (hpp)" extension="hpp" template="module.hpp.template" optional="true"/>
     </type>
-<!--
     <type name="iB2CGroup" description="Behavior-based Group" format="UpperCamelCase" filename="qq(gbb$name)">
       <file name="Header File" extension="h" template="group.h.template"/>
       <file name="Implementation File (cpp)" extension="cpp" template="group.cpp.template" optional="true" preselected="true"/>
       <file name="Implementation File (hpp)" extension="hpp" template="group.hpp.template" optional="true"/>
     </type>
--->
   </section>
   <section name="Finroc Projects">
     <type name="iB2CModule" description="Behavior-based Module" format="UpperCamelCase" filename="qq(mbb$name)">
@@ -19,13 +17,11 @@
       <file name="Implementation File (cpp)" extension="cpp" template="module.cpp.template" optional="true" preselected="true"/>
       <file name="Implementation File (hpp)" extension="hpp" template="module.hpp.template" optional="true"/>
     </type>
-<!--
     <type name="iB2CGroup" description="Behavior-based Group" format="UpperCamelCase" filename="qq(gbb$name)">
       <file name="Header File" extension="h" template="group.h.template"/>
       <file name="Implementation File (cpp)" extension="cpp" template="group.cpp.template" optional="true" preselected="true"/>
       <file name="Implementation File (hpp)" extension="hpp" template="group.hpp.template" optional="true"/>
     </type>
--->
   </section>
   <section name="Finroc Tools">
     <type name="iB2CModule" description="Behavior-based Module" format="UpperCamelCase" filename="qq(mbb$name)">
@@ -33,13 +29,11 @@
       <file name="Implementation File (cpp)" extension="cpp" template="module.cpp.template" optional="true" preselected="true"/>
       <file name="Implementation File (hpp)" extension="hpp" template="module.hpp.template" optional="true"/>
     </type>
-<!--
     <type name="iB2CGroup" description="Behavior-based Group" format="UpperCamelCase" filename="qq(gbb$name)">
       <file name="Header File" extension="h" template="group.h.template"/>
       <file name="Implementation File (cpp)" extension="cpp" template="group.cpp.template" optional="true" preselected="true"/>
       <file name="Implementation File (hpp)" extension="hpp" template="group.hpp.template" optional="true"/>
     </type>
--->
   </section>
   <section name="Finroc Plugins">
     <type name="iB2CModule" description="Behavior-based Module" format="UpperCamelCase" filename="qq(mbb$name)">
@@ -47,12 +41,10 @@
       <file name="Implementation File (cpp)" extension="cpp" template="module.cpp.template" optional="true" preselected="true"/>
       <file name="Implementation File (hpp)" extension="hpp" template="module.hpp.template" optional="true"/>
     </type>
-<!--
     <type name="iB2CGroup" description="Behavior-based Group" format="UpperCamelCase" filename="qq(gbb$name)">
       <file name="Header File" extension="h" template="group.h.template"/>
       <file name="Implementation File (cpp)" extension="cpp" template="group.cpp.template" optional="true" preselected="true"/>
       <file name="Implementation File (hpp)" extension="hpp" template="group.hpp.template" optional="true"/>
     </type>
--->
   </section>
 </content_templates_extension>
