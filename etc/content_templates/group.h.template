@@ -73,6 +73,7 @@ public:
 public:
 
   gbb%%NAME%%(core::tFrameworkElement *parent, const std::string &name = "%%NAME%%",
+      %%INDENT_ONE_NAME%%ib2c::tStimulationMode stimulation_mode = ib2c::tStimulationMode::AUTO, unsigned int number_of_inhibition_ports = 0,
       %%INDENT_ONE_NAME%%const std::string &structure_config_file = __FILE__".xml");
 
 //----------------------------------------------------------------------
