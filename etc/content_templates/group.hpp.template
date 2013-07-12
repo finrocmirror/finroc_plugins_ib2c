@@ -59,7 +59,20 @@ gbb%%NAME%%<>::gbb%%NAME%%(core::tFrameworkElement *parent, const std::string &n
            %%INDENT_TWO_NAMES%%const std::string &structure_config_file) :
   ib2c::tGroup(parent, name, structure_config_file)
   If you have some member variables, please initialize them here. Especially built-in types (like pointers!). Delete this line otherwise!
-{}
+{
+  this->RegisterCharacteristicModule(new mbbFusion<>(this, "Fusion", 2));   Register the characteristic module for this group. Usually a fusion behavior.
+
+  mbbBehavior *behavior_1 = new mbbBehavior_1(this, "Behavior 1", ENABLED);   Create some behavior_1 that is fully stimulated
+  mbbBehavior *behavior_2 = new mbbBehavior_2(this, "Behavior 2", ENABLED);   Create some behavior_2 that is fully stimulated
+
+  mbbFusionBase &fusion = static_cast<mbbFusionBase &>(this->CharacteristicModule());   Treat characteristic module as mbbFusionBase (only valid if you know that it is an mbbFusion)
+
+  behavior_1->activity.ConnectTo(fusion.InputActivity(0));            Connect activity of behavior 1 to fusion module
+  behavior_1->target_rating.ConnectTo(fusion.InputTargetRating(0));   Connect target rating of behavior 1 to fusion module
+
+  behavior_2->activity.ConnectTo(fusion.InputActivity(1));            Connect activity of behavior 2 to fusion module
+  behavior_2->target_rating.ConnectTo(fusion.InputTargetRating(1));   Connect target rating of behavior 2 to fusion module
+}
 
 //----------------------------------------------------------------------
 // gbb%%NAME%% destructor
