@@ -4,6 +4,7 @@
 
   <finrocplugin name="ib2c">
     <sources>
+      gbbEmptyGroup.cpp
       mbbConditionalBehaviorStimulator.cpp
       mbbFusion.cpp
       mbbFusionBase.cpp
