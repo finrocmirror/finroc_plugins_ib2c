@@ -12,9 +12,9 @@
  *
  * \date    %%DATE%%
  *
- * \brief Contains g%%NAME%%
+ * \brief Contains gbb%%NAME%%
  *
- * \b g%%NAME%%
+ * \b gbb%%NAME%%
  *
  * %%DESCRIPTION%%
  *
@@ -88,6 +88,8 @@ private:
    * groups is already handled by the framework.
    */
   ~gbb%%NAME%%();
+
+  virtual void OnStaticParameterChange();   Might be needed to process static parameters. Delete otherwise!
 
 };
 

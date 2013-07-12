@@ -25,9 +25,9 @@
  *
  * \date    2013-07-04
  *
- * \brief Contains gTestGroup
+ * \brief Contains gbbTestGroup
  *
- * \b gTestGroup
+ * \b gbbTestGroup
  *
  * This is a test for iB2C groups.
  *

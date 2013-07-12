@@ -67,6 +67,19 @@ gbb%%NAME%%::~gbb%%NAME%%()
 {}
 
 //----------------------------------------------------------------------
+// gbb%%NAME%% OnStaticParameterChange
+//----------------------------------------------------------------------
+void gbb%%NAME%%::OnStaticParameterChange()
+{
+  tGroup::OnStaticParameterChange();
+
+  if (this->static_parameter_1.HasChanged())
+  {
+    As this static parameter has changed, do something with its value!
+  }
+}
+
+//----------------------------------------------------------------------
 // End of namespace declaration
 //----------------------------------------------------------------------
 %%CLOSE_NAMESPACE%%
