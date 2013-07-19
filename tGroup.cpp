@@ -171,6 +171,7 @@ void tGroup::RegisterCharacteristicModule(tModule *module)
 
   this->characteristic_module = module;
   this->characteristic_module->number_of_inhibition_ports.AttachTo(this->number_of_inhibition_ports);
+  this->OnStaticParameterChange();
   this->ConnectCharacteristicModule();
 }
 
@@ -183,6 +184,7 @@ void tGroup::ConnectCharacteristicModule()
 
   this->number_of_cycles_with_suppressed_warnings.AttachTo(this->characteristic_module->number_of_cycles_with_suppressed_warnings);
   this->stimulation_mode.AttachTo(this->characteristic_module->stimulation_mode);
+  this->characteristic_module->OnParameterChange();
 
   this->stimulation.ConnectTo(this->characteristic_module->stimulation);
 

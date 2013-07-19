@@ -102,8 +102,8 @@ void InitMainGroup(finroc::structure::tThreadContainer *main_thread, const std::
 
 //  new finroc::ib2c::mbbConditionalBehaviorStimulator(main_thread, "CBS");
 
-  finroc::ib2c::gbbTestGroup *group_1 = new finroc::ib2c::gbbTestGroup(main_thread, "Group 1");
-  group_1->number_of_inhibition_ports.Set(2);
+  finroc::ib2c::gbbTestGroup *group_1 = new finroc::ib2c::gbbTestGroup(main_thread, "Group 1", finroc::ib2c::tStimulationMode::AUTO, 2);
+//  group_1->number_of_inhibition_ports.Set(2);
 
   main_thread->SetCycleTime(500);
 }
