@@ -74,7 +74,7 @@ const unsigned int cMAX_NUMBER_OF_INPUT_MODULES = 1000;
 mbbFusionBase::mbbFusionBase(core::tFrameworkElement *parent, const std::string &name,
                              unsigned int number_of_input_modules,
                              tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports) :
-  tModule(parent, name, stimulation_mode, number_of_inhibition_ports, "(F) "),
+  tModule(parent, name, stimulation_mode, number_of_inhibition_ports),
 
   number_of_input_modules(number_of_input_modules, data_ports::tBounds<unsigned int>(1, cMAX_NUMBER_OF_INPUT_MODULES, data_ports::tOutOfBoundsAction::ADJUST_TO_RANGE))
 {

@@ -76,9 +76,9 @@ const size_t cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS = 250;
 // tModule constructors
 //----------------------------------------------------------------------
 tModule::tModule(core::tFrameworkElement *parent, const std::string &name,
-                 tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports, const char *prefix,
+                 tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports,
                  bool share_output_ports, bool share_input_ports) :
-  tModuleBase(parent, strncmp(name.c_str(), prefix, strlen(prefix)) ? prefix + name : name),
+  tModuleBase(parent, name),
 
   meta_input(new core::tPortGroup(this, "iB2C Input", tFlag::INTERFACE, share_input_ports ? tFlags(tFlag::SHARED) : tFlags())),
   input(new core::tPortGroup(this, "Input", tFlag::INTERFACE, share_input_ports ? tFlags(tFlag::SHARED) : tFlags())),

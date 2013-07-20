@@ -100,9 +100,10 @@ tGroup::tGroup(core::tFrameworkElement *parent, const std::string &name,
 
   characteristic_module(NULL)
 {
+  core::tFrameworkElementTags::AddTag(*this, "ib2c_group");
+
   this->interfaces.fill(NULL);
   this->EmplaceAnnotation<runtime_construction::tEditableInterfaces>(cSTATIC_INTERFACE_INFO_GROUP, this->interfaces.begin(), share_input_ports | (share_output_ports << 1));
-  core::tFrameworkElementTags::AddTag(*this, "ib2c_group");
 
   this->number_of_inhibition_ports.Set(number_of_inhibition_ports);
 }
