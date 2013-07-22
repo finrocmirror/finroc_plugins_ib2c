@@ -105,6 +105,8 @@ public:
 
   virtual core::tPortWrapperBase &OutputPort(size_t port_index) = 0;
 
+  virtual unsigned int MaxPortIndex() const = 0;
+
 //----------------------------------------------------------------------
 // Protected methods
 //----------------------------------------------------------------------

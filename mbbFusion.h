@@ -127,6 +127,11 @@ public:
 
   virtual core::tPortWrapperBase &OutputPort(size_t port_index);
 
+  virtual unsigned int MaxPortIndex() const
+  {
+    return tSignalTypes::cSIZE - 1;
+  }
+
 //----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------
