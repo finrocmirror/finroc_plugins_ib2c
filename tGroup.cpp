@@ -91,7 +91,7 @@ tGroup::tGroup(core::tFrameworkElement *parent, const std::string &name,
   number_of_inhibition_ports("Number Of Inhibition Ports", this),
 
   number_of_cycles_with_suppressed_warnings("Number Of Cycles With Suppressed Warnings", this, cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS),
-  stimulation_mode("Stimulation Mode", this),
+  stimulation_mode("Stimulation Mode", this, stimulation_mode),
 
   stimulation("Stimulation", this),
   activity("Activity", this),
