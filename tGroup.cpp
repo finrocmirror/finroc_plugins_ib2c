@@ -138,6 +138,8 @@ core::tPortGroup& tGroup::GetInterface(const std::string &interface_name)
 //----------------------------------------------------------------------
 void tGroup::OnStaticParameterChange()
 {
+  tGroupBase::OnStaticParameterChange();
+
   if (this->number_of_inhibition_ports.HasChanged())
   {
     while (this->inhibition.size() > this->number_of_inhibition_ports.Get())
@@ -157,7 +159,6 @@ void tGroup::OnStaticParameterChange()
       this->ConnectCharacteristicModule();
     }
   }
-
 }
 
 //----------------------------------------------------------------------
