@@ -68,8 +68,8 @@ typedef core::tFrameworkElement::tFlag tFlag;
 const size_t cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS = 250;
 const std::vector<tStaticInterfaceInfo>& cSTATIC_INTERFACE_INFO_GROUP =
 {
-  tStaticInterfaceInfo { "Input", tFlag::INTERFACE, tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA, false },
-  tStaticInterfaceInfo { "Output", tFlag::INTERFACE, tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::OUTPUT_PORT, false }
+  tStaticInterfaceInfo { "Input", tFlag::INTERFACE, tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::PUSH_STRATEGY, false },
+  tStaticInterfaceInfo { "Output", tFlag::INTERFACE, tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::OUTPUT_PORT | tFlag::PUSH_STRATEGY, false }
 };
 
 //----------------------------------------------------------------------
@@ -85,8 +85,8 @@ tGroup::tGroup(core::tFrameworkElement *parent, const std::string &name,
                bool share_output_ports, bool share_input_ports, tFlags extra_flags) :
   tGroupBase(parent, name, structure_config_file, extra_flags),
 
-  meta_input(new core::tPortGroup(this, "iB2C Input", tFlag::INTERFACE, share_input_ports ? tFlags(tFlag::SHARED) : tFlags())),
-  meta_output(new core::tPortGroup(this, "iB2C Output", tFlag::INTERFACE, share_output_ports ? tFlags(tFlag::SHARED) : tFlags())),
+  meta_input(new core::tPortGroup(this, "iB2C Input", tFlag::INTERFACE, tFlag::PUSH_STRATEGY | (share_input_ports ? tFlags(tFlag::SHARED) : tFlags()))),
+  meta_output(new core::tPortGroup(this, "iB2C Output", tFlag::INTERFACE, tFlag::PUSH_STRATEGY | (share_output_ports ? tFlags(tFlag::SHARED) : tFlags()))),
 
   number_of_inhibition_ports("Number Of Inhibition Ports", this),
 
