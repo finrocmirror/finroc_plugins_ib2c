@@ -128,7 +128,14 @@ public:
   typedef tMetaOutput<tActivity> tActivityPort;
   typedef tMetaOutput<tTargetRating> tTargetRatingPort;
 
-  typedef tMetaOutput<double> tActivationPort;
+  class tStatusPort : public structure::tConveniencePort<data_ports::tProxyPort<tStatus, true>, tGroup, core::tPortGroup, &tGroup::GetMetaOutputs>
+  {
+  public:
+    template <typename ... TPortParameters>
+    explicit tStatusPort(const TPortParameters &... port_parameters) :
+      structure::tConveniencePort<data_ports::tProxyPort<tStatus, true>, tGroup, core::tPortGroup, &tGroup::GetMetaOutputs>(port_parameters...)
+    {}
+  };
 
   template <typename T>
   class tInput : public structure::tConveniencePort<data_ports::tProxyPort<T, false>, tGroup, core::tPortGroup, &tGroup::GetInputs>
@@ -162,7 +169,7 @@ public:
   std::vector<tActivityPort> derived_activity;
   tTargetRatingPort target_rating;
 
-  tActivationPort activation;
+  tStatusPort status;
 
 //----------------------------------------------------------------------
 // Public methods and typedefs

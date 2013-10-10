@@ -93,7 +93,8 @@ tModule::tModule(core::tFrameworkElement *parent, const std::string &name,
   stimulation("Stimulation", this),
   activity("Activity", this),
   target_rating("Target Rating", this),
-  activation("Activation", this),
+
+  status("Status", this),
 
   update_task(this),
   input_changed(true),
@@ -338,7 +339,7 @@ void tModule::UpdateTask::ExecuteTask()
     this->module->derived_activity[i].Publish(derived_activities[i]);
   }
 
-  this->module->activation.Publish(activation);
+  this->module->status.Publish(tStatus {this->module->GetQualifiedName(), this->module->stimulation_mode.Get(), activity, target_rating, activation});
 }
 
 //----------------------------------------------------------------------

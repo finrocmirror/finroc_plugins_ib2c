@@ -46,6 +46,7 @@
 // Internal includes with ""
 //----------------------------------------------------------------------
 #include "plugins/ib2c/tMetaSignal.h"
+#include "plugins/ib2c/tStatus.h"
 
 //----------------------------------------------------------------------
 // Debugging
@@ -62,12 +63,6 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-enum class tStimulationMode
-{
-  AUTO,
-  ENABLED,
-  DISABLED
-};
 
 //----------------------------------------------------------------------
 // Class declaration
@@ -136,7 +131,14 @@ public:
   typedef tMetaOutput<tActivity> tActivityPort;
   typedef tMetaOutput<tTargetRating> tTargetRatingPort;
 
-  typedef tMetaOutput<double> tActivationPort;
+  class tStatusPort : public structure::tConveniencePort<data_ports::tOutputPort<tStatus>, tModule, core::tPortGroup, &tModule::GetMetaOutputs>
+  {
+  public:
+    template <typename ... TPortParameters>
+    explicit tStatusPort(const TPortParameters &... port_parameters) :
+      structure::tConveniencePort<data_ports::tOutputPort<tStatus>, tModule, core::tPortGroup, &tModule::GetMetaOutputs>(port_parameters...)
+    {}
+  };
 
   template <typename T>
   class tInput : public structure::tConveniencePort<data_ports::tInputPort<T>, tModule, core::tPortGroup, &tModule::GetInputs>
@@ -181,7 +183,7 @@ public:
   std::vector<tActivityPort> derived_activity;
   tTargetRatingPort target_rating;
 
-  tActivationPort activation;
+  tStatusPort status;
 
 //----------------------------------------------------------------------
 // Public methods and typedefs

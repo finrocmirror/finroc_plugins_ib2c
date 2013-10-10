@@ -14,6 +14,7 @@
       tMetaSignal.h
       tModule.cpp
       tPortConnectionConstraint.cpp
+      tStatus.h
       tViolation.h
       typeutil.h
       mbbLimitOutput.cpp

@@ -96,7 +96,8 @@ tGroup::tGroup(core::tFrameworkElement *parent, const std::string &name,
   stimulation("Stimulation", this),
   activity("Activity", this),
   target_rating("Target Rating", this),
-  activation("Activation", this),
+
+  status("Status", this),
 
   characteristic_module(NULL)
 {
@@ -200,7 +201,7 @@ void tGroup::ConnectCharacteristicModule()
   this->characteristic_module->activity.ConnectTo(this->activity);
   this->characteristic_module->target_rating.ConnectTo(this->target_rating);
 
-  this->characteristic_module->activation.ConnectTo(this->activation);
+  this->characteristic_module->status.ConnectTo(this->status);
 }
 
 //----------------------------------------------------------------------

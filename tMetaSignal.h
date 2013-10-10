@@ -38,7 +38,6 @@
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include <iostream>
-#include <sstream>
 
 #include "rrlib/serialization/serialization.h"
 
