@@ -339,7 +339,15 @@ void tModule::UpdateTask::ExecuteTask()
     this->module->derived_activity[i].Publish(derived_activities[i]);
   }
 
-  this->module->status.Publish(tStatus {this->module->GetQualifiedName(), this->module->stimulation_mode.Get(), activity, target_rating, activation});
+  // Publish status of behavior module
+  data_ports::tPortDataPointer<tStatus> status_buffer = this->module->status.GetUnusedBuffer();
+  status_buffer->name = this->module->GetName(); // since the name should stay the same, this should not allocate memory
+  status_buffer->module_handle = this->module->GetHandle();
+  status_buffer->stimulation_mode = this->module->stimulation_mode.Get();
+  status_buffer->activity = activity;
+  status_buffer->target_rating = target_rating;
+  status_buffer->activation = activation;
+  this->module->status.Publish(status_buffer);
 }
 
 //----------------------------------------------------------------------

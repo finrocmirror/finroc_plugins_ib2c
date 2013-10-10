@@ -77,37 +77,31 @@ enum class tStimulationMode
 struct tStatus
 {
   std::string name;
+  core::tFrameworkElement::tHandle module_handle;
   tStimulationMode stimulation_mode;
   tActivity activity;
   tTargetRating target_rating;
   double activation;
+
+  tStatus() :
+    name(),
+    module_handle(0),
+    stimulation_mode(tStimulationMode::AUTO),
+    activity(0),
+    target_rating(0),
+    activation(0)
+  {}
 };
-
-inline std::ostream &operator << (std::ostream &stream, const tStatus &status)
-{
-  stream << static_cast<uint8_t>(status.stimulation_mode) << status.activity << status.target_rating << status.activation;
-  return stream;
-}
-
-inline std::istream &operator >> (std::istream &stream, tStatus &status)
-{
-  uint8_t stimulation_mode;
-  stream >> stimulation_mode >> status.activity >> status.target_rating >> status.activation;
-  status.stimulation_mode = static_cast<tStimulationMode>(stimulation_mode);
-  return stream;
-}
 
 inline rrlib::serialization::tOutputStream &operator << (rrlib::serialization::tOutputStream &stream, const tStatus &status)
 {
-  stream << static_cast<uint8_t>(status.stimulation_mode) << status.activity << status.target_rating << status.activation;
+  stream << status.name << status.module_handle << status.stimulation_mode << status.activity << status.target_rating << status.activation;
   return stream;
 }
 
 inline rrlib::serialization::tInputStream &operator >> (rrlib::serialization::tInputStream &stream, tStatus &status)
 {
-  uint8_t stimulation_mode;
-  stream >> stimulation_mode >> status.activity >> status.target_rating >> status.activation;
-  status.stimulation_mode = static_cast<tStimulationMode>(stimulation_mode);
+  stream >> status.name >> status.module_handle >> status.stimulation_mode >> status.activity >> status.target_rating >> status.activation;
   return stream;
 }
 
