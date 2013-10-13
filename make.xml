@@ -18,6 +18,7 @@
       tViolation.h
       typeutil.h
       mbbLimitOutput.cpp
+      tGlobalService.cpp
     </sources>
   </finrocplugin>
 

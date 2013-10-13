@@ -1,6 +1,6 @@
 //
 // You received this file as part of Finroc
-// A framework for intelligent robot control
+// A Framework for intelligent robot control
 //
 // Copyright (C) Finroc GbR (finroc.org)
 //
@@ -19,35 +19,34 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    plugins/ib2c/tMetaSignal.h
+/*!\file    plugins/ib2c/tGlobalService.cpp
  *
- * \author  Tobias Föhst
+ * \author  Max Reichardt
  *
- * \date    2013-10-10
- *
- * \brief Contains tStatus
- *
- * \b tStatus
+ * \date    2013-10-13
  *
  */
 //----------------------------------------------------------------------
-#ifndef __plugins__ib2c__tStatus_h__
-#define __plugins__ib2c__tStatus_h__
+#include "plugins/ib2c/tGlobalService.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include <iostream>
-
-#include "rrlib/serialization/serialization.h"
+#include "core/tPlugin.h"
+#include "core/tRuntimeEnvironment.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "plugins/ib2c/tMetaSignal.h"
+#include "plugins/ib2c/tModule.h"
 
 //----------------------------------------------------------------------
 // Debugging
+//----------------------------------------------------------------------
+#include <cassert>
+
+//----------------------------------------------------------------------
+// Namespace usage
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
@@ -57,53 +56,67 @@ namespace finroc
 {
 namespace ib2c
 {
+namespace internal
+{
 
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-enum class tStimulationMode
-{
-  AUTO,
-  ENABLED,
-  DISABLED
-};
 
 //----------------------------------------------------------------------
-// Class declaration
+// Const values
 //----------------------------------------------------------------------
-//!
+static const char* cPORT_NAME = "ib2c";
+
+static rpc_ports::tRPCInterfaceType<tGlobalService> cTYPE("ib2c Interface", &tGlobalService::SetStimulationMode);
+
+//----------------------------------------------------------------------
+// Implementation
+//----------------------------------------------------------------------
+static tGlobalService global_service;
+
 /*!
- *
+ * Plugin class for ib2c
+ * (can also be moved to some other .cpp file - further initializations may be added)
  */
-struct tStatus
+class tPlugin : public core::tPlugin
 {
-  std::string name;
-  core::tFrameworkElement::tHandle module_handle;
-  tStimulationMode stimulation_mode;
-  tActivity activity;
-  tTargetRating target_rating;
-  double activation;
+public:
+  tPlugin() {}
 
-  tStatus() :
-    name(),
-    module_handle(0),
-    stimulation_mode(tStimulationMode::AUTO),
-    activity(0),
-    target_rating(0),
-    activation(0)
-  {}
+  virtual void Init() // TODO mark override with gcc 4.7
+  {
+    /*! Port that receives ib2c requests */
+    tGlobalService::CreateGlobalServicePort();
+  }
 };
 
-inline rrlib::serialization::tOutputStream &operator << (rrlib::serialization::tOutputStream &stream, const tStatus &status)
+static tPlugin plugin;
+
+} // namespace internal
+
+//----------------------------------------------------------------------
+// tGlobalService constructors
+//----------------------------------------------------------------------
+tGlobalService::tGlobalService()
+{}
+
+void tGlobalService::CreateGlobalServicePort()
 {
-  stream << status.name << status.module_handle << status.stimulation_mode << status.activity << status.target_rating << status.activation;
-  return stream;
+  rpc_ports::tServerPort<tGlobalService>(internal::global_service, internal::cPORT_NAME, internal::cTYPE, core::tFrameworkElement::tFlag::SHARED,
+                                         &core::tRuntimeEnvironment::GetInstance().GetElement(core::tSpecialRuntimeElement::SERVICES));
 }
 
-inline rrlib::serialization::tInputStream &operator >> (rrlib::serialization::tInputStream &stream, tStatus &status)
+void tGlobalService::SetStimulationMode(core::tFrameworkElement::tHandle module_handle, tStimulationMode mode)
 {
-  stream >> status.name >> status.module_handle >> status.stimulation_mode >> status.activity >> status.target_rating >> status.activation;
-  return stream;
+  core::tFrameworkElement* element = core::tRuntimeEnvironment::GetInstance().GetElement(module_handle);
+  tModule* module = dynamic_cast<tModule*>(element);
+  if (!module)
+  {
+    FINROC_LOG_PRINT(WARNING, "No behavior module with handle ", module_handle, " found. Stimulation mode not changed.");
+    return;
+  }
+  module->stimulation_mode.Set(mode);
 }
 
 //----------------------------------------------------------------------
@@ -111,6 +124,3 @@ inline rrlib::serialization::tInputStream &operator >> (rrlib::serialization::tI
 //----------------------------------------------------------------------
 }
 }
-
-
-#endif

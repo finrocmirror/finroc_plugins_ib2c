@@ -1,6 +1,6 @@
 //
 // You received this file as part of Finroc
-// A framework for intelligent robot control
+// A Framework for intelligent robot control
 //
 // Copyright (C) Finroc GbR (finroc.org)
 //
@@ -19,36 +19,32 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 //----------------------------------------------------------------------
-/*!\file    plugins/ib2c/tMetaSignal.h
+/*!\file    plugins/ib2c/tGlobalService.h
  *
- * \author  Tobias Föhst
+ * \author  Max Reichardt
  *
- * \date    2013-10-10
+ * \date    2013-10-13
  *
- * \brief Contains tStatus
+ * \brief   Contains tGlobalService
  *
- * \b tStatus
+ * \b tGlobalService
+ *
+ * Global service for ib2c behaviors
  *
  */
 //----------------------------------------------------------------------
-#ifndef __plugins__ib2c__tStatus_h__
-#define __plugins__ib2c__tStatus_h__
+#ifndef __plugins__ib2c__tGlobalService_h__
+#define __plugins__ib2c__tGlobalService_h__
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
-#include <iostream>
-
-#include "rrlib/serialization/serialization.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "plugins/ib2c/tMetaSignal.h"
-
-//----------------------------------------------------------------------
-// Debugging
-//----------------------------------------------------------------------
+#include "plugins/rpc_ports/tServerPort.h"
+#include "plugins/ib2c/tStatus.h"
 
 //----------------------------------------------------------------------
 // Namespace declaration
@@ -61,50 +57,43 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-enum class tStimulationMode
-{
-  AUTO,
-  ENABLED,
-  DISABLED
-};
 
 //----------------------------------------------------------------------
 // Class declaration
 //----------------------------------------------------------------------
-//!
+//! Global service for ib2c behaviors
 /*!
- *
+ * Global service for ib2c behaviors
  */
-struct tStatus
+class tGlobalService : public rpc_ports::tRPCInterface
 {
-  std::string name;
-  core::tFrameworkElement::tHandle module_handle;
-  tStimulationMode stimulation_mode;
-  tActivity activity;
-  tTargetRating target_rating;
-  double activation;
 
-  tStatus() :
-    name(),
-    module_handle(0),
-    stimulation_mode(tStimulationMode::AUTO),
-    activity(0),
-    target_rating(0),
-    activation(0)
-  {}
+//----------------------------------------------------------------------
+// Public methods and typedefs
+//----------------------------------------------------------------------
+public:
+
+  tGlobalService();
+
+  /*!
+   * Instantiates port for ib2c services
+   */
+  static void CreateGlobalServicePort();
+
+  /**
+   * Sets stimulation of behavior module with specified handle
+   *
+   * \param module_handle Runtime Handle of behavior module to modify
+   * \param mode New stimulation mode
+   */
+  void SetStimulationMode(core::tFrameworkElement::tHandle module_handle, tStimulationMode mode);
+
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
+
 };
-
-inline rrlib::serialization::tOutputStream &operator << (rrlib::serialization::tOutputStream &stream, const tStatus &status)
-{
-  stream << status.name << status.module_handle << status.stimulation_mode << status.activity << status.target_rating << status.activation;
-  return stream;
-}
-
-inline rrlib::serialization::tInputStream &operator >> (rrlib::serialization::tInputStream &stream, tStatus &status)
-{
-  stream >> status.name >> status.module_handle >> status.stimulation_mode >> status.activity >> status.target_rating >> status.activation;
-  return stream;
-}
 
 //----------------------------------------------------------------------
 // End of namespace declaration
