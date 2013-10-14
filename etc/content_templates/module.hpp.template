@@ -54,7 +54,7 @@
 //----------------------------------------------------------------------
 template <>
 mbb%%NAME%%<>::mbb%%NAME%%(core::tFrameworkElement *parent, const std::string &name,
-           %%INDENT_TWO_NAMES%%tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports) :
+           %%INDENT_TWO_NAMES%%ib2c::tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports) :
   ib2c::tModule(parent, name, stimulation_mode, number_of_inhibition_ports),
   If you have some member variables, please initialize them here. Especially built-in types (like pointers!). Delete this line otherwise!
 {}

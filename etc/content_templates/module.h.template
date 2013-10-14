@@ -73,7 +73,7 @@ public:
 public:
 
   mbb%%NAME%%(core::tFrameworkElement *parent, const std::string &name = "%%NAME%%",
-      %%INDENT_ONE_NAME%%tStimulationMode stimulation_mode = tStimulationMode::AUTO, unsigned int number_of_inhibition_ports = 0);
+      %%INDENT_ONE_NAME%%ib2c::tStimulationMode stimulation_mode = ib2c::tStimulationMode::AUTO, unsigned int number_of_inhibition_ports = 0);
 
 //----------------------------------------------------------------------
 // Private fields and methods
