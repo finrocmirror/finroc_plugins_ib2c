@@ -103,8 +103,12 @@ tGlobalService::tGlobalService()
 
 void tGlobalService::CreateGlobalServicePort()
 {
-  rpc_ports::tServerPort<tGlobalService>(internal::global_service, internal::cPORT_NAME, internal::cTYPE, core::tFrameworkElement::tFlag::SHARED,
-                                         &core::tRuntimeEnvironment::GetInstance().GetElement(core::tSpecialRuntimeElement::SERVICES));
+  rpc_ports::tServerPort<tGlobalService> port(internal::global_service, internal::cPORT_NAME, internal::cTYPE, core::tFrameworkElement::tFlag::SHARED,
+      &core::tRuntimeEnvironment::GetInstance().GetElement(core::tSpecialRuntimeElement::SERVICES));
+  if (port.GetParent()->IsReady())
+  {
+    port.Init();
+  }
 }
 
 void tGlobalService::SetStimulationMode(core::tFrameworkElement::tHandle module_handle, tStimulationMode mode)
