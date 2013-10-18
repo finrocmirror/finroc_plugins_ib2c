@@ -205,6 +205,12 @@ public:
     return this->inhibition.back();
   }
 
+  inline const tModule &CharacteristicModule() const
+  {
+    assert(this->characteristic_module);
+    return *this->characteristic_module;
+  }
+
 //----------------------------------------------------------------------
 // Protected methods
 //----------------------------------------------------------------------
