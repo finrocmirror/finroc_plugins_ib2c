@@ -68,8 +68,8 @@ typedef core::tFrameworkElement::tFlag tFlag;
 const size_t cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS = 250;
 const std::vector<tStaticInterfaceInfo>& cSTATIC_INTERFACE_INFO_GROUP =
 {
-  tStaticInterfaceInfo { "Input", tFlag::INTERFACE, tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::PUSH_STRATEGY, false },
-  tStaticInterfaceInfo { "Output", tFlag::INTERFACE, tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::OUTPUT_PORT | tFlag::PUSH_STRATEGY, false }
+  tStaticInterfaceInfo { "Input", tFlag::INTERFACE, tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::PUSH_STRATEGY, runtime_construction::tPortCreateOption::SHARED },
+  tStaticInterfaceInfo { "Output", tFlag::INTERFACE, tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::OUTPUT_PORT | tFlag::PUSH_STRATEGY, runtime_construction::tPortCreateOption::SHARED }
 };
 
 //----------------------------------------------------------------------
