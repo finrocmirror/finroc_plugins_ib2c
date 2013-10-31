@@ -77,7 +77,7 @@ public:
   tStaticParameter<unsigned int> number_of_signals;
 
   std::vector<tInput<double>> input_signals;
-  std::vector<tOutput<double> > output_signals;
+  std::vector<tOutput<double>> output_signals;
 
 //----------------------------------------------------------------------
 // Public methods and typedefs
