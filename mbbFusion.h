@@ -127,7 +127,7 @@ public:
 
   virtual core::tPortWrapperBase &OutputPort(size_t port_index);
 
-  virtual unsigned int MaxPortIndex() const
+  virtual size_t MaxPortIndex() const
   {
     return tSignalTypes::cSIZE - 1;
   }
@@ -144,7 +144,7 @@ private:
   };
 
   template <typename dummy>
-  struct tDataPortFuser<sizeof...(TSignalTypes), dummy>
+  struct tDataPortFuser < static_cast<size_t>(-1), dummy >
   {
     static bool PerformFusion(mbbFusion *parent);
   };

@@ -93,13 +93,13 @@ public:
 
   inline const tInput<double> &AddInputCondition(tConditionType type, tConditionRelation relation, double threshold, const std::string &name = "")
   {
-    this->input_conditions.push_back(tCondition(this, name != "" ? name : ("Input Condition " + (this->input_conditions.size() + 1)), type, relation, threshold));
+    this->input_conditions.push_back(tCondition(this, name != "" ? name : ("Input Condition " + std::to_string(this->input_conditions.size() + 1)), type, relation, threshold));
     return this->input_conditions.back().Input();
   }
 
   inline const tInput<double> &AddFeedbackCondition(tConditionType type, tConditionRelation relation, double threshold, const std::string &name = "")
   {
-    this->feedback_conditions.push_back(tCondition(this, name != "" ? name : ("Feedback Condition " + (this->feedback_conditions.size() + 1)), type, relation, threshold));
+    this->feedback_conditions.push_back(tCondition(this, name != "" ? name : ("Feedback Condition " + std::to_string(this->feedback_conditions.size() + 1)), type, relation, threshold));
     return this->feedback_conditions.back().Input();
   }
 

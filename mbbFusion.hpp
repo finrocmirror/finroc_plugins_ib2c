@@ -186,7 +186,7 @@ bool mbbFusion<TSignalTypes...>::ProcessTransferFunction(double activation)
     }
   }
 
-  return tDataPortFuser<0>::PerformFusion(this);
+  return tDataPortFuser < tSignalTypes::cSIZE - 1 >::PerformFusion(this);
 }
 
 //----------------------------------------------------------------------
@@ -249,20 +249,19 @@ template <typename ... TSignalTypes>
 template <size_t Tindex, typename dummy>
 bool mbbFusion<TSignalTypes...>::tDataPortFuser<Tindex, dummy>::PerformFusion(mbbFusion *parent)
 {
-  const size_t n = parent->input.size();
-
   typedef typename tSignalTypes::template tAt<Tindex>::tResult tPortData;
 
-  tPortData values[n];
-  for (size_t i = 0; i < n; ++i)
+  std::vector<tPortData> values;
+  values.reserve(parent->input.size());
+  for (auto it = parent->input.begin(); it != parent->input.end(); ++it)
   {
-    data_ports::tInputPort<tPortData> input_port = data_ports::tInputPort<tPortData>::Wrap(*parent->input[i].data.GetPort(Tindex).GetWrapped());
+    data_ports::tInputPort<tPortData> input_port = data_ports::tInputPort<tPortData>::Wrap(*it->data.GetPort(Tindex).GetWrapped());
     if (!input_port.IsConnected())
     {
       FINROC_LOG_PRINT_STATIC(ERROR, input_port.GetName(), " is not connected.");
       return false;
     }
-    values[i] = input_port.Get();
+    values.emplace_back(input_port.Get());
   }
 
   data_ports::tOutputPort<tPortData> output_port = data_ports::tOutputPort<tPortData>::Wrap(*parent->output.GetPort(Tindex).GetWrapped());
@@ -275,21 +274,21 @@ bool mbbFusion<TSignalTypes...>::tDataPortFuser<Tindex, dummy>::PerformFusion(mb
     break;
 
   case tFusionMethod::WEIGHTED_AVERAGE:
-    output_port.Publish(rrlib::data_fusion::FuseValuesUsingWeightedAverage<tPortData>(values, values + n, parent->input_activities.begin(), parent->input_activities.end()));
+    output_port.Publish(rrlib::data_fusion::FuseValuesUsingWeightedAverage<tPortData>(values.begin(), values.end(), parent->input_activities.begin(), parent->input_activities.end()));
     break;
 
   case tFusionMethod::WEIGHTED_SUM:
-    output_port.Publish(rrlib::data_fusion::FuseValuesUsingWeightedSum<tPortData>(values, values + n, parent->input_activities.begin(), parent->input_activities.end()));
+    output_port.Publish(rrlib::data_fusion::FuseValuesUsingWeightedSum<tPortData>(values.begin(), values.end(), parent->input_activities.begin(), parent->input_activities.end()));
     break;
 
   }
 
-  return tDataPortFuser < Tindex + 1, dummy >::PerformFusion(parent);
+  return tDataPortFuser < Tindex - 1, dummy >::PerformFusion(parent);
 }
 
 template <typename ... TSignalTypes>
 template <typename dummy>
-bool mbbFusion<TSignalTypes...>::tDataPortFuser<sizeof...(TSignalTypes), dummy>::PerformFusion(mbbFusion *parent)
+bool mbbFusion<TSignalTypes...>::tDataPortFuser < static_cast<size_t>(-1), dummy >::PerformFusion(mbbFusion *parent)
 {
   return true;
 }

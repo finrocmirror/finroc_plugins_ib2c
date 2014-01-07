@@ -88,7 +88,7 @@ void mbbLimitOutput::OnStaticParameterChange()
 {
   if (this->number_of_signals.HasChanged())
   {
-    FINROC_LOG_PRINTF(DEBUG, "number of signals has changed\n", this->number_of_signals.Get());
+    FINROC_LOG_PRINTF(DEBUG, "number of signals has changed\n");
 
     while (this->input_signals.size() > this->number_of_signals.Get())
     {
@@ -125,7 +125,7 @@ void mbbLimitOutput::OnStaticParameterChange()
       ++count;
     }
 
-    FINROC_LOG_PRINTF(DEBUG, "size of input signals: %i, size of output signals: %i", this->input_signals.size(), this->output_signals.size());
+    FINROC_LOG_PRINTF(DEBUG, "size of input signals: %zu, size of output signals: %zu", this->input_signals.size(), this->output_signals.size());
   }
 }
 
