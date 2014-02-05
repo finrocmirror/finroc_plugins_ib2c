@@ -35,6 +35,8 @@
 #include "core/tFrameworkElementTags.h"
 #include "plugins/runtime_construction/tEditableInterfaces.h"
 
+#include "rrlib/util/tTraceableException.h"
+
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
@@ -131,7 +133,7 @@ core::tPortGroup& tGroup::GetInterface(const std::string &interface_name)
       return GetInterface(static_cast<tInterfaceEnumeration>(i));
     }
   }
-  throw std::runtime_error("No interface with name '" + interface_name + "' is meant to be added to a group.");
+  throw rrlib::util::tTraceableException<std::runtime_error>("No interface with name '" + interface_name + "' is meant to be added to a group.");
 }
 
 //----------------------------------------------------------------------

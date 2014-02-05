@@ -228,10 +228,7 @@ void tModule::CheckActivityLimitation(tActivity activity, double activation)
 {
   if (activity > activation)
   {
-    std::stringstream message;
-    message << "Activity limitation: Activity = " << activity << " exceeds Activation = " << activation << "!";
-    FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
-    throw tViolation(message.str());
+    FINROC_LOG_THROW(tViolation("Activity limitation: Activity = "  + std::to_string(activity) + " exceeds Activation = " + std::to_string(activation) + "!"));
   }
 }
 
@@ -255,10 +252,7 @@ void tModule::CheckGoalStateActivity(tActivity activity, tTargetRating target_ra
 
     if (activity != this->last_activity && !activity_transfer_inputs_changed)
     {
-      std::stringstream message;
-      message << "Goal state activity: Target rating = 0 but Activity not constant!";
-      FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
-      throw tViolation(message.str());
+      FINROC_LOG_THROW(tViolation("Goal state activity: Target rating = 0 but Activity not constant!"));
     }
   }
 
@@ -276,18 +270,12 @@ void tModule::CheckDerivedActivities(std::vector<tActivity> &derived_activities,
   {
     if (!(0 <= derived_activities[i] && derived_activities[i] <= 1))
     {
-      std::stringstream message;
-      message << "Derived activity \"" << this->derived_activity[i].GetName() << "\" out of bounds: " << derived_activities[i];
-      FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
-      throw tViolation(message.str());
+      FINROC_LOG_THROW(tViolation("Derived activity \"" + this->derived_activity[i].GetName() + "\" out of bounds: " + std::to_string(derived_activities[i])));
     }
 
     if (derived_activities[i] > activity)
     {
-      std::stringstream message;
-      message << "Derived activity \"" << this->derived_activity[i].GetName() << "\" = " << derived_activities[i] << " exceeds Activity = " << activity << "!";
-      FINROC_LOG_PRINT(DEBUG_WARNING, tViolation(message.str()));
-      throw tViolation(message.str());
+      FINROC_LOG_THROW(tViolation("Derived activity \"" + this->derived_activity[i].GetName() + "\" = " + std::to_string(derived_activities[i]) + " exceeds Activity = " + std::to_string(activity)));
     }
   }
 }

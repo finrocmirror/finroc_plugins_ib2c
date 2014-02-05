@@ -40,6 +40,7 @@
 #include <iostream>
 
 #include "rrlib/serialization/serialization.h"
+#include "rrlib/util/tTraceableException.h"
 
 //----------------------------------------------------------------------
 // Internal includes with ""
@@ -106,7 +107,7 @@ public:
   {
     if (0 > value || value > 1)
     {
-      throw tViolation("Meta signal out of bounds!");
+      throw rrlib::util::tTraceableException<tViolation>("Meta signal out of bounds!");
     }
   }
 
