@@ -132,13 +132,13 @@ private:
 
   void AdjustConditionList(std::vector<tCondition> &condition_list, size_t size, const std::string &name_prefix);
 
-  virtual void OnStaticParameterChange();
+  virtual void OnStaticParameterChange() override;
 
-  virtual bool ProcessTransferFunction(double activation);
+  virtual bool ProcessTransferFunction(double activation) override;
 
-  virtual tActivity CalculateActivity(std::vector<tActivity> &derived_activities, double activity) const;
+  virtual tActivity CalculateActivity(std::vector<tActivity> &derived_activities, double activity) const override;
 
-  virtual tTargetRating CalculateTargetRating(double activation) const;
+  virtual tTargetRating CalculateTargetRating(double activation) const override;
 
 };
 

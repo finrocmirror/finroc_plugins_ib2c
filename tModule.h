@@ -209,9 +209,9 @@ protected:
 
   virtual ~tModule();
 
-  virtual void OnStaticParameterChange();
+  virtual void OnStaticParameterChange() override;
 
-  virtual void OnParameterChange();
+  virtual void OnParameterChange() override;
 
   inline const tActivityPort &AddDerivedActivity(const std::string &name)
   {
@@ -250,7 +250,7 @@ private:
     tModule *const module;
   public:
     UpdateTask(tModule *module);
-    virtual void ExecuteTask();
+    virtual void ExecuteTask() override;
     inline const tFrameworkElement &GetLogDescription() const
     {
       return this->module->GetLogDescription();

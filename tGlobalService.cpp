@@ -84,7 +84,7 @@ class tPlugin : public core::tPlugin
 public:
   tPlugin() {}
 
-  virtual void Init() // TODO mark override with gcc 4.7
+  virtual void Init() override
   {
     /*! Port that receives ib2c requests */
     tGlobalService::CreateGlobalServicePort();

@@ -104,9 +104,9 @@ private:
    */
   ~mNumberToActivityConverter();
 
-  virtual void OnParameterChange();
+  virtual void OnParameterChange() override;
 
-  virtual void Update();
+  virtual void Update() override;
 
 };
 

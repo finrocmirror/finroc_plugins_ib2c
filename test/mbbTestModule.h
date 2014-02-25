@@ -99,11 +99,11 @@ private:
   ~mbbTestModule()
   {}
 
-  virtual bool ProcessTransferFunction(double activation);
+  virtual bool ProcessTransferFunction(double activation) override;
 
-  virtual tActivity CalculateActivity(std::vector<tActivity> &derived_activities, double activation) const;
+  virtual tActivity CalculateActivity(std::vector<tActivity> &derived_activities, double activation) const override;
 
-  virtual tTargetRating CalculateTargetRating(double activation) const;
+  virtual tTargetRating CalculateTargetRating(double activation) const override;
 
 };
 

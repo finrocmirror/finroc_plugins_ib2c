@@ -100,7 +100,7 @@ private:
    */
   ~gbbEmptyGroup();
 
-  virtual void OnStaticParameterChange();
+  virtual void OnStaticParameterChange() override;
 
 };
 

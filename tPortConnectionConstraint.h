@@ -75,9 +75,9 @@ class tPortConnectionConstraint : public core::tPortConnectionConstraint
 //----------------------------------------------------------------------
 public:
 
-  virtual bool AllowPortConnection(const core::tAbstractPort &source_port, const core::tAbstractPort &destination_port) const;
+  virtual bool AllowPortConnection(const core::tAbstractPort &source_port, const core::tAbstractPort &destination_port) const override;
 
-  virtual const char* Description() const;
+  virtual const char* Description() const override;
 
 };
 

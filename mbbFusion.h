@@ -119,15 +119,15 @@ public:
             unsigned int number_of_input_modules = 1,
             tStimulationMode stimulation_mode = tStimulationMode::AUTO, unsigned int number_of_inhibition_ports = 0);
 
-  virtual tInputActivityPort &InputActivity(size_t channel_index);
+  virtual tInputActivityPort &InputActivity(size_t channel_index) override;
 
-  virtual tInputTargetRatingPort &InputTargetRating(size_t channel_index);
+  virtual tInputTargetRatingPort &InputTargetRating(size_t channel_index) override;
 
-  virtual core::tPortWrapperBase &InputPort(size_t channel_index, size_t port_index);
+  virtual core::tPortWrapperBase &InputPort(size_t channel_index, size_t port_index) override;
 
-  virtual core::tPortWrapperBase &OutputPort(size_t port_index);
+  virtual core::tPortWrapperBase &OutputPort(size_t port_index) override;
 
-  virtual size_t MaxPortIndex() const
+  virtual size_t MaxPortIndex() const override
   {
     return tSignalTypes::cSIZE - 1;
   }
@@ -155,13 +155,13 @@ private:
 
   void AdjustInputChannels();
 
-  virtual void OnStaticParameterChange();
+  virtual void OnStaticParameterChange() override;
 
-  virtual bool ProcessTransferFunction(double activation);
+  virtual bool ProcessTransferFunction(double activation) override;
 
-  virtual tActivity CalculateActivity(std::vector<tActivity> &derived_activities, double activation) const;
+  virtual tActivity CalculateActivity(std::vector<tActivity> &derived_activities, double activation) const override;
 
-  virtual tTargetRating CalculateTargetRating(double activation) const;
+  virtual tTargetRating CalculateTargetRating(double activation) const override;
 
 };
 

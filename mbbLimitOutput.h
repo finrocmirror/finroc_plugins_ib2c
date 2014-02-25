@@ -98,13 +98,13 @@ private:
    */
   ~mbbLimitOutput();
 
-  virtual void OnStaticParameterChange();
+  virtual void OnStaticParameterChange() override;
 
-  virtual bool ProcessTransferFunction(double activation);
+  virtual bool ProcessTransferFunction(double activation) override;
 
-  virtual ib2c::tActivity CalculateActivity(std::vector<ib2c::tActivity> &derived_activities, double activation) const;
+  virtual ib2c::tActivity CalculateActivity(std::vector<ib2c::tActivity> &derived_activities, double activation) const override;
 
-  virtual ib2c::tTargetRating CalculateTargetRating(double activation) const;
+  virtual ib2c::tTargetRating CalculateTargetRating(double activation) const override;
 
 };
 

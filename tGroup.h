@@ -216,7 +216,7 @@ public:
 //----------------------------------------------------------------------
 protected:
 
-  virtual void OnStaticParameterChange();
+  virtual void OnStaticParameterChange() override;
 
   void RegisterCharacteristicModule(tModule *module);
 
