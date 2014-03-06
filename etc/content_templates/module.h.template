@@ -89,15 +89,15 @@ private:
    */
   ~mbb%%NAME%%();
 
-  virtual void OnStaticParameterChange();   Might be needed to process static parameters. Delete otherwise!
+  virtual void OnStaticParameterChange() override;   Might be needed to process static parameters. Delete otherwise!
 
-  virtual void OnParameterChange();   Might be needed to react to changes in parameters independent from Update() calls. Delete otherwise!
+  virtual void OnParameterChange() override;   Might be needed to react to changes in parameters independent from Update() calls. Delete otherwise!
 
-  virtual bool ProcessTransferFunction(double activation);
+  virtual bool ProcessTransferFunction(double activation) override;
 
-  virtual ib2c::tActivity CalculateActivity(std::vector<ib2c::tActivity> &derived_activities, double activation) const;
+  virtual ib2c::tActivity CalculateActivity(std::vector<ib2c::tActivity> &derived_activities, double activation) const override;
 
-  virtual ib2c::tTargetRating CalculateTargetRating(double activation) const;
+  virtual ib2c::tTargetRating CalculateTargetRating(double activation) const override;
 
 };
 

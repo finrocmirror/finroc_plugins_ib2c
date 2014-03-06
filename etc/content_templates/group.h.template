@@ -90,7 +90,7 @@ private:
    */
   ~gbb%%NAME%%();
 
-  virtual void OnStaticParameterChange();   Might be needed to process static parameters. Delete otherwise!
+  virtual void OnStaticParameterChange() override;   Might be needed to process static parameters. Delete otherwise!
 
 };
 
