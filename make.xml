@@ -19,6 +19,7 @@
       typeutil.h
       mbbLimitOutput.cpp
       tGlobalService.cpp
+      tFunctions.cpp
     </sources>
   </finrocplugin>
 
