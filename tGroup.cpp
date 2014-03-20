@@ -85,7 +85,7 @@ tGroup::tGroup(core::tFrameworkElement *parent, const std::string &name,
                tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports,
                const std::string &structure_config_file,
                bool share_output_ports, bool share_input_ports, tFlags extra_flags) :
-  tGroupBase(parent, name, structure_config_file, extra_flags),
+  tCompositeComponent(parent, name, structure_config_file, extra_flags),
 
   meta_input(new core::tPortGroup(this, "iB2C Input", tFlag::INTERFACE, tFlag::PUSH_STRATEGY | (share_input_ports ? tFlags(tFlag::SHARED) : tFlags()))),
   meta_output(new core::tPortGroup(this, "iB2C Output", tFlag::INTERFACE, tFlag::PUSH_STRATEGY | (share_output_ports ? tFlags(tFlag::SHARED) : tFlags()))),
@@ -141,7 +141,7 @@ core::tPortGroup& tGroup::GetInterface(const std::string &interface_name)
 //----------------------------------------------------------------------
 void tGroup::OnStaticParameterChange()
 {
-  tGroupBase::OnStaticParameterChange();
+  tCompositeComponent::OnStaticParameterChange();
 
   if (this->number_of_inhibition_ports.HasChanged())
   {

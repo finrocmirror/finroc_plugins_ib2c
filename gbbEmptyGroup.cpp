@@ -71,9 +71,8 @@ runtime_construction::tStandardCreateModuleAction<gbbEmptyGroup> cCREATE_ACTION_
 // gTestGroup constructor
 //----------------------------------------------------------------------
 gbbEmptyGroup::gbbEmptyGroup(core::tFrameworkElement *parent, const std::string &name,
-                             tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports,
-                             const std::string &structure_config_file) :
-  ib2c::tGroup(parent, name, stimulation_mode, number_of_inhibition_ports, structure_config_file)
+                             tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports) :
+  ib2c::tGroup(parent, name, stimulation_mode, number_of_inhibition_ports)
 {}
 
 //----------------------------------------------------------------------

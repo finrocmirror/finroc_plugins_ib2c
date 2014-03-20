@@ -34,7 +34,7 @@
 #ifndef __plugins__ib2c__tGroup_h__
 #define __plugins__ib2c__tGroup_h__
 
-#include "plugins/structure/tGroupBase.h"
+#include "plugins/structure/tCompositeComponent.h"
 
 //----------------------------------------------------------------------
 // External includes (system with <>, local with "")
@@ -71,7 +71,7 @@ namespace ib2c
 /*!
  *
  */
-class tGroup : public structure::tGroupBase
+class tGroup : public structure::tCompositeComponent
 {
 
   core::tPortGroup *meta_input;
