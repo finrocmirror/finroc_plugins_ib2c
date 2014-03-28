@@ -67,7 +67,7 @@ namespace data_ports
  *
  */
 template <int Tmeta_signal_type>
-struct tIsNumeric<ib2c::tMetaSignal<Tmeta_signal_type>>
+struct IsNumeric<ib2c::tMetaSignal<Tmeta_signal_type>>
 {
   enum { value = 1 };
 };
