@@ -56,7 +56,7 @@ runtime_construction::tStandardCreateModuleAction<mbb%%NAME%%> cCREATE_ACTION_FO
 //----------------------------------------------------------------------
 mbb%%NAME%%::mbb%%NAME%%(core::tFrameworkElement *parent, const std::string &name,
          %%INDENT_TWO_NAMES%%ib2c::tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports) :
-  ib2c::tModule(parent, name, stimulation_mode, number_of_inhibition_ports),
+  tModule(parent, name, stimulation_mode, number_of_inhibition_ports, false) // change to 'true' to make group's ports shared (so that ports in other processes can connect to its output and/or input ports)
   If you have some member variables, please initialize them here. Especially built-in types (like pointers!). Delete this line otherwise!
 {}
 

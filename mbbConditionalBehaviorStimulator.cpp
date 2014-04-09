@@ -73,7 +73,7 @@ runtime_construction::tStandardCreateModuleAction<mbbConditionalBehaviorStimulat
 //----------------------------------------------------------------------
 mbbConditionalBehaviorStimulator::mbbConditionalBehaviorStimulator(core::tFrameworkElement *parent, const std::string &name,
     tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports) :
-  ib2c::tModule(parent, name, stimulation_mode, number_of_inhibition_ports),
+  tModule(parent, name, stimulation_mode, number_of_inhibition_ports),
 
   reset_requests(0),
   all_input_conditions_fulfilled(false)

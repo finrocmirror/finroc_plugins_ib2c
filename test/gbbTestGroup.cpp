@@ -75,7 +75,7 @@ runtime_construction::tStandardCreateModuleAction<gbbTestGroup> cCREATE_ACTION_F
 gbbTestGroup::gbbTestGroup(core::tFrameworkElement *parent, const std::string &name,
                            tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports,
                            const std::string &structure_config_file) :
-  ib2c::tGroup(parent, name, stimulation_mode, number_of_inhibition_ports, structure_config_file)
+  tGroup(parent, name, stimulation_mode, number_of_inhibition_ports, structure_config_file)
 {
   this->RegisterCharacteristicModule(new mbbFusion<int, double, rrlib::math::tAngleRad>(this, "Fusion", 2));
 
