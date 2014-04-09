@@ -180,13 +180,13 @@ public:
    * \param parent                  Parent
    * \param name                    Name of module
    * \param structure_config_file   XML
-   * \param share_so_and_ci_ports   Share sensor output and controller input ports so that they can be accessed from other runtime environments?
+   * \param share_ports             Share group's ports so that they can be accessed from other runtime environments?
    * \param extra_flags             Any extra flags for group
    */
   tGroup(core::tFrameworkElement *parent, const std::string &name,
          tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports,
          const std::string &structure_config_file = "",
-         bool share_output_ports = false, bool share_input_ports = false, tFlags extra_flags = tFlags());
+         bool share_ports = false, tFlags extra_flags = tFlags());
 
   /*!
    * Get interface (or "port group") by name

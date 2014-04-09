@@ -84,11 +84,11 @@ const std::vector<tStaticInterfaceInfo>& cSTATIC_INTERFACE_INFO_GROUP =
 tGroup::tGroup(core::tFrameworkElement *parent, const std::string &name,
                tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports,
                const std::string &structure_config_file,
-               bool share_output_ports, bool share_input_ports, tFlags extra_flags) :
+               bool share_ports, tFlags extra_flags) :
   tCompositeComponent(parent, name, structure_config_file, extra_flags),
 
-  meta_input(new core::tPortGroup(this, "iB2C Input", tFlag::INTERFACE, tFlag::PUSH_STRATEGY | (share_input_ports ? tFlags(tFlag::SHARED) : tFlags()))),
-  meta_output(new core::tPortGroup(this, "iB2C Output", tFlag::INTERFACE, tFlag::PUSH_STRATEGY | (share_output_ports ? tFlags(tFlag::SHARED) : tFlags()))),
+  meta_input(new core::tPortGroup(this, "iB2C Input", tFlag::INTERFACE, tFlag::PUSH_STRATEGY | (share_ports ? tFlags(tFlag::SHARED) : tFlags()))),
+  meta_output(new core::tPortGroup(this, "iB2C Output", tFlag::INTERFACE, tFlag::PUSH_STRATEGY | (share_ports ? tFlags(tFlag::SHARED) : tFlags()))),
 
   number_of_inhibition_ports("Number Of Inhibition Ports", this),
 
@@ -106,7 +106,7 @@ tGroup::tGroup(core::tFrameworkElement *parent, const std::string &name,
   core::tFrameworkElementTags::AddTag(*this, "ib2c_group");
 
   this->interfaces.fill(NULL);
-  this->EmplaceAnnotation<runtime_construction::tEditableInterfaces>(cSTATIC_INTERFACE_INFO_GROUP, this->interfaces.begin(), share_input_ports | (share_output_ports << 1));
+  this->EmplaceAnnotation<runtime_construction::tEditableInterfaces>(cSTATIC_INTERFACE_INFO_GROUP, this->interfaces.begin(), share_ports | (share_ports << 1));
 
   this->number_of_inhibition_ports.Set(number_of_inhibition_ports);
 }

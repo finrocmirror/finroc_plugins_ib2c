@@ -77,13 +77,13 @@ const size_t cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS = 250;
 //----------------------------------------------------------------------
 tModule::tModule(core::tFrameworkElement *parent, const std::string &name,
                  tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports,
-                 bool share_output_ports, bool share_input_ports) :
+                 bool share_ports) :
   tModuleBase(parent, name),
 
-  meta_input(new core::tPortGroup(this, "iB2C Input", tFlag::INTERFACE, share_input_ports ? tFlags(tFlag::SHARED) : tFlags())),
-  input(new core::tPortGroup(this, "Input", tFlag::INTERFACE, share_input_ports ? tFlags(tFlag::SHARED) : tFlags())),
-  meta_output(new core::tPortGroup(this, "iB2C Output", tFlag::INTERFACE, share_output_ports ? tFlags(tFlag::SHARED) : tFlags())),
-  output(new core::tPortGroup(this, "Output", tFlag::INTERFACE, share_output_ports ? tFlags(tFlag::SHARED) : tFlags())),
+  meta_input(new core::tPortGroup(this, "iB2C Input", tFlag::INTERFACE, share_ports ? tFlags(tFlag::SHARED) : tFlags())),
+  input(new core::tPortGroup(this, "Input", tFlag::INTERFACE, share_ports ? tFlags(tFlag::SHARED) : tFlags())),
+  meta_output(new core::tPortGroup(this, "iB2C Output", tFlag::INTERFACE, share_ports ? tFlags(tFlag::SHARED) : tFlags())),
+  output(new core::tPortGroup(this, "Output", tFlag::INTERFACE, share_ports ? tFlags(tFlag::SHARED) : tFlags())),
 
   number_of_inhibition_ports("Number Of Inhibition Ports", this),
 

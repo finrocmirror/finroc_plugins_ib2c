@@ -192,7 +192,7 @@ public:
 
   tModule(core::tFrameworkElement *parent, const std::string &name,
           tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports,
-          bool share_output_ports = false, bool share_input_ports = false);
+          bool share_ports = false);
 
   inline const tInhibitionPort &AddInhibition(const std::string &name)
   {

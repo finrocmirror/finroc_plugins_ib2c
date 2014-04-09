@@ -79,8 +79,8 @@ gbbTestGroup::gbbTestGroup(core::tFrameworkElement *parent, const std::string &n
 {
   this->RegisterCharacteristicModule(new mbbFusion<int, double, rrlib::math::tAngleRad>(this, "Fusion", 2));
 
-  mbbTestModule *module_1 = new finroc::ib2c::mbbTestModule(this, "Module 1", tStimulationMode::ENABLED);
-  mbbTestModule *module_2 = new finroc::ib2c::mbbTestModule(this, "Module 2", tStimulationMode::ENABLED);
+  mbbTestModule *module_1 = new ib2c::mbbTestModule(this, "Module 1", tStimulationMode::ENABLED);
+  mbbTestModule *module_2 = new ib2c::mbbTestModule(this, "Module 2", tStimulationMode::ENABLED);
 
   this->input1_1.ConnectTo(module_1->input1);
   this->input1_2.ConnectTo(module_1->input2);
