@@ -240,6 +240,12 @@ protected:
     return this->cycles_since_last_warning == 0;
   }
 
+  static bool IsConnectedToOutputPort(const core::tAbstractPort &port);
+  static inline bool IsConnectedToOutputPort(const core::tPortWrapperBase &port)
+  {
+    return IsConnectedToOutputPort(*port.GetWrapped());
+  }
+
 //----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------

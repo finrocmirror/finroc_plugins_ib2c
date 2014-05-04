@@ -156,6 +156,21 @@ void tModule::OnParameterChange()
 }
 
 //----------------------------------------------------------------------
+// tModule IsConnectedToOutputPort
+//----------------------------------------------------------------------
+bool tModule::IsConnectedToOutputPort(const core::tAbstractPort &port)
+{
+  for (auto it = port.IncomingConnectionsBegin(); it != port.IncomingConnectionsEnd(); ++it)
+  {
+    if (it->IsOutputPort() || IsConnectedToOutputPort(*it))
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+//----------------------------------------------------------------------
 // tModule CalculateActivation
 //----------------------------------------------------------------------
 double tModule::CalculateActivation() const
@@ -166,7 +181,7 @@ double tModule::CalculateActivation() const
   switch (this->stimulation_mode.Get())
   {
   case tStimulationMode::AUTO:
-    if (!this->stimulation.IsConnected())
+    if (!IsConnectedToOutputPort(this->stimulation))
     {
       if (this->WarnNow())
       {
@@ -178,7 +193,7 @@ double tModule::CalculateActivation() const
     break;
 
   case tStimulationMode::ENABLED:
-    if (this->stimulation.IsConnected())
+    if (IsConnectedToOutputPort(this->stimulation))
     {
       if (this->WarnNow())
       {
@@ -189,7 +204,7 @@ double tModule::CalculateActivation() const
     break;
 
   case tStimulationMode::DISABLED:
-    if (this->stimulation.IsConnected())
+    if (IsConnectedToOutputPort(this->stimulation))
     {
       if (this->WarnNow())
       {
@@ -212,7 +227,7 @@ tInhibition tModule::CalculateInhibition() const
 
   for (auto it = this->inhibition.begin(); it != this->inhibition.end(); ++it)
   {
-    if (it->IsConnected())
+    if (IsConnectedToOutputPort(*it))
     {
       inhibition = std::max(inhibition, it->Get());
     }
