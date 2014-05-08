@@ -160,7 +160,7 @@ bool mbbFusion<TSignalTypes...>::ProcessTransferFunction(double activation)
 
   for (size_t i = 0; i < this->input.size(); ++i)
   {
-    if (!this->input[i].activity.IsConnected())
+    if (!IsConnectedToOutputPort(this->input[i].activity))
     {
       if (this->WarnNow())
       {
@@ -168,7 +168,7 @@ bool mbbFusion<TSignalTypes...>::ProcessTransferFunction(double activation)
       }
       return false;
     }
-    if (!this->input[i].target_rating.IsConnected())
+    if (!IsConnectedToOutputPort(this->input[i].target_rating))
     {
       if (this->WarnNow())
       {
@@ -256,7 +256,7 @@ bool mbbFusion<TSignalTypes...>::tDataPortFuser<Tindex, dummy>::PerformFusion(mb
   for (auto it = parent->input.begin(); it != parent->input.end(); ++it)
   {
     data_ports::tInputPort<tPortData> input_port = data_ports::tInputPort<tPortData>::Wrap(*it->data.GetPort(Tindex).GetWrapped());
-    if (!input_port.IsConnected())
+    if (!IsConnectedToOutputPort(input_port))
     {
       FINROC_LOG_PRINT_STATIC(ERROR, input_port.GetName(), " is not connected.");
       return false;
