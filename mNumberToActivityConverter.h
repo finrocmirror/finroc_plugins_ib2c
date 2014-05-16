@@ -79,7 +79,7 @@ class mNumberToActivityConverter : public structure::tModule
 //----------------------------------------------------------------------
 public:
 
-  tParameter<unsigned int> number_of_ports;
+  tStaticParameter<unsigned int> number_of_ports;
 
   std::vector<tInput<double>> input;
 
@@ -90,7 +90,8 @@ public:
 //----------------------------------------------------------------------
 public:
 
-  mNumberToActivityConverter(core::tFrameworkElement *parent, const std::string &name = "NumberToActivityConverter");
+  mNumberToActivityConverter(core::tFrameworkElement *parent, const std::string &name = "NumberToActivityConverter",
+                             unsigned int number_of_ports = 1);
 
 //----------------------------------------------------------------------
 // Private fields and methods
@@ -104,7 +105,9 @@ private:
    */
   ~mNumberToActivityConverter();
 
-  virtual void OnParameterChange();
+  void AdjustPorts();
+
+  virtual void OnStaticParameterChange();
 
   virtual void Update();
 

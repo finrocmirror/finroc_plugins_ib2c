@@ -70,10 +70,13 @@ runtime_construction::tStandardCreateModuleAction<mNumberToActivityConverter> cC
 //----------------------------------------------------------------------
 // mNumberToActivityConverter constructor
 //----------------------------------------------------------------------
-mNumberToActivityConverter::mNumberToActivityConverter(core::tFrameworkElement *parent, const std::string &name) :
+mNumberToActivityConverter::mNumberToActivityConverter(core::tFrameworkElement *parent, const std::string &name,
+    unsigned int number_of_ports) :
   tModule(parent, name),
-  number_of_ports(1)
-{}
+  number_of_ports(number_of_ports)
+{
+  this->AdjustPorts();
+}
 
 //----------------------------------------------------------------------
 // mNumberToActivityConverter destructor
@@ -82,24 +85,33 @@ mNumberToActivityConverter::~mNumberToActivityConverter()
 {}
 
 //----------------------------------------------------------------------
-// mNumberToActivityConverter EvaluateParameters
+// mNumberToActivityConverter AdjustPorts
 //----------------------------------------------------------------------
-void mNumberToActivityConverter::OnParameterChange()
+void mNumberToActivityConverter::AdjustPorts()
+{
+  while (this->input.size() > this->number_of_ports.Get())
+  {
+    this->input.back().GetWrapped()->ManagedDelete();
+    this->input.pop_back();
+    this->output.back().GetWrapped()->ManagedDelete();
+    this->output.pop_back();
+  }
+  for (size_t i = this->input.size(); i < this->number_of_ports.Get(); ++i)
+  {
+    this->input.push_back(tInput<double>("Input Signal " + std::to_string(i + 1), this));
+    this->output.push_back(tOutput<tActivity>("Output Signal " + std::to_string(i + 1), this));
+  }
+  assert(this->input.size() == this->output.size());
+}
+
+//----------------------------------------------------------------------
+// mNumberToActivityConverter OnStaticParameterChange
+//----------------------------------------------------------------------
+void mNumberToActivityConverter::OnStaticParameterChange()
 {
   if (this->number_of_ports.HasChanged())
   {
-    while (this->input.size() > this->number_of_ports.Get())
-    {
-      this->input.back().GetWrapped()->ManagedDelete();
-      this->input.pop_back();
-      this->output.back().GetWrapped()->ManagedDelete();
-      this->output.pop_back();
-    }
-    for (size_t i = this->input.size(); i < this->number_of_ports.Get(); ++i)
-    {
-      this->input.push_back(tInput<double>("Input Signal " + std::to_string(i + 1), this));
-      this->output.push_back(tOutput<tActivity>("Output Signal " + std::to_string(i + 1), this));
-    }
+    this->AdjustPorts();
   }
 }
 
