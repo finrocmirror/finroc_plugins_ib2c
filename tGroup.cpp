@@ -33,8 +33,6 @@
 // External includes (system with <>, local with "")
 //----------------------------------------------------------------------
 #include "core/tFrameworkElementTags.h"
-#include "plugins/runtime_construction/tEditableInterfaces.h"
-
 #include "rrlib/util/tTraceableException.h"
 
 //----------------------------------------------------------------------
@@ -61,7 +59,7 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-typedef runtime_construction::tEditableInterfaces::tStaticInterfaceInfo tStaticInterfaceInfo;
+typedef structure::tCompositeComponent::tInterfaces::tStaticInterfaceInfo tStaticInterfaceInfo;
 typedef core::tFrameworkElement::tFlag tFlag;
 
 //----------------------------------------------------------------------
@@ -106,7 +104,7 @@ tGroup::tGroup(core::tFrameworkElement *parent, const std::string &name,
   core::tFrameworkElementTags::AddTag(*this, "ib2c_group");
 
   this->interfaces.fill(NULL);
-  this->EmplaceAnnotation<runtime_construction::tEditableInterfaces>(cSTATIC_INTERFACE_INFO_GROUP, this->interfaces.begin(), share_ports | (share_ports << 1));
+  this->EmplaceAnnotation<tInterfaces>(cSTATIC_INTERFACE_INFO_GROUP, this->interfaces.begin(), share_ports | (share_ports << 1));
 
   this->number_of_inhibition_ports.Set(number_of_inhibition_ports);
 }
@@ -118,7 +116,7 @@ core::tPortGroup& tGroup::GetInterface(tInterfaceEnumeration interface)
 {
   if (!this->interfaces[interface])
   {
-    runtime_construction::tEditableInterfaces *editable_interfaces = this->GetAnnotation<runtime_construction::tEditableInterfaces>();
+    tInterfaces *editable_interfaces = this->GetAnnotation<tInterfaces>();
     editable_interfaces->CreateInterface(this, interface, IsReady());
   }
   return *this->interfaces[interface];

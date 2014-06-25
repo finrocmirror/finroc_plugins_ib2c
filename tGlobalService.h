@@ -43,6 +43,7 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
+#ifdef _LIB_FINROC_PLUGINS_RPC_PORTS_PRESENT_
 #include "plugins/rpc_ports/tServerPort.h"
 #include "plugins/ib2c/tStatus.h"
 
@@ -100,6 +101,6 @@ private:
 //----------------------------------------------------------------------
 }
 }
-
+#endif
 
 #endif

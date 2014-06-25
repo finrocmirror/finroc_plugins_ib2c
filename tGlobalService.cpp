@@ -27,6 +27,8 @@
  *
  */
 //----------------------------------------------------------------------
+#ifdef _LIB_FINROC_PLUGINS_RPC_PORTS_PRESENT_
+
 #include "plugins/ib2c/tGlobalService.h"
 
 //----------------------------------------------------------------------
@@ -66,6 +68,7 @@ namespace internal
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
+
 static const char* cPORT_NAME = "ib2c";
 
 static rpc_ports::tRPCInterfaceType<tGlobalService> cTYPE("ib2c Interface", &tGlobalService::SetStimulationMode);
@@ -128,3 +131,5 @@ void tGlobalService::SetStimulationMode(core::tFrameworkElement::tHandle module_
 //----------------------------------------------------------------------
 }
 }
+
+#endif
