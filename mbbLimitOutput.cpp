@@ -36,7 +36,7 @@
 //----------------------------------------------------------------------
 // Internal includes with ""
 //----------------------------------------------------------------------
-#include "rrlib/util/sStringUtils.h"
+
 //----------------------------------------------------------------------
 // Debugging
 //----------------------------------------------------------------------
@@ -109,7 +109,7 @@ void mbbLimitOutput::OnStaticParameterChange()
 
     while (this->input_signals.size() < this->number_of_signals.Get())
     {
-      this->input_signals.push_back(tInput<double>("Input signal" + rrlib::util::sStringUtils::StringOf(count), this));
+      this->input_signals.push_back(tInput<double>("Input signal" + std::to_string(count), this));
       FINROC_LOG_PRINTF(DEBUG, "created input port %i", count);
       ++count;
     }
@@ -120,7 +120,7 @@ void mbbLimitOutput::OnStaticParameterChange()
 
     while (this->output_signals.size() < this->number_of_signals.Get())
     {
-      this->output_signals.push_back(tOutput<double>("Output signal" + rrlib::util::sStringUtils::StringOf(count), this));
+      this->output_signals.push_back(tOutput<double>("Output signal" + std::to_string(count), this));
       FINROC_LOG_PRINTF(DEBUG, "created output port %i", count);
       ++count;
     }
