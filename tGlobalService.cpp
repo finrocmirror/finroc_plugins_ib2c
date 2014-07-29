@@ -85,7 +85,7 @@ static tGlobalService global_service;
 class tPlugin : public core::tPlugin
 {
 public:
-  tPlugin() {}
+  tPlugin() : core::tPlugin("ib2c") {}
 
   virtual void Init() override
   {
