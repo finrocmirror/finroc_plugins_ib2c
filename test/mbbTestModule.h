@@ -92,12 +92,17 @@ public:
                 tStimulationMode stimulation_mode = tStimulationMode::AUTO, unsigned int number_of_inhibition_ports = 0);
 
 //----------------------------------------------------------------------
-// Private fields and methods
+// Protected methods
 //----------------------------------------------------------------------
-private:
+protected:
 
   ~mbbTestModule()
   {}
+
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
 
   virtual bool ProcessTransferFunction(double activation) override;
 

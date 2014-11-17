@@ -76,11 +76,9 @@ public:
       %%INDENT_ONE_NAME%%ib2c::tStimulationMode stimulation_mode = ib2c::tStimulationMode::AUTO, unsigned int number_of_inhibition_ports = 0);
 
 //----------------------------------------------------------------------
-// Private fields and methods
+// Protected methods
 //----------------------------------------------------------------------
-private:
-
-  Here is the right place for your variables. Replace this line by your declarations!
+protected:
 
   /*! Destructor
    *
@@ -88,6 +86,13 @@ private:
    * modules is already handled by the framework.
    */
   ~mbb%%NAME%%();
+
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
+
+  Here is the right place for your variables. Replace this line by your declarations!
 
   virtual void OnStaticParameterChange() override;   Might be needed to process static parameters. Delete otherwise!
 

@@ -96,9 +96,9 @@ public:
                const std::string &structure_config_file = __FILE__".xml");
 
 //----------------------------------------------------------------------
-// Private fields and methods
+// Protected methods
 //----------------------------------------------------------------------
-private:
+protected:
 
   /*! Destructor
    *
@@ -106,6 +106,11 @@ private:
    * groups is already handled by the framework.
    */
   ~gbbTestGroup();
+
+//----------------------------------------------------------------------
+// Private fields and methods
+//----------------------------------------------------------------------
+private:
 
 };
 

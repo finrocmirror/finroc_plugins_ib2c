@@ -77,18 +77,23 @@ public:
       %%INDENT_ONE_NAME%%const std::string &structure_config_file = __FILE__".xml");
 
 //----------------------------------------------------------------------
+// Protected methods
+//----------------------------------------------------------------------
+protected:
+
+  /*! Destructor
+   *
+   * The destructor of groups is declared protected to avoid accidental deletion. Deleting
+   * groups is already handled by the framework.
+   */
+  ~gbb%%NAME%%();
+
+//----------------------------------------------------------------------
 // Private fields and methods
 //----------------------------------------------------------------------
 private:
 
   Here is the right place for your variables. Replace this line by your declarations!
-
-  /*! Destructor
-   *
-   * The destructor of groups is declared private to avoid accidental deletion. Deleting
-   * groups is already handled by the framework.
-   */
-  ~gbb%%NAME%%();
 
   virtual void OnStaticParameterChange() override;   Might be needed to process static parameters. Delete otherwise!
 
