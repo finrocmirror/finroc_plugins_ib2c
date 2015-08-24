@@ -215,7 +215,7 @@ protected:
 
   inline const tActivityPort &AddDerivedActivity(const std::string &name)
   {
-    this->derived_activity.push_back(tActivityPort(this, "(A) " + name));
+    this->derived_activity.push_back(tActivityPort("(A) " + name, this));
     this->derived_activity.back().Init();
     return this->derived_activity.back();
   }
