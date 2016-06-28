@@ -258,7 +258,7 @@ bool mbbFusion<TSignalTypes...>::tDataPortFuser<Tindex, dummy>::PerformFusion(mb
     data_ports::tInputPort<tPortData> input_port = data_ports::tInputPort<tPortData>::Wrap(*it->data.GetPort(Tindex).GetWrapped());
     if (!IsConnectedToOutputPort(input_port))
     {
-      FINROC_LOG_PRINT_STATIC(ERROR, input_port.GetName(), " is not connected.");
+      FINROC_LOG_PRINT_STATIC(ERROR, input_port.GetName(), " of ", parent->GetName(), " is not connected.");
       return false;
     }
     values.push_back(input_port.Get());
