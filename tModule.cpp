@@ -71,6 +71,10 @@ const size_t cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS = 250;
 //----------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------
+const structure::tComponent::tInterfaceInfo tModule::cINPUT_INTERFACE_INFO = { "Input", tFlags(), data_ports::cDEFAULT_INPUT_PORT_FLAGS };
+const structure::tComponent::tInterfaceInfo tModule::cOUTPUT_INTERFACE_INFO = { "Output", tFlags(), data_ports::cDEFAULT_OUTPUT_PORT_FLAGS };
+const structure::tComponent::tInterfaceInfo tModule::cMETA_INPUT_INTERFACE_INFO = { "iB2C Input", tFlags(), data_ports::cDEFAULT_INPUT_PORT_FLAGS };
+const structure::tComponent::tInterfaceInfo tModule::cMETA_OUTPUT_INTERFACE_INFO = { "iB2C Output", tFlags(), data_ports::cDEFAULT_OUTPUT_PORT_FLAGS };
 
 //----------------------------------------------------------------------
 // tModule constructors
@@ -78,12 +82,12 @@ const size_t cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS = 250;
 tModule::tModule(core::tFrameworkElement *parent, const std::string &name,
                  tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports,
                  bool share_ports) :
-  tModuleBase(parent, name),
+  tModuleBase(parent, name, tFlags(), share_ports),
 
-  meta_input(new core::tPortGroup(this, "iB2C Input", tFlag::INTERFACE, share_ports ? tFlags(tFlag::SHARED) : tFlags())),
-  input(new core::tPortGroup(this, "Input", tFlag::INTERFACE, share_ports ? tFlags(tFlag::SHARED) : tFlags())),
-  meta_output(new core::tPortGroup(this, "iB2C Output", tFlag::INTERFACE, share_ports ? tFlags(tFlag::SHARED) : tFlags())),
-  output(new core::tPortGroup(this, "Output", tFlag::INTERFACE, share_ports ? tFlags(tFlag::SHARED) : tFlags())),
+  meta_input(&GetInterface(cMETA_INPUT_INTERFACE_INFO, share_ports)),
+  input(&GetInterface(cINPUT_INTERFACE_INFO, share_ports)),
+  meta_output(&GetInterface(cMETA_OUTPUT_INTERFACE_INFO, share_ports)),
+  output(&GetInterface(cOUTPUT_INTERFACE_INFO, share_ports)),
 
   number_of_inhibition_ports("Number Of Inhibition Ports", this),
 

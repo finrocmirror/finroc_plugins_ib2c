@@ -74,41 +74,41 @@ namespace ib2c
 class tGroup : public structure::tCompositeComponent
 {
 
-  core::tPortGroup *meta_input;
-  core::tPortGroup *meta_output;
+  tInterface *meta_input;
+  tInterface *meta_output;
 
 //----------------------------------------------------------------------
 // Ports (These are the only variables that may be declared public)
 //----------------------------------------------------------------------
 public:
 
-  inline core::tPortGroup &GetMetaInputs()
+  inline tInterface &GetMetaInputs()
   {
     return *this->meta_input;
   }
 
-  inline core::tPortGroup &GetInputs()
+  inline tInterface &GetInputs()
   {
-    return this->GetInterface(eINTERFACE_INPUT);
+    return GetInterface(cINPUT_INTERFACE_INFO, GetFlag(tFlag::SHARED));
   }
 
-  inline core::tPortGroup &GetMetaOutputs()
+  inline tInterface &GetMetaOutputs()
   {
     return *this->meta_output;
   }
 
-  inline core::tPortGroup &GetOutputs()
+  inline tInterface &GetOutputs()
   {
-    return this->GetInterface(eINTERFACE_OUTPUT);
+    return GetInterface(cOUTPUT_INTERFACE_INFO, GetFlag(tFlag::SHARED));
   }
 
   template <typename T>
-  class tMetaInput : public structure::tConveniencePort<data_ports::tProxyPort<T, false>, tGroup, core::tPortGroup, &tGroup::GetMetaInputs>
+  class tMetaInput : public structure::tConveniencePort<data_ports::tProxyPort<T, false>, tGroup, tInterface, &tGroup::GetMetaInputs>
   {
   public:
     template<typename ... TPortParameters>
     explicit tMetaInput(const TPortParameters &... port_parameters) :
-      structure::tConveniencePort<data_ports::tProxyPort<T, false>, tGroup, core::tPortGroup, &tGroup::GetMetaInputs>(port_parameters...)
+      structure::tConveniencePort<data_ports::tProxyPort<T, false>, tGroup, tInterface, &tGroup::GetMetaInputs>(port_parameters...)
     {}
   };
 
@@ -116,44 +116,44 @@ public:
   typedef tMetaInput<tInhibition> tInhibitionPort;
 
   template <typename T>
-  class tMetaOutput : public structure::tConveniencePort<data_ports::tProxyPort<T, true>, tGroup, core::tPortGroup, &tGroup::GetMetaOutputs>
+  class tMetaOutput : public structure::tConveniencePort<data_ports::tProxyPort<T, true>, tGroup, tInterface, &tGroup::GetMetaOutputs>
   {
   public:
     template<typename ... TPortParameters>
     explicit tMetaOutput(const TPortParameters &... port_parameters) :
-      structure::tConveniencePort<data_ports::tProxyPort<T, true>, tGroup, core::tPortGroup, &tGroup::GetMetaOutputs>(port_parameters...)
+      structure::tConveniencePort<data_ports::tProxyPort<T, true>, tGroup, tInterface, &tGroup::GetMetaOutputs>(port_parameters...)
     {}
   };
 
   typedef tMetaOutput<tActivity> tActivityPort;
   typedef tMetaOutput<tTargetRating> tTargetRatingPort;
 
-  class tStatusPort : public structure::tConveniencePort<data_ports::tProxyPort<tStatus, true>, tGroup, core::tPortGroup, &tGroup::GetMetaOutputs>
+  class tStatusPort : public structure::tConveniencePort<data_ports::tProxyPort<tStatus, true>, tGroup, tInterface, &tGroup::GetMetaOutputs>
   {
   public:
     template <typename ... TPortParameters>
     explicit tStatusPort(const TPortParameters &... port_parameters) :
-      structure::tConveniencePort<data_ports::tProxyPort<tStatus, true>, tGroup, core::tPortGroup, &tGroup::GetMetaOutputs>(port_parameters...)
+      structure::tConveniencePort<data_ports::tProxyPort<tStatus, true>, tGroup, tInterface, &tGroup::GetMetaOutputs>(port_parameters...)
     {}
   };
 
   template <typename T>
-  class tInput : public structure::tConveniencePort<data_ports::tProxyPort<T, false>, tGroup, core::tPortGroup, &tGroup::GetInputs>
+  class tInput : public structure::tConveniencePort<data_ports::tProxyPort<T, false>, tGroup, tInterface, &tGroup::GetInputs>
   {
   public:
     template<typename ... TPortParameters>
     explicit tInput(const TPortParameters &... port_parameters) :
-      structure::tConveniencePort<data_ports::tProxyPort<T, false>, tGroup, core::tPortGroup, &tGroup::GetInputs>(port_parameters...)
+      structure::tConveniencePort<data_ports::tProxyPort<T, false>, tGroup, tInterface, &tGroup::GetInputs>(port_parameters...)
     {}
   };
 
   template <typename T>
-  class tOutput : public structure::tConveniencePort<data_ports::tProxyPort<T, true>, tGroup, core::tPortGroup, &tGroup::GetOutputs>
+  class tOutput : public structure::tConveniencePort<data_ports::tProxyPort<T, true>, tGroup, tInterface, &tGroup::GetOutputs>
   {
   public:
     template<typename ... TPortParameters>
     explicit tOutput(const TPortParameters &... port_parameters) :
-      structure::tConveniencePort<data_ports::tProxyPort<T, true>, tGroup, core::tPortGroup, &tGroup::GetOutputs>(port_parameters...)
+      structure::tConveniencePort<data_ports::tProxyPort<T, true>, tGroup, tInterface, &tGroup::GetOutputs>(port_parameters...)
     {}
   };
 
@@ -188,15 +188,6 @@ public:
          const std::string &structure_config_file = "",
          bool share_ports = false, tFlags extra_flags = tFlags());
 
-  /*!
-   * Get interface (or "port group") by name
-   *
-   * \param Interface name
-   * \return Interface with specified name (e.g. "Sensor Output")
-   * \throw std::runtime_error if no interface with this name can be obtained
-   */
-  core::tPortGroup &GetInterface(const std::string &interface_name);
-
   inline const tInhibitionPort &AddInhibition(const std::string &name)
   {
     this->inhibition.push_back(tInhibitionPort("(I) " + name, this));
@@ -216,6 +207,9 @@ public:
 //----------------------------------------------------------------------
 protected:
 
+  /*! Static interface info on data port interfaces */
+  static const tInterfaceInfo cOUTPUT_INTERFACE_INFO, cINPUT_INTERFACE_INFO, cMETA_OUTPUT_INTERFACE_INFO, cMETA_INPUT_INTERFACE_INFO;
+
   virtual void OnStaticParameterChange() override;
 
   void RegisterCharacteristicModule(tModule *module);
@@ -233,19 +227,7 @@ private:
 
   tModule *characteristic_module;
 
-  enum tInterfaceEnumeration
-  {
-    eINTERFACE_INPUT,
-    eINTERFACE_OUTPUT,
-    eINTERFACE_DIMENSION
-  };
-
-  std::array<core::tPortGroup *, eINTERFACE_DIMENSION> interfaces;
-
-  core::tPortGroup &GetInterface(tInterfaceEnumeration interface);
-
   void ConnectCharacteristicModule();
-
 };
 
 //----------------------------------------------------------------------

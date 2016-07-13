@@ -59,18 +59,18 @@ namespace ib2c
 //----------------------------------------------------------------------
 // Forward declarations / typedefs / enums
 //----------------------------------------------------------------------
-typedef structure::tCompositeComponent::tInterfaces::tStaticInterfaceInfo tStaticInterfaceInfo;
 typedef core::tFrameworkElement::tFlag tFlag;
+typedef core::tFrameworkElement::tFlags tFlags;
 
 //----------------------------------------------------------------------
 // Const values
 //----------------------------------------------------------------------
 const size_t cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS = 250;
-const std::vector<tStaticInterfaceInfo>& cSTATIC_INTERFACE_INFO_GROUP =
-{
-  tStaticInterfaceInfo { "Input", tFlag::INTERFACE, tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::PUSH_STRATEGY, runtime_construction::tPortCreateOption::SHARED },
-  tStaticInterfaceInfo { "Output", tFlag::INTERFACE, tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::OUTPUT_PORT | tFlag::PUSH_STRATEGY, runtime_construction::tPortCreateOption::SHARED }
-};
+
+const structure::tComponent::tInterfaceInfo tGroup::cINPUT_INTERFACE_INFO = { "Input", tFlags(), tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::PUSH_STRATEGY };
+const structure::tComponent::tInterfaceInfo tGroup::cOUTPUT_INTERFACE_INFO = { "Output", tFlags(), tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::OUTPUT_PORT | tFlag::PUSH_STRATEGY };
+const structure::tComponent::tInterfaceInfo tGroup::cMETA_INPUT_INTERFACE_INFO = { "iB2C Input", tFlags(), tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::PUSH_STRATEGY };
+const structure::tComponent::tInterfaceInfo tGroup::cMETA_OUTPUT_INTERFACE_INFO = { "iB2C Output", tFlags(), tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::OUTPUT_PORT | tFlag::PUSH_STRATEGY };
 
 //----------------------------------------------------------------------
 // Implementation
@@ -83,10 +83,10 @@ tGroup::tGroup(core::tFrameworkElement *parent, const std::string &name,
                tStimulationMode stimulation_mode, unsigned int number_of_inhibition_ports,
                const std::string &structure_config_file,
                bool share_ports, tFlags extra_flags) :
-  tCompositeComponent(parent, name, structure_config_file, extra_flags),
+  tCompositeComponent(parent, name, structure_config_file, extra_flags, share_ports),
 
-  meta_input(new core::tPortGroup(this, "iB2C Input", tFlag::INTERFACE, tFlag::PUSH_STRATEGY | (share_ports ? tFlags(tFlag::SHARED) : tFlags()))),
-  meta_output(new core::tPortGroup(this, "iB2C Output", tFlag::INTERFACE, tFlag::PUSH_STRATEGY | (share_ports ? tFlags(tFlag::SHARED) : tFlags()))),
+  meta_input(&GetInterface(cMETA_INPUT_INTERFACE_INFO, share_ports)),
+  meta_output(&GetInterface(cMETA_OUTPUT_INTERFACE_INFO, share_ports)),
 
   number_of_inhibition_ports("Number Of Inhibition Ports", this),
 
@@ -103,35 +103,12 @@ tGroup::tGroup(core::tFrameworkElement *parent, const std::string &name,
 {
   core::tFrameworkElementTags::AddTag(*this, "ib2c_group");
 
-  this->interfaces.fill(NULL);
-  this->EmplaceAnnotation<tInterfaces>(cSTATIC_INTERFACE_INFO_GROUP, this->interfaces.begin(), share_ports | (share_ports << 1));
+#ifdef _LIB_FINROC_PLUGINS_RUNTIME_CONSTRUCTION_PRESENT_
+  runtime_construction::tEditableInterfaces::AddInterface(GetOutputs(), runtime_construction::tPortCreateOption::SHARED, true);
+  runtime_construction::tEditableInterfaces::AddInterface(GetInputs(), runtime_construction::tPortCreateOption::SHARED, true);
+#endif
 
   this->number_of_inhibition_ports.Set(number_of_inhibition_ports);
-}
-
-//----------------------------------------------------------------------
-// tGroup GetInterface
-//----------------------------------------------------------------------
-core::tPortGroup& tGroup::GetInterface(tInterfaceEnumeration interface)
-{
-  if (!this->interfaces[interface])
-  {
-    tInterfaces *editable_interfaces = this->GetAnnotation<tInterfaces>();
-    editable_interfaces->CreateInterface(this, interface, IsReady());
-  }
-  return *this->interfaces[interface];
-}
-
-core::tPortGroup& tGroup::GetInterface(const std::string &interface_name)
-{
-  for (size_t i = 0; i < cSTATIC_INTERFACE_INFO_GROUP.size(); ++i)
-  {
-    if (interface_name.compare(cSTATIC_INTERFACE_INFO_GROUP[i].name) == 0)
-    {
-      return GetInterface(static_cast<tInterfaceEnumeration>(i));
-    }
-  }
-  throw rrlib::util::tTraceableException<std::runtime_error>("No interface with name '" + interface_name + "' is meant to be added to a group.");
 }
 
 //----------------------------------------------------------------------

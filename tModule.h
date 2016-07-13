@@ -75,43 +75,43 @@ class tModule : public structure::tModuleBase
 {
   friend class tGroup;
 
-  core::tPortGroup *meta_input;
-  core::tPortGroup *input;
-  core::tPortGroup *meta_output;
-  core::tPortGroup *output;
+  tInterface *meta_input;
+  tInterface *input;
+  tInterface *meta_output;
+  tInterface *output;
 
 //----------------------------------------------------------------------
 // Ports (These are the only variables that may be declared public)
 //----------------------------------------------------------------------
 public:
 
-  inline core::tPortGroup &GetMetaInputs()
+  inline tInterface &GetMetaInputs()
   {
     return *this->meta_input;
   }
 
-  inline core::tPortGroup &GetInputs()
+  inline tInterface &GetInputs()
   {
     return *this->input;
   }
 
-  inline core::tPortGroup &GetMetaOutputs()
+  inline tInterface &GetMetaOutputs()
   {
     return *this->meta_output;
   }
 
-  inline core::tPortGroup &GetOutputs()
+  inline tInterface &GetOutputs()
   {
     return *this->output;
   }
 
   template <typename TSignal>
-  class tMetaInput : public structure::tConveniencePort<data_ports::tInputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaInputs>  // FIXME: can be replaced by template alias with gcc 4.7
+  class tMetaInput : public structure::tConveniencePort<data_ports::tInputPort<TSignal>, tModule, tInterface, &tModule::GetMetaInputs>  // FIXME: can be replaced by template alias with gcc 4.7
   {
   public:
     template <typename ... TPortParameters>
     explicit tMetaInput(const TPortParameters &... port_parameters) :
-      structure::tConveniencePort<data_ports::tInputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaInputs>(port_parameters..., data_ports::tBounds<TSignal>(0, 1, false))
+      structure::tConveniencePort<data_ports::tInputPort<TSignal>, tModule, tInterface, &tModule::GetMetaInputs>(port_parameters..., data_ports::tBounds<TSignal>(0, 1, false))
     {}
   };
 
@@ -119,34 +119,34 @@ public:
   typedef tMetaInput<tInhibition> tInhibitionPort;
 
   template <typename TSignal>
-  class tMetaOutput : public structure::tConveniencePort<data_ports::tOutputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaOutputs>  // FIXME: can be replaced by template alias with gcc 4.7
+  class tMetaOutput : public structure::tConveniencePort<data_ports::tOutputPort<TSignal>, tModule, tInterface, &tModule::GetMetaOutputs>  // FIXME: can be replaced by template alias with gcc 4.7
   {
   public:
     template <typename ... TPortParameters>
     explicit tMetaOutput(const TPortParameters &... port_parameters) :
-      structure::tConveniencePort<data_ports::tOutputPort<TSignal>, tModule, core::tPortGroup, &tModule::GetMetaOutputs>(port_parameters..., data_ports::tBounds<TSignal>(0, 1, false))
+      structure::tConveniencePort<data_ports::tOutputPort<TSignal>, tModule, tInterface, &tModule::GetMetaOutputs>(port_parameters..., data_ports::tBounds<TSignal>(0, 1, false))
     {}
   };
 
   typedef tMetaOutput<tActivity> tActivityPort;
   typedef tMetaOutput<tTargetRating> tTargetRatingPort;
 
-  class tStatusPort : public structure::tConveniencePort<data_ports::tOutputPort<tStatus>, tModule, core::tPortGroup, &tModule::GetMetaOutputs>
+  class tStatusPort : public structure::tConveniencePort<data_ports::tOutputPort<tStatus>, tModule, tInterface, &tModule::GetMetaOutputs>
   {
   public:
     template <typename ... TPortParameters>
     explicit tStatusPort(const TPortParameters &... port_parameters) :
-      structure::tConveniencePort<data_ports::tOutputPort<tStatus>, tModule, core::tPortGroup, &tModule::GetMetaOutputs>(port_parameters...)
+      structure::tConveniencePort<data_ports::tOutputPort<tStatus>, tModule, tInterface, &tModule::GetMetaOutputs>(port_parameters...)
     {}
   };
 
   template <typename T>
-  class tInput : public structure::tConveniencePort<data_ports::tInputPort<T>, tModule, core::tPortGroup, &tModule::GetInputs>
+  class tInput : public structure::tConveniencePort<data_ports::tInputPort<T>, tModule, tInterface, &tModule::GetInputs>
   {
   public:
     template <typename ... TPortParameters>
     explicit tInput(const TPortParameters &... port_parameters) :
-      structure::tConveniencePort<data_ports::tInputPort<T>, tModule, core::tPortGroup, &tModule::GetInputs>(port_parameters...)
+      structure::tConveniencePort<data_ports::tInputPort<T>, tModule, tInterface, &tModule::GetInputs>(port_parameters...)
     {
       this->RegisterActivityTransferInput(this);
     }
@@ -162,12 +162,12 @@ public:
   };
 
   template <typename T>
-  class tOutput : public structure::tConveniencePort<data_ports::tOutputPort<T>, tModule, core::tPortGroup, &tModule::GetOutputs>
+  class tOutput : public structure::tConveniencePort<data_ports::tOutputPort<T>, tModule, tInterface, &tModule::GetOutputs>
   {
   public:
     template <typename ... TPortParameters>
     explicit tOutput(const TPortParameters &... port_parameters) :
-      structure::tConveniencePort<data_ports::tOutputPort<T>, tModule, core::tPortGroup, &tModule::GetOutputs>(port_parameters...)
+      structure::tConveniencePort<data_ports::tOutputPort<T>, tModule, tInterface, &tModule::GetOutputs>(port_parameters...)
     {}
   };
 
@@ -206,6 +206,9 @@ public:
 // Protected methods
 //----------------------------------------------------------------------
 protected:
+
+  /*! Static interface info on data port interfaces */
+  static const tInterfaceInfo cOUTPUT_INTERFACE_INFO, cINPUT_INTERFACE_INFO, cMETA_OUTPUT_INTERFACE_INFO, cMETA_INPUT_INTERFACE_INFO;
 
   virtual ~tModule();
 
