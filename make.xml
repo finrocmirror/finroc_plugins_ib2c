@@ -9,6 +9,7 @@
       mbbFusion.cpp
       mbbFusionBase.cpp
       mNumberToActivityConverter.cpp
+      rtti.cpp
       tCondition.cpp
       tGroup.cpp
       tMetaSignal.h
