@@ -166,7 +166,7 @@ bool tModule::IsConnectedToOutputPort(const core::tAbstractPort &port)
 {
   for (auto it = port.IncomingConnectionsBegin(); it != port.IncomingConnectionsEnd(); ++it)
   {
-    if (it->IsOutputPort() || it->GetAnnotation<parameters::internal::tParameterInfo>() || IsConnectedToOutputPort(*it))
+    if (it->Source().IsOutputPort() || it->Source().GetAnnotation<parameters::internal::tParameterInfo>() || IsConnectedToOutputPort(it->Source()))
     {
       return true;
     }
