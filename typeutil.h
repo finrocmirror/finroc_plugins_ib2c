@@ -78,4 +78,19 @@ struct IsNumeric<ib2c::tMetaSignal<Tmeta_signal_type>>
 }
 }
 
+namespace rrlib
+{
+namespace rtti
+{
+template <int Tmeta_signal_type>
+struct UnderlyingType<finroc::ib2c::tMetaSignal<Tmeta_signal_type>>
+{
+  typedef double type;
+  enum { cREVERSE_CAST_VALID = true };
+  enum { cBINARY_SERIALIZATION_DIFFERS = false };
+  enum { cOTHER_SERIALIZATION_DIFFERS = false };
+};
+}
+}
+
 #endif
