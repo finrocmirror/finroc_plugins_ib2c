@@ -67,10 +67,10 @@ typedef core::tFrameworkElement::tFlags tFlags;
 //----------------------------------------------------------------------
 const size_t cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS = 250;
 
-const structure::tComponent::tInterfaceInfo tGroup::cINPUT_INTERFACE_INFO = { "Input", tFlags(), tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::PUSH_STRATEGY };
-const structure::tComponent::tInterfaceInfo tGroup::cOUTPUT_INTERFACE_INFO = { "Output", tFlags(), tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::OUTPUT_PORT | tFlag::PUSH_STRATEGY };
-const structure::tComponent::tInterfaceInfo tGroup::cMETA_INPUT_INTERFACE_INFO = { "iB2C Input", tFlags(), tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::PUSH_STRATEGY };
-const structure::tComponent::tInterfaceInfo tGroup::cMETA_OUTPUT_INTERFACE_INFO = { "iB2C Output", tFlags(), tFlag::EMITS_DATA | tFlag::ACCEPTS_DATA | tFlag::OUTPUT_PORT | tFlag::PUSH_STRATEGY };
+const structure::tComponent::tInterfaceInfo tGroup::cINPUT_INTERFACE_INFO = { "Input", tFlag::PROXY_INTERFACE | tFlag::INTERFACE_FOR_DATA_PORTS | tFlag::INTERFACE_FOR_INPUTS };
+const structure::tComponent::tInterfaceInfo tGroup::cOUTPUT_INTERFACE_INFO = { "Output", tFlag::PROXY_INTERFACE | tFlag::INTERFACE_FOR_DATA_PORTS | tFlag::INTERFACE_FOR_OUTPUTS };
+const structure::tComponent::tInterfaceInfo tGroup::cMETA_INPUT_INTERFACE_INFO = { "iB2C Input", tFlag::PROXY_INTERFACE | tFlag::INTERFACE_FOR_DATA_PORTS | tFlag::INTERFACE_FOR_INPUTS };
+const structure::tComponent::tInterfaceInfo tGroup::cMETA_OUTPUT_INTERFACE_INFO = { "iB2C Output", tFlag::PROXY_INTERFACE | tFlag::INTERFACE_FOR_DATA_PORTS | tFlag::INTERFACE_FOR_OUTPUTS };
 
 //----------------------------------------------------------------------
 // Implementation

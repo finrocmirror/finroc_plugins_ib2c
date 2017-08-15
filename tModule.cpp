@@ -71,10 +71,10 @@ const size_t cNUMBER_OF_CYCLES_WITH_SUPPRESSED_WARNINGS = 250;
 //----------------------------------------------------------------------
 // Implementation
 //----------------------------------------------------------------------
-const structure::tComponent::tInterfaceInfo tModule::cINPUT_INTERFACE_INFO = { "Input", tFlags(), data_ports::cDEFAULT_INPUT_PORT_FLAGS };
-const structure::tComponent::tInterfaceInfo tModule::cOUTPUT_INTERFACE_INFO = { "Output", tFlags(), data_ports::cDEFAULT_OUTPUT_PORT_FLAGS };
-const structure::tComponent::tInterfaceInfo tModule::cMETA_INPUT_INTERFACE_INFO = { "iB2C Input", tFlags(), data_ports::cDEFAULT_INPUT_PORT_FLAGS };
-const structure::tComponent::tInterfaceInfo tModule::cMETA_OUTPUT_INTERFACE_INFO = { "iB2C Output", tFlags(), data_ports::cDEFAULT_OUTPUT_PORT_FLAGS };
+const structure::tComponent::tInterfaceInfo tModule::cINPUT_INTERFACE_INFO = { "Input", tFlag::INTERFACE_FOR_DATA_PORTS | tFlag::INTERFACE_FOR_INPUTS };
+const structure::tComponent::tInterfaceInfo tModule::cOUTPUT_INTERFACE_INFO = { "Output", tFlag::INTERFACE_FOR_DATA_PORTS | tFlag::INTERFACE_FOR_OUTPUTS };
+const structure::tComponent::tInterfaceInfo tModule::cMETA_INPUT_INTERFACE_INFO = { "iB2C Input", tFlag::INTERFACE_FOR_DATA_PORTS | tFlag::INTERFACE_FOR_INPUTS };
+const structure::tComponent::tInterfaceInfo tModule::cMETA_OUTPUT_INTERFACE_INFO = { "iB2C Output", tFlag::INTERFACE_FOR_DATA_PORTS | tFlag::INTERFACE_FOR_OUTPUTS };
 
 //----------------------------------------------------------------------
 // tModule constructors
